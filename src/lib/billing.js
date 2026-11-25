@@ -6,10 +6,13 @@ const mailer = require('./mailer');
 const P = config.pricing;
 
 async function foundingAvailable() {
-  if (Date.now() > new Date(P.foundingEnds).getTime()) return { open: false, left: 0 };
   const row = await db('users').where({ founding_member: true }).count({ n: '*' }).first();
   const used = Number(row.n || 0);
-  return { open: used < P.foundingLimit, left: Math.max(0, P.foundingLimit - used) };
+  const ends = new Date(P.foundingEnds);
+  const expired = Date.now() > ends.getTime();
+  const left = Math.max(0, P.foundingLimit - used);
+  const endsLabel = ends.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Africa/Lagos' });
+  return { open: !expired && left > 0, left, used, limit: P.foundingLimit, ends, endsLabel, expired };
 }
 
 function teamSeatPrice(seats) {

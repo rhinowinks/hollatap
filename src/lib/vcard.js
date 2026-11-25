@@ -20,9 +20,17 @@ function buildVCard(card, { url, logoBase64 } = {}) {
   if (card.website) lines.push(`URL:${esc(card.website)}`);
   if (url) lines.push(`URL;TYPE=HollaTap:${esc(url)}`);
   if (card.address) lines.push(`ADR;TYPE=WORK:;;${esc(card.address)};;;;`);
+  if (card.note) lines.push(`NOTE:${esc(card.note)}`);
   if (logoBase64) lines.push(`PHOTO;ENCODING=b;TYPE=JPEG:${logoBase64}`);
   lines.push('END:VCARD');
   return lines.join('\r\n') + '\r\n';
 }
 
-module.exports = { buildVCard };
+// A shared contact (lead) as a vCard the card owner can save to their phone.
+function leadVCard(lead, cardName) {
+  const when = new Date(lead.created_at || Date.now()).toLocaleDateString('en-GB');
+  const note = [`Shared via HollaTap card (${cardName}) on ${when}.`, lead.message || ''].filter(Boolean).join(' ');
+  return buildVCard({ full_name: lead.name, company: lead.company, phone: lead.phone, email: lead.email, note });
+}
+
+module.exports = { buildVCard, leadVCard };

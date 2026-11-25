@@ -12,6 +12,7 @@ const { foundingAvailable } = require('../lib/billing');
 const { deleteUserEverything } = require('../jobs');
 
 const csrf = require('../lib/csrf');
+const { leadVCard } = require('../lib/vcard');
 const router = express.Router();
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -232,6 +233,27 @@ router.get('/cards/:id/leads.csv', requireUser, async (req, res) => {
   );
   res.setHeader('Content-Disposition', `attachment; filename="hollatap-leads-${card.slug}.csv"`);
   res.type('text/csv').send(rows.map((r) => r.map(esc).join(',')).join('\r\n'));
+});
+
+function vcfName(s) {
+  return String(s || 'contact').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'contact';
+}
+
+router.get('/cards/:id/leads.vcf', requireUser, async (req, res) => {
+  const card = await ownCard(req, res);
+  if (!card) return;
+  const leads = await db('leads').where({ card_id: card.id }).orderBy('id', 'desc');
+  res.setHeader('Content-Disposition', `attachment; filename="hollatap-contacts-${card.slug}.vcf"`);
+  res.type('text/vcard').send(leads.map((l) => leadVCard(l, card.full_name)).join(''));
+});
+
+router.get('/cards/:id/leads/:lid.vcf', requireUser, async (req, res) => {
+  const card = await ownCard(req, res);
+  if (!card) return;
+  const lead = await db('leads').where({ id: req.params.lid, card_id: card.id }).first();
+  if (!lead) return res.sendStatus(404);
+  res.setHeader('Content-Disposition', `attachment; filename="${vcfName(lead.name)}.vcf"`);
+  res.type('text/vcard').send(leadVCard(lead, card.full_name));
 });
 
 router.post('/cards/:id/leads/:lid/delete', requireUser, async (req, res) => {

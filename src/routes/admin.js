@@ -5,6 +5,7 @@ const { requireAdmin } = require('../lib/auth');
 const { clean, cleanUrl, randomCode } = require('../lib/util');
 const { INDUSTRIES } = require('../lib/promos');
 
+const { foundingAvailable } = require('../lib/billing');
 const router = express.Router();
 router.use('/admin', requireAdmin);
 
@@ -28,7 +29,8 @@ router.get('/admin', async (req, res) => {
     leads: await count(db('leads')),
   };
   const promos = await db('promos').orderBy('clicks', 'desc').limit(5);
-  res.render('admin/index', { title: 'Admin', stats, promos });
+  const founding = await foundingAvailable();
+  res.render('admin/index', { title: 'Admin', stats, promos, founding });
 });
 
 router.get('/admin/users', async (req, res) => {

@@ -37,7 +37,7 @@ config.pricing = {
   proAnnual: 25000,
   proFounding: 20000,
   foundingLimit: 5000,
-  foundingEnds: '2027-02-28T23:59:59+01:00',
+  foundingEnds: '2026-12-31T23:59:59+01:00',
   footerRemoval: 5000,
   teamSeat: 30000,
   teamSeat50: 20000,

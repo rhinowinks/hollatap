@@ -5,7 +5,7 @@ const { db } = require('../db');
 const config = require('../config');
 const mailer = require('../lib/mailer');
 const { effectivePlan } = require('../lib/auth');
-const { buildVCard } = require('../lib/vcard');
+const { buildVCard, leadVCard } = require('../lib/vcard');
 const { showFooter, publicUrl, TEMPLATES } = require('../lib/cards');
 const { onColour } = require('../lib/images');
 const { clean, cleanEmail, cleanPhone, waNumber, isFuture } = require('../lib/util');
@@ -119,11 +119,13 @@ router.post('/:slug/lead', leadLimiter, async (req, res) => {
   const plan = await effectivePlan(owner);
   const lead = { card_id: card.id, name, email, phone, company: clean(req.body.company, 160), message: clean(req.body.message, 1000) };
   await db('leads').insert(lead);
+  const vcfFile = String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'contact';
   await mailer.send({
+    attachments: [{ filename: `${vcfFile}.vcf`, content: leadVCard(lead, card.full_name), contentType: 'text/vcard' }],
     to: owner.email,
     subject: `${name} shared their details with you`,
     title: 'New contact from your HollaTap card',
-    html: `<p><b>${name.replace(/</g, '&lt;')}</b>${lead.company ? ' (' + lead.company.replace(/</g, '&lt;') + ')' : ''}</p><p>${email ? 'Email: ' + email + '<br>' : ''}${phone ? 'Phone: ' + phone : ''}</p>${lead.message ? '<p>' + lead.message.replace(/</g, '&lt;') + '</p>' : ''}<p><a href="${config.baseUrl}/cards/${card.id}/leads" style="color:#C2410C">See all your leads</a></p>`,
+    html: `<p><b>${name.replace(/</g, '&lt;')}</b>${lead.company ? ' (' + lead.company.replace(/</g, '&lt;') + ')' : ''}</p><p>${email ? 'Email: ' + email + '<br>' : ''}${phone ? 'Phone: ' + phone : ''}</p>${lead.message ? '<p>' + lead.message.replace(/</g, '&lt;') + '</p>' : ''}<p><b>To save ${name.replace(/</g, '&lt;').split(' ')[0]} to your phone:</b> open the attached contact file (${vcfFile}.vcf) and tap Save or Add contact.</p><p><a href="${config.baseUrl}/cards/${card.id}/leads" style="color:#C2410C">See all your leads</a></p>`,
     text: `${name} ${email || ''} ${phone || ''}`,
   }).catch(() => {});
   req.session.flash = { type: 'success', text: `Thanks, ${name}. ${card.full_name.split(' ')[0]} has your details.` };

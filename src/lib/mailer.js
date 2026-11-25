@@ -25,9 +25,10 @@ function wrap(title, bodyHtml) {
 </table></td></tr></table></body></html>`;
 }
 
-async function send({ to, subject, title, html, text }) {
+async function send({ to, subject, title, html, text, attachments }) {
   const msg = { from: config.smtp.from, to, subject, html: wrap(title || subject, html), text };
-  sentLog.push({ to, subject, text, at: new Date() });
+  if (attachments) msg.attachments = attachments;
+  sentLog.push({ to, subject, text, attachments: (attachments || []).map((a) => a.filename), at: new Date() });
   if (sentLog.length > 200) sentLog.shift();
   if (!transport) {
     console.log(`[mail:dev] to=${to} subject="${subject}"\n${text || ''}`);

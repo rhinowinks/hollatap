@@ -144,7 +144,15 @@ async function pngLogo() {
     assert(mailer.sentLog.some((m) => m.to === 'ada@lekkilogistics.com' && /Tunde/.test(m.subject)));
     r = await u.get(`/cards/${card.id}/leads.csv`);
     assert(r.text.includes('Tunde Bello'), 'CSV export during trial');
-    ok('lead captured, owner emailed, CSV export');
+    assert(mailer.sentLog.some((m) => /Tunde/.test(m.subject) && (m.attachments || []).includes('tunde-bello.vcf')), 'lead email has vcf');
+    const leadRow = await db('leads').where({ card_id: card.id }).first();
+    r = await u.get(`/cards/${card.id}/leads/${leadRow.id}.vcf`);
+    assert(r.status === 200 && /BEGIN:VCARD/.test(r.text) && /FN:Tunde Bello/.test(r.text) && /ORG:Bello Ltd/.test(r.text), 'single lead vcf');
+    r = await u.get(`/cards/${card.id}/leads.vcf`);
+    assert(r.status === 200 && /FN:Tunde Bello/.test(r.text), 'all leads vcf');
+    r = await visitor.get(`/cards/${card.id}/leads/${leadRow.id}.vcf`);
+    assert(r.status !== 200 || !/BEGIN:VCARD/.test(r.text), 'vcf not public');
+    ok('lead captured, owner emailed with contact file, CSV + save-to-contacts');
 
     // Free user after trial: footer shows, mode forced to profile
     await db('users').where({ id: user.id }).update({ trial_ends_at: new Date(Date.now() - 1000) });

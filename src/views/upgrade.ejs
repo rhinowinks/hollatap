@@ -7,7 +7,7 @@
   <div class="grid c3">
     <div class="plan-card"><h3>Free</h3><div class="price">₦0</div><ul><li>Instant Card, or an account with 2 cards</li><li>QR code, link and save-contact button</li><li>WhatsApp button and 5 link buttons</li><li>10 shared contacts a month</li><li>"Made free with HollaTap" footer</li></ul><% if (!user) { %><a class="btn" href="/login">Start free</a><% } %></div>
     <div class="plan-card featured">
-      <% if (founding.open) { %><span class="badge orange">Founding member price: <%= founding.left.toLocaleString() %> spots left</span><% } %>
+      <% if (founding.open) { %><span class="badge orange">Founding member price ends <%= founding.endsLabel %></span><% } %>
       <h3>Pro</h3>
       <div class="price"><% if (founding.open) { %><s>₦25,000</s>₦20,000<% } else { %>₦25,000<% } %><span class="small muted">/year</span></div>
       <% if (founding.open) { %><p class="small muted" style="margin:0">First year, then ₦25,000/year. Includes a Founding Member badge.</p><% } %>

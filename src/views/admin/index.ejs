@@ -6,6 +6,7 @@
     <div class="stat">Users<b><%= stats.users.toLocaleString() %></b><span class="small muted">+<%= stats.users30 %> in 30 days</span></div>
     <div class="stat">Cards<b><%= stats.cards.toLocaleString() %></b></div>
     <div class="stat">Pro (paid)<b><%= stats.pro %></b><span class="small muted"><%= stats.founding %> founding</span></div>
+    <div class="stat">Founding spots left<b><%= founding.left.toLocaleString() %> / <%= founding.limit.toLocaleString() %></b><span class="small muted"><%= founding.expired ? 'Offer ended' : (founding.left ? 'Ends ' + founding.endsLabel : 'Sold out') %> · <%= founding.used.toLocaleString() %> taken</span></div>
     <div class="stat">Active teams<b><%= stats.teams %></b></div>
     <div class="stat">Revenue<b><%= naira(stats.revenue) %></b><span class="small muted"><%= naira(stats.revenue30) %> in 30 days</span></div>
     <div class="stat">New enquiries<b><%= stats.enquiriesNew %></b></div>
