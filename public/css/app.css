@@ -234,3 +234,6 @@ hr{border:none;border-top:1px solid var(--border);margin:28px 0}
 .end-band .btn-row .btn{min-height:52px;padding:12px 26px;font-size:16px}
 .end-band .btn.dark{background:#0F1B2D;border-color:#0F1B2D;color:#fff}
 .end-band .btn.clear{background:transparent;border-color:#0F1B2D;color:#0F1B2D}
+
+.foot-links{text-align:right;margin-left:auto}
+@media (max-width:700px){.foot-links{text-align:left;margin-left:0}}
