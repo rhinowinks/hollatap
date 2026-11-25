@@ -1,0 +1,13 @@
+<%- include('partials/header') %>
+<section class="section"><div class="wrap">
+  <h1 style="font-size:32px">Shared contacts</h1>
+  <p class="muted">People who sent you their details from <a href="/<%= card.slug %>" target="_blank">your card</a>.</p>
+  <div class="btn-row" style="margin-bottom:16px"><% if (plan !== 'free') { %><a class="btn small" href="/cards/<%= card.id %>/leads.csv">Download CSV</a><% } else { %><a class="btn small" href="/upgrade">Upgrade to export CSV</a><% } %><a class="btn small" href="/dashboard">Back</a></div>
+  <% if (!leads.length) { %><div class="card-box"><p class="muted" style="margin:0">No one has shared their details yet. Your card shows a "Share my details" button to everyone who opens it.</p></div><% } else { %>
+  <div class="table-wrap"><table class="data"><thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Phone</th><th>Company</th><th>Message</th><th></th></tr></thead><tbody>
+  <% leads.forEach(l => { %><tr><td><%= new Date(l.created_at).toLocaleDateString('en-GB') %></td><td><%= l.name %></td><td><% if (l.email) { %><a href="mailto:<%= l.email %>"><%= l.email %></a><% } %></td><td><% if (l.phone) { %><a href="tel:<%= l.phone %>"><%= l.phone %></a><% } %></td><td><%= l.company || '' %></td><td><%= l.message || '' %></td>
+  <td><form method="post" action="/cards/<%= card.id %>/leads/<%= l.id %>/delete" data-confirm="Delete this contact?"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn small danger" type="submit">Delete</button></form></td></tr><% }) %>
+  </tbody></table></div><% } %>
+</div></section>
+<script src="/js/ui.js"></script>
+<%- include('partials/footer') %>

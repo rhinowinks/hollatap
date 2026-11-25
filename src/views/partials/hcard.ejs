@@ -1,0 +1,32 @@
+<%
+  const initials = (card.full_name || '?').split(/\s+/).map(w => w[0]).slice(0,2).join('').toUpperCase();
+%>
+<article class="hc tpl-<%= card.template %>" style="--accent:<%= card.accent %>;--on:<%= onAccent %>" aria-label="Business card for <%= card.full_name %>">
+  <div class="hc-top">
+    <div class="hc-logo"><% if (card.logo) { %><img src="/<%= card.slug %>/logo" alt="<%= card.company || card.full_name %> logo"><% } else { %><span class="init"><%= initials %></span><% } %></div>
+    <div>
+      <h1 class="hc-name"><%= card.full_name %></h1>
+      <p class="hc-title"><%= [card.job_title, card.company].filter(Boolean).join(' · ') %></p>
+      <% if (verified || founding) { %><div class="hc-badges">
+        <% if (verified) { %><span>✓ Verified, <%= teamName %></span><% } %>
+        <% if (founding) { %><span>Founding member</span><% } %>
+      </div><% } %>
+    </div>
+  </div>
+  <% if (card.bio) { %><p class="hc-bio" style="padding-top:14px"><%= card.bio %></p><% } %>
+  <div class="hc-body">
+    <% if (card.phone) { %><a class="hc-row" href="tel:<%= card.phone.replace(/[^\d+]/g,'') %>"><%- include('icon', {name:'phone'}) %><span><%= card.phone %></span></a><% } %>
+    <% if (card.email) { %><a class="hc-row" href="mailto:<%= card.email %>"><%- include('icon', {name:'mail'}) %><span><%= card.email %></span></a><% } %>
+    <% if (card.website) { %><a class="hc-row" href="<%= card.website %>" target="_blank" rel="noopener nofollow"><%- include('icon', {name:'web'}) %><span><%= card.website.replace(/^https?:\/\//,'').replace(/\/$/,'') %></span></a><% } %>
+    <% if (card.address) { %><a class="hc-row" href="https://www.google.com/maps/search/?api=1&query=<%= encodeURIComponent(card.address) %>" target="_blank" rel="noopener"><%- include('icon', {name:'map'}) %><span><%= card.address %></span></a><% } %>
+  </div>
+  <% if (links.length) { %><div class="hc-links"><% links.forEach(l => { %><a href="<%= l.url %>" target="_blank" rel="noopener nofollow"><%= l.label %></a><% }) %></div><% } %>
+  <div class="hc-actions">
+    <a class="hc-save" href="/<%= card.slug %>/contact.vcf">Save contact</a>
+    <div class="hc-secondary">
+      <% if (wa) { %><a href="https://wa.me/<%= wa %>" target="_blank" rel="noopener"><%- include('icon', {name:'wa'}) %> WhatsApp</a><% } else if (card.phone) { %><a href="tel:<%= card.phone.replace(/[^\d+]/g,'') %>">Call</a><% } %>
+      <% if (leadsOpen) { %><a href="#share-back">Share my details</a><% } %>
+    </div>
+  </div>
+  <% if (footer) { %><div class="hc-foot"><img src="/brand/hollatap-mark-colour.svg" alt="">Made free with <a href="<%= config.baseUrl %>/?utm_source=card">HollaTap</a> · <a href="<%= config.baseUrl %>/login">Get yours</a></div><% } %>
+</article>

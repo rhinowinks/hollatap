@@ -1,0 +1,10 @@
+<div class="grid c2" style="gap:0 16px">
+  <div class="field"><label for="f_name">Full name</label><input id="f_name" name="full_name" type="text" maxlength="120" required value="<%= card.full_name || '' %>" autocomplete="name"></div>
+  <div class="field"><label for="f_title">Job title</label><input id="f_title" name="job_title" type="text" maxlength="120" value="<%= card.job_title || '' %>" autocomplete="organization-title"></div>
+  <div class="field"><label for="f_company">Company</label><input id="f_company" name="company" type="text" maxlength="160" value="<%= card.company || '' %>" autocomplete="organization" <%= locked ? 'readonly' : '' %>></div>
+  <div class="field"><label for="f_phone">Phone</label><input id="f_phone" name="phone" type="tel" maxlength="40" value="<%= card.phone || '' %>" autocomplete="tel" placeholder="+234 801 234 5678"></div>
+  <div class="field"><label for="f_wa">WhatsApp number <span class="hint">(if different)</span></label><input id="f_wa" name="whatsapp" type="tel" maxlength="40" value="<%= card.whatsapp || '' %>" placeholder="+234 801 234 5678"></div>
+  <div class="field"><label for="f_email">Email</label><input id="f_email" name="email" type="email" maxlength="254" value="<%= card.email || '' %>" autocomplete="email"></div>
+  <div class="field"><label for="f_web">Website</label><input id="f_web" name="website" type="text" maxlength="255" value="<%= card.website || '' %>" placeholder="yourcompany.com" autocomplete="url"></div>
+  <div class="field"><label for="f_addr">Address</label><input id="f_addr" name="address" type="text" maxlength="255" value="<%= card.address || '' %>" autocomplete="street-address"></div>
+</div>

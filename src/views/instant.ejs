@@ -1,0 +1,42 @@
+<%- include('partials/header') %>
+<section class="section"><div class="wrap">
+  <span class="badge">Nothing stored</span>
+  <h1 style="font-size:36px;margin-top:10px">Instant Card</h1>
+  <p class="lead">Your card is built here on your device. Your details never reach our servers. When you close this page, they're gone.</p>
+  <div class="editor" style="margin-top:24px">
+    <form id="instant-form" class="card-box" autocomplete="on">
+      <div class="dropzone field">
+        <label for="pdf">Fill in from your current card <span class="hint">(PDF, read on your device)</span></label>
+        <input id="pdf" type="file" accept="application/pdf">
+        <p class="tiny muted" id="pdf-status" aria-live="polite" style="margin:6px 0 0"></p>
+      </div>
+      <%- include('partials/fields', { card: {}, locked: false }) %>
+      <div class="field"><label for="f_logo">Logo <span class="hint">(stays on your device)</span></label><input id="f_logo" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"></div>
+      <div class="field"><span style="display:block;font-weight:700;font-size:14px;margin-bottom:6px">Design</span>
+        <div class="tpl-picker"><% TEMPLATES.forEach((t,i) => { %><label><input type="radio" name="template" value="<%= t.id %>" <%= i===0?'checked':'' %>> <%= t.name %></label><% }) %></div></div>
+      <div class="field"><label for="f_accent">Card colour</label><input id="f_accent" name="accent" type="color" value="#0F1B2D"></div>
+      <p class="tiny muted">The QR code holds your details directly, so it works offline and saves your contact without visiting any website.</p>
+    </form>
+    <div class="preview">
+      <div id="preview"></div>
+      <div class="card-box" style="margin-top:16px;text-align:center">
+        <h2 style="font-size:20px">Your QR code</h2>
+        <div id="qr" style="max-width:240px;margin:0 auto" aria-label="QR code with your contact details"></div>
+        <p class="tiny muted" id="qr-note"></p>
+        <div class="btn-row" style="justify-content:center">
+          <button class="btn primary small" type="button" id="dl-qr">Download QR</button>
+          <button class="btn small" type="button" id="dl-vcf">Download contact file</button>
+          <button class="btn small" type="button" id="dl-card">Download card image</button>
+        </div>
+      </div>
+      <div class="card-box" style="margin-top:16px">
+        <h3>Want a link you can update?</h3>
+        <p class="small muted">A free account gives you a web link, QR that never needs reprinting, a WhatsApp button and contacts shared back to you.</p>
+        <a class="btn dark small" href="/login">Create a free account</a>
+      </div>
+    </div>
+  </div>
+</div></section>
+<script src="/vendor/qrcode-generator.js"></script>
+<script type="module" src="/js/instant.js"></script>
+<%- include('partials/footer') %>

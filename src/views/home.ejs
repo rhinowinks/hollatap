@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <div class="wrap grid c2">
+    <div>
+      <span class="badge orange">Free · Made in Lagos</span>
+      <h1 style="margin-top:14px">Your business card, one tap away.</h1>
+      <p class="lead">Make a digital business card with a QR code in two minutes. People scan or tap, and your details save straight to their phone.</p>
+      <div class="btn-row">
+        <a class="btn primary" href="/login">Create my free card</a>
+        <a class="btn" href="/instant">Try Instant Card, nothing stored</a>
+      </div>
+      <p class="small muted" style="margin-top:14px">No app needed. Works on every phone. Delete your data any time.</p>
+    </div>
+    <div>
+      <article class="hc tpl-classic" style="--accent:#0F1B2D;--on:#fff" aria-label="Example card">
+        <div class="hc-top"><div class="hc-logo"><img src="/brand/hollatap-mark-colour.svg" alt=""></div><h2 class="hc-name">Adaeze Okafor</h2><p class="hc-title">Head of Partnerships · Lekki Logistics</p></div>
+        <div class="hc-body">
+          <span class="hc-row"><%- include('partials/icon',{name:'phone'}) %><span>+234 801 234 5678</span></span>
+          <span class="hc-row"><%- include('partials/icon',{name:'mail'}) %><span>adaeze@lekkilogistics.com</span></span>
+          <span class="hc-row"><%- include('partials/icon',{name:'map'}) %><span>Admiralty Way, Lekki Phase I</span></span>
+        </div>
+        <div class="hc-actions"><span class="hc-save" style="background:#FF5A1F;color:#0F1B2D">Save contact</span></div>
+      </article>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <div class="grid c3" style="margin-top:20px">
+      <div class="card-box"><h3>1. Add your details</h3><p class="muted">Name, company, phone, email, address and logo. Or upload your current card as a PDF and we fill it in.</p></div>
+      <div class="card-box"><h3>2. Share your QR or link</h3><p class="muted">Print the QR, put it in your email signature, or tap an NFC card on any phone.</p></div>
+      <div class="card-box"><h3>3. They save you in one tap</h3><p class="muted">Your contact lands in their phone. They can send you their details back, too.</p></div>
+    </div>
+  </div>
+</section>
+<section class="section sand">
+  <div class="wrap">
+    <h2>Simple pricing</h2>
+    <p class="muted">Annual plans. Cancel any time; your free card stays.</p>
+    <div class="grid c3" style="margin-top:20px">
+      <div class="plan-card"><h3>Free</h3><div class="price">₦0</div><ul><li>2 cards, QR and link</li><li>WhatsApp button, 5 links</li><li>10 shared contacts a month</li><li>"Made free with HollaTap" footer</li></ul><a class="btn" href="/login">Start free</a></div>
+      <div class="plan-card featured"><span class="badge orange">Founding members<% if (founding.open) { %>: <%= founding.left.toLocaleString() %> spots left<% } %></span><h3>Pro</h3><div class="price"><% if (founding.open) { %><s>₦25,000</s>₦20,000<% } else { %>₦25,000<% } %><span class="small muted">/year</span></div><ul><li>Up to 5 cards, no footer</li><li>Scan statistics and unlimited leads</li><li>Card modes: reviews, menu, bookings</li><li>Your logo inside the QR code</li></ul><a class="btn primary" href="/checkout/pro">Get Pro</a></div>
+      <div class="plan-card"><h3>Teams</h3><div class="price">₦30,000<span class="small muted">/staff/year</span></div><ul><li>Company dashboard and locked design</li><li>Verified company badge</li><li>Switch off cards when staff leave</li><li><b>NFC card included</b> for 20+ staff</li></ul><a class="btn" href="/teams">Set up my team</a></div>
+    </div>
+  </div>
+</section>
+<section class="section navy">
+  <div class="wrap grid c2">
+    <div><h2>Your data, your call</h2><p class="muted">Instant Card builds your card on your phone and stores nothing with us. With an account, you can delete any card or your whole account in one click, permanently.</p></div>
+    <div><h2>Earn up to 30%</h2><p class="muted">Become a HollaTap affiliate and earn cash on every paid plan you refer. Everyone else gets ₦5,000 credit per paying friend.</p><a class="btn primary" href="/affiliates">See how</a></div>
+  </div>
+</section>
+<%- include('partials/footer') %>

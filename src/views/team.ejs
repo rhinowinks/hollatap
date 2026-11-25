@@ -1,0 +1,70 @@
+<%- include('partials/header') %>
+<section class="section"><div class="wrap">
+  <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-end">
+    <div>
+      <h1 style="font-size:34px"><%= team.name %> <% if (paid && team.verified) { %><span class="badge">✓ Verified</span><% } %></h1>
+      <p class="muted" style="margin:0"><% if (paid) { %>Paid for <%= team.seats %> staff until <%= new Date(team.paid_until).toLocaleDateString('en-GB') %>.<% } else { %>Not active yet. Staff cards show the HollaTap footer and no verified badge until you pay.<% } %></p>
+    </div>
+    <% if (admin) { %><div class="btn-row"><a class="btn primary" href="/checkout/team?qty=<%= Math.max(config.pricing.teamMinSeats, used) %>"><%= paid ? 'Add seats or renew' : 'Activate Teams' %></a></div><% } %>
+  </div>
+
+  <% if (!admin) { %>
+    <div class="card-box" style="margin-top:20px"><p style="margin:0">You're a member of <%= team.name %>. Your company manages the design of your card. <a href="/dashboard">Go to your card</a>.</p></div>
+  <% } else { %>
+  <div class="grid c4" style="margin-top:20px">
+    <div class="stat">Staff<b><%= members.length %></b></div>
+    <div class="stat">Pending invites<b><%= invites.length %></b></div>
+    <div class="stat">Seats<b><%= paid ? team.seats : '—' %></b></div>
+    <div class="stat">Card views<b><%= cards.reduce((a,c)=>a+c.views,0) %></b></div>
+  </div>
+
+  <div class="grid c2" style="margin-top:24px;align-items:start">
+    <form method="post" action="/teams/settings" enctype="multipart/form-data" class="card-box">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <h2 style="font-size:20px">Company design</h2>
+      <div class="field"><label for="tn">Company name</label><input id="tn" name="name" type="text" maxlength="160" value="<%= team.name %>"></div>
+      <div class="field"><label for="tl">Logo</label><input id="tl" name="logo" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"><label class="check" style="margin-top:8px"><input type="checkbox" name="accent_auto" value="1"> <span>Match colour to logo</span></label></div>
+      <div class="field"><span style="display:block;font-weight:700;font-size:14px;margin-bottom:6px">Design</span><div class="tpl-picker"><% TEMPLATES.forEach(t => { %><label><input type="radio" name="template" value="<%= t.id %>" <%= team.template === t.id ? 'checked' : '' %>> <%= t.name %></label><% }) %></div></div>
+      <div class="field"><label for="ta">Colour</label><input id="ta" name="accent" type="color" value="<%= team.accent %>"></div>
+      <div class="field"><label for="tw">Website</label><input id="tw" name="website" type="text" maxlength="255" value="<%= team.website || '' %>"></div>
+      <div class="field"><label for="tad">Office address</label><input id="tad" name="address" type="text" maxlength="255" value="<%= team.address || '' %>"></div>
+      <div class="field"><label for="tp">Main phone</label><input id="tp" name="phone" type="tel" maxlength="40" value="<%= team.phone || '' %>"></div>
+      <button class="btn primary" type="submit">Save and apply to all cards</button>
+    </form>
+
+    <div>
+      <form method="post" action="/teams/invite" enctype="multipart/form-data" class="card-box">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <h2 style="font-size:20px">Invite staff</h2>
+        <div class="field"><label for="ie">One per line: email, full name, job title, phone</label><textarea id="ie" name="emails" rows="6" placeholder="ada@company.com, Ada Obi, Sales Manager, 08012345678"></textarea></div>
+        <div class="field"><label for="ic">Or upload a CSV with the same columns</label><input id="ic" name="csv" type="file" accept=".csv,text/csv,text/plain"></div>
+        <button class="btn primary" type="submit">Send invitations</button>
+      </form>
+      <% if (invites.length) { %><div class="card-box" style="margin-top:16px"><h3>Pending invitations</h3>
+        <% invites.forEach(i => { %><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)"><span class="small"><%= i.email %></span><form method="post" action="/teams/invites/<%= i.id %>/cancel"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn small" type="submit">Cancel</button></form></div><% }) %>
+      </div><% } %>
+    </div>
+  </div>
+
+  <h2 style="font-size:22px;margin-top:32px">Staff</h2>
+  <div class="table-wrap"><table class="data"><thead><tr><th>Email</th><th>Name</th><th>Role</th><th>Card</th><th></th></tr></thead><tbody>
+  <% members.forEach(m => { const c = cards.find(x => x.user_id === m.id); %><tr><td><%= m.email %></td><td><%= m.name || '' %></td><td><%= m.id === team.owner_id ? 'Owner' : (m.team_role || 'member') %></td><td><% if (c) { %><a href="/<%= c.slug %>" target="_blank">/<%= c.slug %></a> · <%= c.views %> views<% } else { %>—<% } %></td>
+  <td><% if (m.id !== team.owner_id) { %><form method="post" action="/teams/members/<%= m.id %>/remove" data-confirm="Remove <%= m.email %>? Their company card will be switched off."><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn small danger" type="submit">Remove</button></form><% } %></td></tr><% }) %>
+  </tbody></table></div>
+
+  <% if (orders.length) { %>
+  <h2 style="font-size:22px;margin-top:32px">NFC card deliveries</h2>
+  <% orders.forEach(o => { %>
+  <form method="post" action="/teams/orders/<%= o.id %>/shipping" class="card-box" style="margin-bottom:12px">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <p style="margin-top:0"><b><%= o.quantity %> card<%= o.quantity>1?'s':'' %></b> (<%= o.kind %>) · status: <b><%= o.status %></b></p>
+    <% if (o.status === 'new') { %>
+    <div class="grid c3" style="gap:10px"><input name="ship_name" type="text" placeholder="Contact name" value="<%= o.ship_name || '' %>" aria-label="Contact name"><input name="ship_phone" type="tel" placeholder="Phone" value="<%= o.ship_phone || '' %>" aria-label="Phone"><input name="ship_address" type="text" placeholder="Delivery address" value="<%= o.ship_address || '' %>" aria-label="Delivery address"></div>
+    <button class="btn small" type="submit" style="margin-top:10px">Save delivery details</button>
+    <% } %>
+  </form><% }) %>
+  <% } %>
+  <% } %>
+</div></section>
+<script src="/js/ui.js"></script>
+<%- include('partials/footer') %>

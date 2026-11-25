@@ -1,0 +1,23 @@
+<%- include('partials/header') %>
+<section class="section"><div class="wrap grid c2" style="align-items:start">
+  <div>
+    <h1 style="font-size:32px">Share your card</h1>
+    <p class="muted">Your link: <a href="<%= url %>" target="_blank"><%= url.replace(/^https?:\/\//,'') %></a></p>
+    <input type="text" readonly value="<%= url %>" data-copy aria-label="Card link">
+    <div class="btn-row" style="margin-top:16px">
+      <a class="btn primary" href="/cards/<%= card.id %>/qr.png">Download QR (PNG)</a>
+      <a class="btn" href="/cards/<%= card.id %>/qr.svg">Download QR (SVG, for print)</a>
+      <a class="btn" href="https://wa.me/?text=<%= encodeURIComponent('My contact card: ' + url) %>" target="_blank" rel="noopener">Send on WhatsApp</a>
+    </div>
+    <hr>
+    <h2 style="font-size:22px">Printing tips</h2>
+    <ul class="muted">
+      <li>Print the QR at least 2 cm wide on business cards, and 15 cm on banners.</li>
+      <li>Keep a white border around it, and test with two phones before a big print run.</li>
+      <li>This QR points to your link, so you can change your details without reprinting.</li>
+    </ul>
+  </div>
+  <div class="qr-box" style="margin:0 auto"><%- qrSvg %><p class="small muted" style="text-align:center;margin:8px 0 0">Scan to test</p></div>
+</div></section>
+<script src="/js/ui.js"></script>
+<%- include('partials/footer') %>

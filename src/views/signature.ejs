@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+<section class="section"><div class="wrap">
+  <h1 style="font-size:32px">Email signature</h1>
+  <% if (!card) { %><p class="muted">Create a card first.</p><a class="btn primary" href="/cards/new">Create my card</a><% } else { %>
+  <% if (cards.length > 1) { %><form method="get" action="/signature" class="field" style="max-width:360px"><label for="sc">Card</label><select id="sc" name="card" data-autosubmit><% cards.forEach(c => { %><option value="<%= c.id %>" <%= c.id === card.id ? 'selected' : '' %>><%= c.full_name %></option><% }) %></select></form><% } %>
+  <div class="card-box" style="max-width:640px">
+    <div id="sig">
+      <table cellpadding="0" cellspacing="0" border="0" style="font-family:Arial,sans-serif;color:#0F1B2D;font-size:14px;line-height:20px">
+        <tr>
+          <% if (card.logo) { %><td style="padding-right:14px;vertical-align:top"><img src="<%= url %>/logo" alt="" width="64" height="64" style="display:block;border-radius:8px"></td><% } %>
+          <td style="border-left:3px solid <%= card.accent %>;padding-left:12px;vertical-align:top">
+            <b style="font-size:16px"><%= card.full_name %></b><br>
+            <% if (card.job_title || card.company) { %><span style="color:#5B6573"><%= [card.job_title, card.company].filter(Boolean).join(' · ') %></span><br><% } %>
+            <% if (card.phone) { %><%= card.phone %><br><% } %>
+            <a href="<%= url %>" style="color:#C2410C;font-weight:bold;text-decoration:none">Save my contact</a>
+            <% if (plan === 'free') { %><br><span style="font-size:11px;color:#5B6573">via <a href="<%= config.baseUrl %>" style="color:#5B6573">HollaTap</a></span><% } %>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div class="btn-row" style="margin-top:16px"><button class="btn primary" type="button" data-copy-target="sig" data-copy-html="1">Copy signature</button></div>
+  <h2 style="font-size:20px;margin-top:28px">Add it to your email</h2>
+  <ol class="steps" style="max-width:640px">
+    <li><b>Gmail:</b> Settings → See all settings → General → Signature → Create new → paste.</li>
+    <li><b>Outlook:</b> Settings → Mail → Compose and reply → Email signature → paste.</li>
+    <li><b>Zoho Mail:</b> Settings → Signatures → Add signature → paste.</li>
+  </ol>
+  <% } %>
+</div></section>
+<script src="/js/ui.js"></script>
+<script src="/js/autosubmit.js"></script>
+<%- include('partials/footer') %>

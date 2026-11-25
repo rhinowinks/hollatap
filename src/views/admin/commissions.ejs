@@ -1,0 +1,11 @@
+<%- include('../partials/header') %>
+<section class="section"><div class="wrap">
+  <h1 style="font-size:32px">Affiliate commissions</h1><%- include('_nav') %>
+  <p class="muted">Commissions become payable 30 days after payment. Pay by bank transfer once an affiliate's payable total is at least <%= naira(minPayout) %>, then mark as paid.</p>
+  <div class="table-wrap"><table class="data"><thead><tr><th>Date</th><th>Affiliate</th><th>Bank</th><th>Rate</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>
+  <% rows.forEach(r => { %><tr><td><%= new Date(r.created_at).toLocaleDateString('en-GB') %></td><td><%= r.email %></td><td class="small"><%= r.affiliate_bank || '' %></td><td><%= r.rate_pct %>%</td><td><%= naira(r.amount_naira) %></td><td><%= r.status %></td>
+  <td class="btn-row"><% if (r.status === 'payable') { %><form method="post" action="/admin/commissions/<%= r.id %>/paid"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn small" type="submit">Mark paid</button></form><% } %><% if (['pending','payable'].includes(r.status)) { %><form method="post" action="/admin/commissions/<%= r.id %>/void" data-confirm="Void this commission (for example after a refund)?"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn small danger" type="submit">Void</button></form><% } %></td></tr><% }) %>
+  </tbody></table></div>
+</div></section>
+<script src="/js/ui.js"></script>
+<%- include('../partials/footer') %>

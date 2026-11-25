@@ -1,0 +1,24 @@
+<%- include('head') %>
+<header class="site-header">
+  <div class="wrap">
+    <a class="logo" href="/" aria-label="HollaTap home"><img src="/brand/hollatap-logo-horizontal-colour.svg" alt="HollaTap"></a>
+    <nav class="nav" aria-label="Main">
+      <% if (user) { %>
+        <a href="/dashboard">My cards</a>
+        <a href="/teams">Teams</a>
+        <a href="/affiliate">Earn</a>
+        <a href="/account">Account</a>
+        <% if (isAdmin) { %><a href="/admin">Admin</a><% } %>
+        <form method="post" action="/logout"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn small" type="submit">Sign out</button></form>
+      <% } else { %>
+        <a href="/instant">Instant Card</a>
+        <a href="/upgrade">Pricing</a>
+        <a href="/affiliates">Earn</a>
+        <a href="/login">Sign in</a>
+        <a class="btn primary small" href="/login">Create free card</a>
+      <% } %>
+    </nav>
+  </div>
+</header>
+<main>
+<% if (flash) { %><div class="wrap"><div class="flash <%= flash.type %>" role="status"><%= flash.text %></div></div><% } %>

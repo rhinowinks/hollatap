@@ -1,0 +1,53 @@
+<%- include('partials/header') %>
+<section class="hero"><div class="wrap">
+  <h1>Plans and services</h1>
+  <p class="lead">Annual plans for now. Your free card stays free, forever.</p>
+</div></section>
+<section class="section"><div class="wrap">
+  <div class="grid c3">
+    <div class="plan-card"><h3>Free</h3><div class="price">₦0</div><ul><li>Instant Card, or an account with 2 cards</li><li>QR code, link and save-contact button</li><li>WhatsApp button and 5 link buttons</li><li>10 shared contacts a month</li><li>"Made free with HollaTap" footer</li></ul><% if (!user) { %><a class="btn" href="/login">Start free</a><% } %></div>
+    <div class="plan-card featured">
+      <% if (founding.open) { %><span class="badge orange">Founding member price: <%= founding.left.toLocaleString() %> spots left</span><% } %>
+      <h3>Pro</h3>
+      <div class="price"><% if (founding.open) { %><s>₦25,000</s>₦20,000<% } else { %>₦25,000<% } %><span class="small muted">/year</span></div>
+      <% if (founding.open) { %><p class="small muted" style="margin:0">First year, then ₦25,000/year. Includes a Founding Member badge.</p><% } %>
+      <ul><li>Up to 5 cards, no HollaTap footer</li><li>Views and saves statistics</li><li>Unlimited shared contacts + CSV export</li><li>Card modes: reviews, menu, WhatsApp, bookings</li><li>Up to 50 link buttons</li><li>No Rhinowinks promos on your cards</li></ul>
+      <% if (plan === 'team') { %><p class="small muted">Included in your company plan.</p><% } else if (user && user.plan === 'pro') { %><a class="btn" href="/checkout/pro">Renew for another year</a><% } else { %><a class="btn primary" href="/checkout/pro">Get Pro</a><% } %>
+    </div>
+    <div class="plan-card"><h3>Teams</h3><div class="price">₦30,000<span class="small muted">/staff/year</span></div><p class="small muted" style="margin:0">₦20,000 per staff from 50 staff. Minimum 5.</p><ul><li>Everything in Pro for every staff member</li><li>Company dashboard and locked design</li><li>Verified company badge</li><li>Bulk invite from a spreadsheet</li><li>Switch off cards when staff leave</li><li><b>NFC card included</b> for 20+ staff</li></ul><a class="btn" href="/teams">Set up Teams</a></div>
+  </div>
+
+  <h2 style="margin-top:40px">Add-ons</h2>
+  <div class="table-wrap"><table class="data">
+    <thead><tr><th>Add-on</th><th>Price</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>Remove the HollaTap footer from one free card</td><td><%= naira(config.pricing.footerRemoval) %>/year</td><td><% if (user && cards.length) { %><a class="btn small" href="/checkout/footer?card=<%= cards[0].id %>">Buy</a><% } %></td></tr>
+      <tr><td>NFC tap card (HollaTap design, delivered in Lagos in 2–3 days)</td><td><%= naira(config.pricing.nfcCard) %></td><td><% if (user) { %><a class="btn small" href="/checkout/nfc">Order</a><% } %></td></tr>
+      <tr><td>Replacement NFC card</td><td><%= naira(config.pricing.nfcReplacement) %></td><td><% if (user) { %><a class="btn small" href="/checkout/nfc_replacement">Order</a><% } %></td></tr>
+      <tr><td>Company-branded NFC cards (200+), custom domain, paid setup</td><td>Quote</td><td><a class="btn small" href="#services">Ask us</a></td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 style="margin-top:40px" id="services">More from Rhinowinks</h2>
+  <% if (sent) { %><div class="flash success">Thanks. We'll reply within one working day.</div><% } %>
+  <div class="grid c2">
+    <div class="grid" style="gap:12px">
+      <div class="card-box"><h3>RhinoVMS</h3><p class="small muted">Visitor management for offices, estates and hotels.</p></div>
+      <div class="card-box"><h3>rhinoEVENTS</h3><p class="small muted">Event registration, tickets and attendee cards.</p></div>
+      <div class="card-box"><h3>rhinoRETAIL</h3><p class="small muted">Online store, stock and sales in one system.</p></div>
+      <div class="card-box"><h3>Websites and AI</h3><p class="small muted">Business websites, AI agents and AI training for leadership teams.</p></div>
+    </div>
+    <form method="post" action="/enquiry" class="card-box">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <h3>Talk to us</h3>
+      <div class="field"><label for="ep">Interested in</label><select id="ep" name="product" required><option>RhinoVMS</option><option>rhinoEVENTS</option><option>rhinoRETAIL</option><option>Website</option><option>AI training or agents</option><option>HollaTap Enterprise / branded cards</option><option>Other</option></select></div>
+      <div class="field"><label for="en">Name</label><input id="en" name="name" type="text" maxlength="120" required value="<%= user ? (user.name || '') : '' %>"></div>
+      <div class="field"><label for="ee">Email</label><input id="ee" name="email" type="email" required value="<%= user ? user.email : '' %>"></div>
+      <div class="field"><label for="eph">Phone or WhatsApp</label><input id="eph" name="phone" type="tel" maxlength="40"></div>
+      <div class="field"><label for="ec">Company</label><input id="ec" name="company" type="text" maxlength="160"></div>
+      <div class="field"><label for="em">What do you need?</label><textarea id="em" name="message" maxlength="2000"></textarea></div>
+      <button class="btn primary" type="submit">Send</button>
+    </form>
+  </div>
+</div></section>
+<%- include('partials/footer') %>

@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+<section class="section"><div class="wrap">
+  <h1 style="font-size:32px">Earn with HollaTap</h1>
+  <div class="card-box" style="margin-bottom:20px">
+    <label for="rl">Your invite link</label>
+    <input id="rl" type="text" readonly value="<%= refLink %>" data-copy>
+    <p class="small muted" style="margin:8px 0 0"><%= referred %> people have signed up through your link.</p>
+  </div>
+  <% if (!user.is_affiliate) { %>
+  <div class="grid c2">
+    <div class="card-box"><h2 style="font-size:20px">You're earning credit</h2><p class="muted">You get ₦5,000 credit each time a friend buys a paid plan. Credit comes off your next purchase automatically. Your balance: <b><%= naira(user.credit_naira) %></b>.</p></div>
+    <form class="card-box" method="post" action="/affiliate/join">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <h2 style="font-size:20px">Earn cash instead: become an affiliate</h2>
+      <p class="small muted">20% of first-year payments (25% until 28 Feb 2027, 30% for top affiliates). Affiliates earn cash instead of credit.</p>
+      <div class="field"><label for="bk">Bank details for payouts</label><input id="bk" name="bank" type="text" maxlength="255" placeholder="Bank, account name, account number" required></div>
+      <button class="btn primary" type="submit">Join the affiliate programme</button>
+    </form>
+  </div>
+  <% } else { %>
+  <div class="grid c3">
+    <div class="stat">Pending (refund window)<b><%= naira(totals.pending) %></b></div>
+    <div class="stat">Ready to pay<b><%= naira(totals.payable) %></b></div>
+    <div class="stat">Paid<b><%= naira(totals.paid) %></b></div>
+  </div>
+  <p class="small muted" style="margin-top:8px">Payouts go to: <%= user.affiliate_bank %>. Paid monthly once you reach ₦5,000.</p>
+  <% if (commissions.length) { %><div class="table-wrap" style="margin-top:16px"><table class="data"><thead><tr><th>Date</th><th>Rate</th><th>Amount</th><th>Status</th></tr></thead><tbody>
+  <% commissions.forEach(c => { %><tr><td><%= new Date(c.created_at).toLocaleDateString('en-GB') %></td><td><%= c.rate_pct %>%</td><td><%= naira(c.amount_naira) %></td><td><%= c.status %></td></tr><% }) %>
+  </tbody></table></div><% } %>
+  <% } %>
+</div></section>
+<script src="/js/ui.js"></script>
+<%- include('partials/footer') %>

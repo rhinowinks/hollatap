@@ -1,0 +1,12 @@
+<%- include('partials/header') %>
+<section class="section"><div class="narrow">
+  <h1 style="font-size:32px">Link your NFC card</h1>
+  <p class="muted">Card serial <b><%= tag.code %></b>. Choose which of your cards it should open.</p>
+  <% if (!cards.length) { %><p>Create a card first, then tap your NFC card again.</p><a class="btn primary" href="/cards/new">Create my card</a><% } else { %>
+  <form method="post" action="/claim/<%= tag.code %>" class="card-box">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <% cards.forEach((c, i) => { %><label class="check" style="margin-bottom:10px"><input type="radio" name="card_id" value="<%= c.id %>" <%= i===0?'checked':'' %>> <span><b><%= c.full_name %></b> <span class="muted">/<%= c.slug %></span></span></label><% }) %>
+    <button class="btn primary" type="submit">Link this NFC card</button>
+  </form><% } %>
+</div></section>
+<%- include('partials/footer') %>

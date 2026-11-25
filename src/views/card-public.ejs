@@ -1,0 +1,23 @@
+<%- include('partials/head') %>
+<div class="card-page">
+  <% if (isOwner) { %><div class="owner-bar"><span class="muted">You're viewing your own card.</span><a class="btn small" href="/cards/<%= card.id %>/edit">Edit</a></div><% } %>
+  <% if (flash) { %><div class="flash <%= flash.type %>" style="max-width:420px;margin:0 auto 14px" role="status"><%= flash.text %></div><% } %>
+  <%- include('partials/hcard') %>
+  <% if (leadsOpen && !leadSent) { %>
+  <section class="leadform card-box" id="share-back" aria-labelledby="sb-title">
+    <h2 id="sb-title" style="font-size:20px">Share your details with <%= card.full_name.split(' ')[0] %></h2>
+    <form method="post" action="/<%= card.slug %>/lead">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <div class="field"><label for="ln">Your name</label><input id="ln" name="name" type="text" required maxlength="120" autocomplete="name"></div>
+      <div class="field"><label for="le">Email</label><input id="le" name="email" type="email" maxlength="254" autocomplete="email"></div>
+      <div class="field"><label for="lp">Phone</label><input id="lp" name="phone" type="tel" maxlength="40" autocomplete="tel"></div>
+      <div class="field"><label for="lc">Company <span class="hint">(optional)</span></label><input id="lc" name="company" type="text" maxlength="160" autocomplete="organization"></div>
+      <div class="field"><label for="lm">Message <span class="hint">(optional)</span></label><textarea id="lm" name="message" maxlength="1000"></textarea></div>
+      <div class="sr-only"><label for="hp">Leave empty</label><input id="hp" name="website_url" type="text" tabindex="-1" autocomplete="off"></div>
+      <div class="field"><label class="check"><input type="checkbox" name="consent" required> <span>I agree to share these details with <%= card.full_name %>. HollaTap stores them only for this purpose (<a href="/privacy">privacy</a>).</span></label></div>
+      <button class="btn dark" type="submit" style="width:100%">Send my details</button>
+    </form>
+  </section>
+  <% } %>
+</div>
+</body></html>

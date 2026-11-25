@@ -1,0 +1,45 @@
+# Render Blueprint: one web service + one Postgres database.
+services:
+  - type: web
+    name: hollatap
+    runtime: node
+    plan: starter
+    region: frankfurt
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BASE_URL
+        value: https://hollatap.com
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_EMAILS
+        value: global@hollatap.com
+      - key: SUPPORT_EMAIL
+        value: global@hollatap.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hollatap-db
+          property: connectionString
+      - key: SMTP_HOST
+        value: smtppro.zoho.com
+      - key: SMTP_PORT
+        value: "465"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: MAIL_FROM
+        value: HollaTap <global@hollatap.com>
+      - key: PAYSTACK_SECRET_KEY
+        sync: false
+      - key: PAYSTACK_PUBLIC_KEY
+        sync: false
+      - key: WHATSAPP_NUMBER
+        value: "2349047363235"
+databases:
+  - name: hollatap-db
+    plan: basic-256mb
+    region: frankfurt

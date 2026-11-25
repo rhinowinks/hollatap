@@ -1,0 +1,14 @@
+<%- include('partials/header') %>
+<section class="section"><div class="narrow" style="max-width:480px">
+  <h1 style="font-size:32px">Check your email</h1>
+  <p class="muted">We sent a 6-digit code to <b><%= email %></b>. It expires in 15 minutes. Check spam if you can't see it.</p>
+  <% if (devHint) { %><div class="flash warn">Test mode: email isn't set up, so the code is printed in the server log.</div><% } %>
+  <% if (error) { %><div class="flash error" role="alert"><%= error %></div><% } %>
+  <form method="post" action="/verify" class="card-box">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="field"><label for="code">Code</label><input id="code" class="code-input" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required></div>
+    <button class="btn primary" type="submit" style="width:100%">Continue</button>
+  </form>
+  <p class="small" style="margin-top:12px"><a href="/login">Use a different email or resend</a></p>
+</div></section>
+<%- include('partials/footer') %>

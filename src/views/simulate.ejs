@@ -1,0 +1,8 @@
+<%- include('partials/header') %>
+<section class="section"><div class="narrow" style="max-width:520px">
+  <h1 style="font-size:30px">Test payment</h1>
+  <div class="flash warn">Paystack keys are not set, so this is a simulated payment for testing. It never appears in production.</div>
+  <div class="card-box"><p><b><%= JSON.parse(pay.meta_json || '{}').label %></b></p><p>Amount: <b><%= naira(pay.amount_naira) %></b><br>Reference: <%= pay.reference %></p>
+  <form method="post"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn primary" type="submit">Mark as paid</button> <a class="btn" href="/dashboard">Cancel</a></form></div>
+</div></section>
+<%- include('partials/footer') %>

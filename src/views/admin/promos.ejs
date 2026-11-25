@@ -1,0 +1,25 @@
+<%- include('../partials/header') %>
+<section class="section"><div class="wrap">
+  <h1 style="font-size:32px">Promotions</h1><%- include('_nav') %>
+  <p class="muted">Shown after someone creates a card and on their dashboard, matched to their industry. Links get UTM tags automatically.</p>
+  <% if (error) { %><div class="flash error"><%= error %></div><% } %>
+  <% [...promos, {}].forEach(p => { %>
+  <form method="post" action="/admin/promos" class="card-box" style="margin-bottom:12px">
+    <input type="hidden" name="_csrf" value="<%= csrf %>"><% if (p.id) { %><input type="hidden" name="id" value="<%= p.id %>"><% } %>
+    <h3><%= p.id ? p.title : 'New promotion' %> <% if (p.id) { %><span class="small muted">· <%= p.impressions %> shown · <%= p.clicks %> clicks</span><% } %></h3>
+    <div class="grid c2" style="gap:0 16px">
+      <div class="field"><label>Title</label><input name="title" type="text" maxlength="120" value="<%= p.title || '' %>" required></div>
+      <div class="field"><label>Button text</label><input name="cta" type="text" maxlength="40" value="<%= p.cta || 'Learn more' %>"></div>
+      <div class="field"><label>Text</label><input name="body" type="text" maxlength="300" value="<%= p.body || '' %>"></div>
+      <div class="field"><label>Link</label><input name="url" type="text" maxlength="500" value="<%= p.url || '' %>" required></div>
+      <div class="field"><label>Show to industry</label><select name="industry"><option value="">Everyone</option><% industries.forEach(i => { %><option <%= p.industry===i?'selected':'' %>><%= i %></option><% }) %></select></div>
+      <div class="field"><label>Where</label><select name="slot"><% ['any','created','dashboard'].forEach(s => { %><option <%= (p.slot||'any')===s?'selected':'' %>><%= s %></option><% }) %></select></div>
+    </div>
+    <label class="check"><input type="checkbox" name="active" <%= p.id ? (p.active ? 'checked' : '') : 'checked' %>> <span>Active</span></label>
+    <div class="btn-row" style="margin-top:10px"><button class="btn small primary" type="submit">Save</button></div>
+  </form>
+  <% if (p.id) { %><form method="post" action="/admin/promos/<%= p.id %>/delete" data-confirm="Delete this promotion?" style="margin:-6px 0 18px"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn small danger" type="submit">Delete</button></form><% } %>
+  <% }) %>
+</div></section>
+<script src="/js/ui.js"></script>
+<%- include('../partials/footer') %>

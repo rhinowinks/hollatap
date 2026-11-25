@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+<section class="section"><div class="narrow" style="max-width:560px">
+  <h1 style="font-size:32px">Checkout</h1>
+  <% if (typeof error !== 'undefined' && error) { %><div class="flash error" role="alert"><%= error %></div><% } %>
+  <form method="post" class="card-box">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <% if (opts.cardId) { %><input type="hidden" name="card" value="<%= opts.cardId %>"><% } %>
+    <h2 style="font-size:20px"><%= q.label %></h2>
+    <% if (kind === 'team') { %>
+      <div class="field"><label for="qty">Number of staff <span class="hint">(minimum <%= config.pricing.teamMinSeats %>)</span></label><input id="qty" name="qty" type="number" min="<%= config.pricing.teamMinSeats %>" max="5000" value="<%= q.meta.seats %>"></div>
+      <p class="small muted"><%= naira(config.pricing.teamSeat) %> per staff a year; <%= naira(config.pricing.teamSeat50) %> from 50 staff. NFC card included for <%= config.pricing.teamCardIncludedFrom %>+ staff. <button class="btn link" type="submit" formmethod="get">Update price</button></p>
+    <% } %>
+    <% if (kind === 'nfc') { %>
+      <div class="field"><label for="qty">How many cards?</label><input id="qty" name="qty" type="number" min="1" max="500" value="<%= q.meta.quantity %>"></div>
+      <p class="small muted"><button class="btn link" type="submit" formmethod="get">Update price</button></p>
+    <% } %>
+    <table class="data" style="margin:12px 0">
+      <tr><td>Price</td><td style="text-align:right"><%= naira(q.base) %></td></tr>
+      <% if (q.meta.founding) { %><tr><td colspan="2" class="small" style="color:var(--teal-strong)">Founding member price applied (normally <%= naira(config.pricing.proAnnual) %>)</td></tr><% } %>
+      <% if (q.discount) { %><tr><td>Friend discount (<%= config.pricing.friendDiscountPct %>%)</td><td style="text-align:right">−<%= naira(q.discount) %></td></tr><% } %>
+      <% if (q.credit) { %><tr><td>Your credit</td><td style="text-align:right">−<%= naira(q.credit) %></td></tr><% } %>
+      <tr><td><b>Total today</b></td><td style="text-align:right"><b><%= naira(q.total) %></b></td></tr>
+    </table>
+    <% if (needsShipping) { %>
+      <h3>Delivery</h3>
+      <div class="field"><label for="sn">Name</label><input id="sn" name="ship_name" type="text" maxlength="120" required value="<%= user.name || '' %>"></div>
+      <div class="field"><label for="sp">Phone</label><input id="sp" name="ship_phone" type="tel" maxlength="40" required></div>
+      <div class="field"><label for="sa">Delivery address</label><textarea id="sa" name="ship_address" maxlength="500" required></textarea></div>
+    <% } %>
+    <% if (kind === 'pro' || kind === 'team' || kind === 'footer') { %><p class="small muted">Billed yearly. You'll get a reminder before renewal. 30-day refund if you're not happy.</p><% } %>
+    <button class="btn primary" type="submit" style="width:100%">Pay <%= naira(q.total) %> securely with Paystack</button>
+    <p class="tiny muted" style="margin-top:10px">Card, bank transfer or USSD. We never see your card details.</p>
+  </form>
+</div></section>
+<%- include('partials/footer') %>

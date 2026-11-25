@@ -1,0 +1,20 @@
+<%- include('../partials/header') %>
+<section class="section"><div class="wrap">
+  <h1 style="font-size:32px">Admin</h1>
+  <%- include('_nav') %>
+  <div class="grid c4">
+    <div class="stat">Users<b><%= stats.users.toLocaleString() %></b><span class="small muted">+<%= stats.users30 %> in 30 days</span></div>
+    <div class="stat">Cards<b><%= stats.cards.toLocaleString() %></b></div>
+    <div class="stat">Pro (paid)<b><%= stats.pro %></b><span class="small muted"><%= stats.founding %> founding</span></div>
+    <div class="stat">Active teams<b><%= stats.teams %></b></div>
+    <div class="stat">Revenue<b><%= naira(stats.revenue) %></b><span class="small muted"><%= naira(stats.revenue30) %> in 30 days</span></div>
+    <div class="stat">New enquiries<b><%= stats.enquiriesNew %></b></div>
+    <div class="stat">NFC orders to dispatch<b><%= stats.nfcNew %></b></div>
+    <div class="stat">Commissions to pay<b><%= naira(stats.payable) %></b></div>
+  </div>
+  <h2 style="font-size:22px;margin-top:28px">Top promotions</h2>
+  <table class="data"><thead><tr><th>Promo</th><th>Shown</th><th>Clicks</th><th>Click rate</th></tr></thead><tbody>
+  <% promos.forEach(p => { %><tr><td><%= p.title %></td><td><%= p.impressions %></td><td><%= p.clicks %></td><td><%= p.impressions ? (100*p.clicks/p.impressions).toFixed(1) + '%' : '—' %></td></tr><% }) %>
+  </tbody></table>
+</div></section>
+<%- include('../partials/footer') %>

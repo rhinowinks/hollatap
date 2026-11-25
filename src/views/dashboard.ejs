@@ -1,0 +1,66 @@
+<%- include('partials/header') %>
+<section class="section"><div class="wrap">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+    <div>
+      <h1 style="font-size:34px">Your cards</h1>
+      <p class="muted" style="margin:0">Plan: <b><%= plan === 'pro' ? 'Pro' : plan === 'team' ? 'Teams' : 'Free' %></b>
+        <% if (plan === 'pro' && trialDaysLeft && !(user.plan === 'pro')) { %> · free trial, <%= trialDaysLeft %> day<%= trialDaysLeft === 1 ? '' : 's' %> left<% } %>
+        <% if (user.plan === 'pro' && user.plan_expires_at) { %> · renews <%= new Date(user.plan_expires_at).toLocaleDateString('en-GB') %><% } %>
+        <% if (user.founding_member) { %> · <span class="badge orange">Founding member</span><% } %>
+        <% if (user.credit_naira > 0) { %> · Credit: <b><%= naira(user.credit_naira) %></b><% } %>
+      </p>
+    </div>
+    <div class="btn-row">
+      <a class="btn primary" href="/cards/new">New card</a>
+      <% if (user.plan !== 'pro' && plan !== 'team') { %><a class="btn" href="/checkout/pro">Get Pro<% if (founding.open) { %> for ₦20,000<% } %></a><% } %>
+    </div>
+  </div>
+
+  <% if (companyTeam) { %><div class="flash warn" style="margin-top:20px"><%= companyTeam.name %> uses HollaTap Teams. Ask your company admin to invite <b><%= user.email %></b> for a verified company card.</div><% } %>
+
+  <% if (justCreated) { const c = cards.find(x => x.id === justCreated); if (c) { %>
+  <div class="card-box" style="margin-top:20px;border-color:var(--teal)">
+    <h2 style="font-size:22px">Your card is live 🎉</h2>
+    <p>Share it at <a href="/<%= c.slug %>" target="_blank"><%= config.baseUrl.replace(/^https?:\/\//,'') %>/<%= c.slug %></a>, or download your QR code.</p>
+    <div class="btn-row"><a class="btn primary" href="/cards/<%= c.id %>/share">Get my QR code</a><a class="btn" href="/<%= c.slug %>" target="_blank">View card</a></div>
+  </div>
+  <% } } %>
+
+  <% if (promo) { %>
+  <div class="promo" style="margin-top:20px"><div><b><%= promo.title %></b><div class="muted small"><%= promo.body %></div></div><a class="btn primary small" href="/go/<%= promo.id %>" target="_blank" rel="noopener"><%= promo.cta %></a></div>
+  <% } %>
+
+  <div class="cardlist" style="margin-top:24px">
+    <% if (!cards.length) { %>
+      <div class="card-box"><h2 style="font-size:22px">Create your first card</h2><p class="muted">It takes about two minutes. You can upload your current card as a PDF to fill it in.</p><a class="btn primary" href="/cards/new">Create my card</a></div>
+    <% } %>
+    <% cards.forEach(c => { %>
+    <div class="cardrow">
+      <div class="meta">
+        <div class="thumb" style="background:<%= c.accent %>"><% if (c.logo) { %><img src="/<%= c.slug %>/logo" alt="" style="background:#fff"><% } else { %><span style="color:#fff"><%= c.full_name[0] %></span><% } %></div>
+        <div>
+          <b><%= c.full_name %></b> <% if (!c.active) { %><span class="badge">Switched off</span><% } %> <% if (c.team_id) { %><span class="badge navy">Company card</span><% } %>
+          <div class="small muted"><a href="/<%= c.slug %>" target="_blank"><%= config.baseUrl.replace(/^https?:\/\//,'') %>/<%= c.slug %></a>
+          <% if (plan !== 'free') { %> · <%= c.views %> views · <%= c.saves %> saves<% } %></div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <a class="btn small primary" href="/cards/<%= c.id %>/share">QR &amp; share</a>
+        <a class="btn small" href="/cards/<%= c.id %>/edit">Edit</a>
+        <a class="btn small" href="/cards/<%= c.id %>/leads">Leads</a>
+        <% if (plan === 'free' && !(c.footer_removed && new Date(c.footer_paid_until) > new Date())) { %><a class="btn small" href="/checkout/footer?card=<%= c.id %>">Remove footer (<%= naira(config.pricing.footerRemoval) %>)</a><% } %>
+        <form method="post" action="/cards/<%= c.id %>/delete" data-confirm="Delete this card and its shared contacts permanently? This can't be undone."><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn small danger" type="submit">Delete</button></form>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <p class="small muted" style="margin-top:10px">Cards used: <%= cards.length %> of <%= limits.cards %>. Shared contacts this month: <%= leadCount %><%= plan === 'free' ? ' of ' + limits.leadsPerMonth : '' %>.</p>
+
+  <div class="grid c3" style="margin-top:28px">
+    <div class="card-box"><h3>Email signature</h3><p class="small muted">Add your card link to Gmail, Outlook or Zoho.</p><a class="btn small" href="/signature">Make my signature</a></div>
+    <div class="card-box"><h3>Invite friends, get ₦5,000</h3><p class="small muted">You get ₦5,000 credit when a friend buys; they get 10% off.</p><input type="text" readonly value="<%= refLink %>" aria-label="Your invite link" data-copy></div>
+    <div class="card-box"><h3>NFC tap card</h3><p class="small muted">A plastic card people tap with their phone. <%= naira(config.pricing.nfcCard) %>, delivered in Lagos in 2–3 days.</p><a class="btn small" href="/checkout/nfc">Order an NFC card</a></div>
+  </div>
+</div></section>
+<script src="/js/ui.js"></script>
+<%- include('partials/footer') %>

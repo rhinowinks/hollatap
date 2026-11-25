@@ -1,0 +1,24 @@
+<%- include('partials/header') %>
+<section class="hero"><div class="wrap grid c2">
+  <div>
+    <h1>HollaTap Teams</h1>
+    <p class="lead">Matching, verified business cards for your whole company, controlled from one dashboard.</p>
+    <ul>
+      <li>Set your logo, colours and design once; every card follows it.</li>
+      <li>Invite staff from a spreadsheet. They claim their card in a minute.</li>
+      <li>When someone leaves, switch their card off. Your contacts stay yours.</li>
+      <li>A verified company badge on every card.</li>
+      <li>An NFC tap card included for each staff member on plans of <%= pricing.teamCardIncludedFrom %>+.</li>
+    </ul>
+    <p><b><%= naira(pricing.teamSeat) %></b> per staff a year (<%= naira(pricing.teamSeat50) %> from 50 staff). Minimum <%= pricing.teamMinSeats %>.</p>
+  </div>
+  <form method="post" action="/teams" class="card-box">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <h2 style="font-size:22px">Create your company team</h2>
+    <% if (error) { %><div class="flash error"><%= error %></div><% } %>
+    <div class="field"><label for="tn">Company name</label><input id="tn" name="name" type="text" maxlength="160" required></div>
+    <p class="small muted">You'll be the team admin. You can set the design and invite staff before you pay.</p>
+    <button class="btn primary" type="submit">Create team</button>
+  </form>
+</div></section>
+<%- include('partials/footer') %>

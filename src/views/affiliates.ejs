@@ -1,0 +1,25 @@
+<%- include('partials/header') %>
+<section class="hero"><div class="narrow">
+  <h1>Earn up to 30% with HollaTap</h1>
+  <p class="lead">Recommend HollaTap to professionals and companies. Earn cash on every paid plan they buy in their first year.</p>
+  <a class="btn primary" href="<%= user ? '/affiliate' : '/login' %>">Become an affiliate</a>
+</div></section>
+<section class="section"><div class="narrow">
+  <div class="table-wrap"><table class="data">
+    <thead><tr><th>Who</th><th>What you earn</th></tr></thead>
+    <tbody>
+      <tr><td>Affiliates</td><td><b>20%</b> of the first-year payment on Pro and Teams; <b>10%</b> on NFC cards</td></tr>
+      <tr><td>Launch bonus (until 28 February 2027)</td><td><b>25%</b></td></tr>
+      <tr><td>Top affiliates (20+ paid referrals in a quarter)</td><td><b>30%</b></td></tr>
+      <tr><td>Everyone else</td><td><b>₦5,000 credit</b> for each friend who buys a paid plan; your friend gets 10% off</td></tr>
+    </tbody>
+  </table></div>
+  <h2 style="font-size:22px;margin-top:28px">How it works</h2>
+  <ol class="steps">
+    <li>Create a free account and join the affiliate programme with your bank details.</li>
+    <li>Share your personal link. Anyone who signs up through it is linked to you.</li>
+    <li>When they pay, your commission is recorded. It becomes payable after their 30-day refund window.</li>
+    <li>We pay monthly by bank transfer once you have at least ₦5,000. You can't earn on your own purchases.</li>
+  </ol>
+</div></section>
+<%- include('partials/footer') %>

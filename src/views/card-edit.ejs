@@ -1,0 +1,51 @@
+<%- include('partials/header') %>
+<% const links = JSON.parse(card.links_json || '[]'); const locked = !!card.team_id; %>
+<section class="section"><div class="wrap">
+  <h1 style="font-size:34px"><%= isNew ? 'Create your card' : 'Edit your card' %></h1>
+  <% if (error) { %><div class="flash error" role="alert"><%= error %></div><% } %>
+  <div class="editor" style="margin-top:20px">
+    <form id="card-form" class="card-box" method="post" action="<%= isNew ? '/cards' : '/cards/' + card.id %>" enctype="multipart/form-data" data-footer="<%= plan === 'free' ? '1' : '0' %>" data-logo="<%= card.logo && card.slug ? '/' + card.slug + '/logo' : '' %>">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <div class="dropzone field">
+        <label for="pdf">Fill in from your current card <span class="hint">(PDF, read on your device, always check the result)</span></label>
+        <input id="pdf" type="file" accept="application/pdf">
+        <p class="tiny muted" id="pdf-status" aria-live="polite" style="margin:6px 0 0"></p>
+      </div>
+      <%- include('partials/fields', { card, locked }) %>
+      <div class="field"><label for="f_bio">Short bio <span class="hint">(optional, up to 400 characters)</span></label><textarea id="f_bio" name="bio" maxlength="400"><%= card.bio || '' %></textarea></div>
+      <% if (!locked) { %>
+      <div class="field"><label for="f_logo">Logo</label><input id="f_logo" name="logo" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+        <label class="check" style="margin-top:8px"><input type="checkbox" name="accent_auto" value="1" checked> <span>Match the card colour to my logo</span></label>
+        <% if (card.logo) { %><label class="check"><input type="checkbox" name="remove_logo" value="1"> <span>Remove current logo</span></label><% } %>
+      </div>
+      <div class="field"><span style="display:block;font-weight:700;font-size:14px;margin-bottom:6px">Design</span>
+        <div class="tpl-picker"><% TEMPLATES.forEach(t => { %><label><input type="radio" name="template" value="<%= t.id %>" <%= card.template === t.id ? 'checked' : '' %>> <%= t.name %></label><% }) %></div></div>
+      <div class="field"><label for="f_accent">Card colour</label><input id="f_accent" name="accent" type="color" value="<%= card.accent %>"></div>
+      <% } else { %>
+      <input type="hidden" name="template" value="<%= card.template %>"><input type="hidden" id="f_accent" name="accent" value="<%= card.accent %>">
+      <p class="small muted">Your company sets the design and logo for this card.</p>
+      <% } %>
+      <fieldset class="field links-editor" style="border:none;padding:0">
+        <legend style="font-weight:700;font-size:14px;margin-bottom:6px">Link buttons <span class="hint">(up to <%= limits.links %>: booking page, portfolio, Instagram…)</span></legend>
+        <div id="links" data-max="<%= limits.links %>">
+          <% (links.length ? links : [{label:'',url:''}]).forEach(l => { %>
+          <div class="row"><input name="link_label" type="text" maxlength="40" placeholder="Label" value="<%= l.label %>" aria-label="Link label"><input name="link_url" type="text" maxlength="500" placeholder="https://…" value="<%= l.url %>" aria-label="Link address"><button class="btn small" type="button" data-remove aria-label="Remove link">✕</button></div>
+          <% }) %>
+        </div>
+        <button class="btn small" type="button" id="add-link">Add link</button>
+      </fieldset>
+      <div class="field"><label for="f_slug">Your card's web address</label>
+        <div style="display:flex;align-items:center;gap:6px"><span class="muted small"><%= config.baseUrl.replace(/^https?:\/\//,'') %>/</span><input id="f_slug" name="slug" type="text" maxlength="40" pattern="[a-z0-9-]{3,40}" value="<%= card.slug || '' %>" placeholder="your-name"></div></div>
+      <fieldset class="field" style="border:none;padding:0">
+        <legend style="font-weight:700;font-size:14px;margin-bottom:6px">When someone scans or taps <% if (plan === 'free') { %><span class="badge orange">Pro</span><% } %></legend>
+        <select name="mode" id="f_mode" <%= plan === 'free' ? 'disabled' : '' %>><% MODES.forEach(m => { %><option value="<%= m.id %>" <%= card.mode === m.id ? 'selected' : '' %>><%= m.name %></option><% }) %></select>
+        <input name="mode_url" type="text" maxlength="500" placeholder="Link for reviews, menu or booking page" value="<%= card.mode_url || '' %>" style="margin-top:8px" <%= plan === 'free' ? 'disabled' : '' %>>
+        <p class="tiny muted" style="margin-top:6px">Change where your QR and NFC card point without reprinting. Your card page is always at your web address.</p>
+      </fieldset>
+      <div class="btn-row"><button class="btn primary" type="submit"><%= isNew ? 'Create my card' : 'Save changes' %></button><a class="btn" href="/dashboard">Cancel</a></div>
+    </form>
+    <div class="preview"><p class="small muted" style="text-align:center">Live preview</p><div id="preview"></div></div>
+  </div>
+</div></section>
+<script type="module" src="/js/edit.js"></script>
+<%- include('partials/footer') %>
