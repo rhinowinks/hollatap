@@ -16,6 +16,30 @@
         <a class="btn primary small" href="/signup">Sign up free</a>
       <% } %>
     </nav>
+    <div class="mnav-wrap">
+      <% if (!user) { %>
+        <a class="mnav-link" href="/login">Log in</a>
+        <a class="btn primary small" href="/signup">Sign up free</a>
+      <% } %>
+      <details class="mnav">
+        <summary aria-label="Open menu"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="#0F1B2D" stroke-width="2.2" stroke-linecap="round"/></svg></summary>
+        <div class="mnav-menu">
+          <% if (user) { %>
+            <a href="/dashboard">My cards</a>
+            <a href="/teams">Teams</a>
+            <a href="/account">Account</a>
+            <% if (isAdmin) { %><a href="/admin">Admin</a><% } %>
+            <form method="post" action="/logout"><input type="hidden" name="_csrf" value="<%= csrf %>"><button type="submit">Sign out</button></form>
+          <% } else { %>
+            <a href="/for-teams">For companies</a>
+            <a href="/upgrade">Pricing</a>
+            <a href="/instant">Instant Card</a>
+            <a href="/demo">Live demo</a>
+            <a href="/login/company">Company admin log in</a>
+          <% } %>
+        </div>
+      </details>
+    </div>
   </div>
 </header>
 <main>

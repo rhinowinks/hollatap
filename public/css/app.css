@@ -155,7 +155,7 @@ hr{border:none;border-top:1px solid var(--border);margin:28px 0}
 .gs-list li.done a{color:var(--slate);text-decoration:line-through}
 .gs-list a{font-weight:600}
 
-@media (max-width:560px){.nav .nav-opt{display:none}.site-header .wrap{min-height:58px}}
+
 .auth{max-width:480px}
 .auth h1{font-size:34px}
 .btn.big{width:100%;min-height:52px;font-size:16px}
@@ -241,3 +241,23 @@ hr{border:none;border-top:1px solid var(--border);margin:28px 0}
 
 .site-footer a{text-decoration:none}
 .site-footer a:hover,.site-footer a:focus-visible{text-decoration:underline;color:#FF5A1F}
+
+/* Mobile header: one row, logo + log in + sign up + menu */
+.mnav-wrap{display:none}
+@media (max-width:760px){
+  .site-header .wrap{flex-wrap:nowrap;min-height:58px;gap:8px}
+  .site-header .logo img{height:28px;width:auto}
+  .nav{display:none}
+  .mnav-wrap{display:flex;align-items:center;gap:6px;margin-left:auto}
+  .mnav-link{color:var(--navy);font-weight:700;font-size:15px;padding:8px 8px;text-decoration:none}
+  .mnav-wrap .btn.small{min-height:40px;padding:8px 12px;font-size:14px;white-space:nowrap}
+  .mnav{position:relative}
+  .mnav summary{list-style:none;display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:10px;cursor:pointer}
+  .mnav summary::-webkit-details-marker{display:none}
+  .mnav[open] summary{background:var(--sand)}
+  .mnav-menu{position:absolute;right:0;top:48px;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 16px 40px rgba(15,27,45,.16);padding:8px;min-width:220px;display:flex;flex-direction:column;z-index:30}
+  .mnav-menu a,.mnav-menu button{display:block;text-align:left;padding:12px 14px;border-radius:10px;color:var(--navy);font-weight:600;font-size:16px;text-decoration:none;background:none;border:0;width:100%;font-family:inherit;cursor:pointer}
+  .mnav-menu a:hover,.mnav-menu button:hover{background:var(--sand)}
+  .mnav-menu form{margin:0}
+}
+@media (max-width:360px){.mnav-link{display:none}}
