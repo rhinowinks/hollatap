@@ -6,16 +6,14 @@
       <% if (user) { %>
         <a href="/dashboard">My cards</a>
         <a href="/teams">Teams</a>
-        <a href="/affiliate">Earn</a>
         <a href="/account">Account</a>
         <% if (isAdmin) { %><a href="/admin">Admin</a><% } %>
         <form method="post" action="/logout"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn small" type="submit">Sign out</button></form>
       <% } else { %>
         <a href="/for-teams">For companies</a>
         <a class="nav-opt" href="/upgrade">Pricing</a>
-        <a class="nav-opt" href="/affiliates">Earn</a>
-        <a href="/login">Sign in</a>
-        <a class="btn primary small" href="/login">Create free card</a>
+        <a href="/login">Log in</a>
+        <a class="btn primary small" href="/signup">Sign up free</a>
       <% } %>
     </nav>
   </div>

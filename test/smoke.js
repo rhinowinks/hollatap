@@ -55,8 +55,17 @@ class Client {
     if (file) fd.append(file.field, new Blob([file.data], { type: file.type }), file.name);
     return this.req('POST', url, fd);
   }
+  async code(email) {
+    const mail = [...mailer.sentLog].reverse().find((m) => m.to === email && /\d{6}/.test(m.text || ''));
+    return mail.text.match(/\d{6}/)[0];
+  }
   async login(email, extra = {}) {
-    let r = await this.post('/login', { email, ...extra }, '/login');
+    // Existing users log in; new ones are sent to Sign up, as a real person would be.
+    let r = await this.post('/login', { email }, '/login');
+    if (r.status === 404) {
+      assert(/Sign up with this email/.test(r.text), 'unknown email offers sign-up');
+      r = await this.post('/signup', { email, ...extra }, '/signup');
+    }
     assert.strictEqual(r.location, '/verify');
     const mail = [...mailer.sentLog].reverse().find((m) => m.to === email);
     const code = mail.text.match(/\d{6}/)[0];
@@ -82,7 +91,7 @@ async function pngLogo() {
     }
     {
       const home = await new Client().get('/');
-      assert(/<svg/.test(home.text) && /The HollaTap tap card/.test(home.text) && /₦15,000/.test(home.text), 'home has demo QR and NFC section');
+      assert(/<svg/.test(home.text) && /The HollaTap NFC tap card/.test(home.text) && /₦15,000/.test(home.text), 'home has demo QR and NFC section');
       const v = await new Client().get('/demo/contact.vcf');
       assert(/FN:HollaTap/.test(v.text) && /PHOTO/.test(v.text), 'demo vcf');
     }
@@ -217,7 +226,41 @@ async function pngLogo() {
 
     // Teams: create, design, invite, join, verified badge, remove member
     const boss = new Client();
-    await boss.login('ceo@nipcogas.com');
+    // Company admins: username + password, then an email code
+    r = await boss.post('/signup/company', { email: 'ceo@nipcogas.com', username: 'nipcogas', password: 'short', password2: 'short' }, '/signup/company');
+    assert.strictEqual(r.status, 400, 'weak password refused');
+    r = await boss.post('/signup/company', { email: 'ceo@nipcogas.com', username: 'nipcogas', password: 'Nipco2026', password2: 'Nipco2026', keep: 'on' }, '/signup/company');
+    assert.strictEqual(r.location, '/verify');
+    r = await boss.post('/verify', { code: await boss.code('ceo@nipcogas.com') }, '/verify');
+    assert.strictEqual(r.location, '/teams');
+    {
+      // the same person cannot slip in with only an email code
+      const sneak = new Client();
+      r = await sneak.post('/login', { email: 'ceo@nipcogas.com' }, '/login');
+      assert(/company admin account/.test(r.text), 'code-only login blocked for company admin');
+      r = await sneak.post('/login/company', { username: 'nipcogas', password: 'wrong-pass1' }, '/login/company');
+      assert.strictEqual(r.status, 400, 'wrong password refused');
+      r = await sneak.post('/login/company', { username: 'nipcogas', password: 'Nipco2026' }, '/login/company');
+      assert.strictEqual(r.location, '/verify', 'password then code');
+      r = await sneak.post('/verify', { code: await sneak.code('ceo@nipcogas.com') }, '/verify');
+      assert.strictEqual(r.location, '/teams');
+      // forgot password
+      const forgot = new Client();
+      r = await forgot.post('/forgot-password', { email: 'nipcogas' }, '/forgot-password');
+      assert.strictEqual(r.location, '/verify');
+      r = await forgot.post('/verify', { code: await forgot.code('ceo@nipcogas.com') }, '/verify');
+      assert.strictEqual(r.location, '/reset-password');
+      r = await forgot.post('/reset-password', { password: 'NewPass2026', password2: 'NewPass2026' }, '/reset-password');
+      assert.strictEqual(r.status, 302);
+      const after = await db('users').where({ email: 'ceo@nipcogas.com' }).first();
+      assert(require('../src/lib/passwords').checkPassword('NewPass2026', after.password_hash), 'password reset saved');
+      // a personal account can't create a team without a company login
+      const solo = new Client();
+      await solo.login('solo@example.com');
+      r = await solo.get('/teams');
+      assert.strictEqual(r.location, '/signup/company');
+    }
+    ok('company admin: username + password + email code, wrong password refused, code-only blocked, password reset');
     r = await boss.post('/teams', { name: 'NIPCO Gas' }, '/teams');
     assert.strictEqual(r.location, '/teams');
     const team = await db('teams').where({ name: 'NIPCO Gas' }).first();

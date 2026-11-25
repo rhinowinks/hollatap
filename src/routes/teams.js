@@ -26,8 +26,12 @@ function isTeamAdmin(req, team) {
   return team && (team.owner_id === req.user.id || req.user.team_role === 'admin');
 }
 
-router.get('/teams', requireUser, async (req, res) => {
+router.get('/teams', (req, res, next) => {
+  if (!req.user) { req.session.next = '/teams'; return res.redirect('/login/company'); }
+  next();
+}, async (req, res) => {
   const team = await myTeam(req);
+  if (!team && !req.user.password_hash) return res.redirect('/signup/company');
   if (!team) return res.render('team-new', { title: 'HollaTap Teams', error: null, pricing: config.pricing });
   const admin = isTeamAdmin(req, team);
   const members = await db('users').where({ team_id: team.id }).orderBy('id');
@@ -51,6 +55,7 @@ router.get('/teams', requireUser, async (req, res) => {
 
 router.post('/teams', requireUser, async (req, res) => {
   if (req.user.team_id) return res.redirect('/teams');
+  if (!req.user.password_hash) return res.redirect('/signup/company');
   const name = clean(req.body.name, 160);
   if (!name) return res.status(400).render('team-new', { title: 'HollaTap Teams', error: 'Enter your company name.', pricing: config.pricing });
   const domain = req.user.email.split('@')[1];

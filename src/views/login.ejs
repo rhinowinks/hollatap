@@ -1,16 +1,28 @@
 <%- include('partials/header') %>
-<section class="section"><div class="narrow" style="max-width:480px">
-  <h1 style="font-size:32px">Sign in or create your account</h1>
-  <p class="muted">We'll email you a 6-digit code. No password needed.</p>
+<section class="section"><div class="narrow auth">
+  <h1>Log in</h1>
+  <p class="muted">Welcome back. Type your email and we'll send you a 6-digit code.</p>
+  <% if (notice === 'unknown') { %>
+    <div class="flash warn" role="alert">We don't have an account for <b><%= email %></b> yet.</div>
+    <form method="post" action="/signup" class="card-box" style="margin-bottom:18px">
+      <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="email" value="<%= email %>">
+      <p style="margin-top:0">Is this your first time? Create your free account with this email.</p>
+      <button class="btn primary big" type="submit">Sign up with this email</button>
+    </form>
+  <% } else if (notice === 'company') { %>
+    <div class="flash warn" role="alert">This is a company admin account. <a href="/login/company">Log in with your username and password</a>.</div>
+  <% } %>
   <% if (error) { %><div class="flash error" role="alert"><%= error %></div><% } %>
-  <form method="post" action="/login" class="card-box">
-    <input type="hidden" name="_csrf" value="<%= csrf %>">
-    <div class="field"><label for="em">Email address</label><input id="em" name="email" type="email" required autocomplete="email" value="<%= email %>" placeholder="name@company.com"></div>
-    <div class="field"><label for="ind">Your industry <span class="hint">(optional, helps us show relevant tips)</span></label>
-      <select id="ind" name="industry"><option value="">Choose…</option><% industries.forEach(i => { %><option><%= i %></option><% }) %></select></div>
-    <div class="field"><label class="check"><input type="checkbox" name="marketing_opt_in"> <span>Send me occasional tips and offers from HollaTap and Rhinowinks. Unsubscribe any time.</span></label></div>
-    <button class="btn primary" type="submit" style="width:100%">Email me a code</button>
-    <p class="tiny muted" style="margin-top:12px">By continuing you agree to the <a href="/terms">terms</a> and <a href="/privacy">privacy notice</a>.</p>
-  </form>
+  <div class="card-box">
+    <%- include('partials/google-btn', { gLabel: 'Log in with Google' }) %>
+    <form method="post" action="/login">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <div class="field"><label for="em">Your email address</label><input id="em" name="email" type="email" required autocomplete="email" value="<%= email %>" placeholder="name@gmail.com"></div>
+      <%- include('partials/keep') %>
+      <button class="btn primary big" type="submit">Email me a code</button>
+    </form>
+  </div>
+  <p class="auth-switch">New to HollaTap? <a href="/signup">Sign up free</a></p>
+  <p class="auth-switch small">Company admin? <a href="/login/company">Log in with your username</a></p>
 </div></section>
 <%- include('partials/footer') %>

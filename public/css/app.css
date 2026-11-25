@@ -48,7 +48,7 @@ p{margin:0 0 1em}
 form .field{margin-bottom:16px}
 label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
 .hint{font-weight:400;color:var(--slate);font-size:13px}
-input[type=text],input[type=email],input[type=tel],input[type=url],input[type=number],input[type=search],select,textarea{width:100%;min-height:44px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-md);font:inherit;background:#fff;color:var(--navy)}
+input[type=text],input[type=password],input[type=email],input[type=tel],input[type=url],input[type=number],input[type=search],select,textarea{width:100%;min-height:44px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-md);font:inherit;background:#fff;color:var(--navy)}
 input:focus,select:focus,textarea:focus{outline:3px solid #FFD3C2;border-color:var(--orange)}
 textarea{min-height:90px}
 input[type=color]{width:56px;height:44px;border:1.5px solid var(--border);border-radius:var(--r-md);padding:2px;background:#fff}
@@ -156,3 +156,12 @@ hr{border:none;border-top:1px solid var(--border);margin:28px 0}
 .gs-list a{font-weight:600}
 
 @media (max-width:560px){.nav .nav-opt{display:none}.site-header .wrap{min-height:58px}}
+.auth{max-width:480px}
+.auth h1{font-size:34px}
+.btn.big{width:100%;min-height:52px;font-size:16px}
+.auth-switch{text-align:center;margin:16px 0 0}
+.lead-code{font-size:19px;margin:0 0 6px}
+.g-btn{width:100%;min-height:50px;border-color:var(--border);font-weight:700}
+.or{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--slate);font-size:13px}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--border)}
+.field > .hint{display:block;margin-top:6px}

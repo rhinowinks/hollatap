@@ -25,6 +25,7 @@ const config = {
     secret: env('PAYSTACK_SECRET_KEY', ''),
     public: env('PAYSTACK_PUBLIC_KEY', ''),
   },
+  google: { clientId: env('GOOGLE_CLIENT_ID', ''), clientSecret: env('GOOGLE_CLIENT_SECRET', '') },
   turnstile: { site: env('TURNSTILE_SITE_KEY', ''), secret: env('TURNSTILE_SECRET_KEY', '') },
 };
 
@@ -64,4 +65,5 @@ config.limits = {
   team: { cards: 5, links: 50, leadsPerMonth: 100000 },
 };
 
+config.googleEnabled = !!(config.google.clientId && config.google.clientSecret);
 module.exports = config;

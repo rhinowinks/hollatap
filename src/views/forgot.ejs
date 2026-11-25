@@ -1,0 +1,15 @@
+<%- include('partials/header') %>
+<section class="section"><div class="narrow auth">
+  <h1>Reset your password</h1>
+  <% if (notice === 'sent') { %>
+    <div class="flash success" role="status">If that username or email has a company login, we've sent a code to its email. Check your inbox and spam.</div>
+  <% } %>
+  <p class="muted">Type your username or work email. We'll email you a code, then you choose a new password.</p>
+  <form method="post" action="/forgot-password" class="card-box">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="field"><label for="em">Username or work email</label><input id="em" name="email" type="text" required autocomplete="username"></div>
+    <button class="btn primary big" type="submit">Email me a code</button>
+  </form>
+  <p class="auth-switch"><a href="/login/company">Back to company log in</a></p>
+</div></section>
+<%- include('partials/footer') %>

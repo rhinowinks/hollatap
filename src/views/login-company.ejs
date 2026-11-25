@@ -1,0 +1,17 @@
+<%- include('partials/header') %>
+<section class="section"><div class="narrow auth">
+  <h1>Company admin log in</h1>
+  <p class="muted">Type your username and password. We'll then send a 6-digit code to your email.</p>
+  <% if (error) { %><div class="flash error" role="alert"><%= error %></div><% } %>
+  <form method="post" action="/login/company" class="card-box">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="field"><label for="un">Username or email</label><input id="un" name="username" type="text" required autocomplete="username" value="<%= username %>"></div>
+    <div class="field"><label for="pw">Password</label><input id="pw" name="password" type="password" required autocomplete="current-password"></div>
+    <%- include('partials/keep') %>
+    <button class="btn primary big" type="submit">Continue</button>
+    <p class="small" style="margin:14px 0 0"><a href="/forgot-password">Forgot your password?</a></p>
+  </form>
+  <p class="auth-switch">New company? <a href="/signup/company">Set up your company's cards</a></p>
+  <p class="auth-switch small">Staff member or personal card? <a href="/login">Log in with your email</a></p>
+</div></section>
+<%- include('partials/footer') %>

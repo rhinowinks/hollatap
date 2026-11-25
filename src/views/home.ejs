@@ -3,11 +3,11 @@
 <section class="h-hero">
   <div class="wrap h-hero-grid">
     <div class="h-hero-copy">
-      <p class="h-kicker">Made in Lagos. Free forever.</p>
+      <p class="h-kicker">Digital business cards, made in Lagos. Free forever.</p>
       <h1 class="h-title">Your business card, one tap away.</h1>
       <p class="h-sub">Tap a HollaTap card on any phone, or let them scan your QR. Your name, number and WhatsApp land straight in their contacts. No app. No typing. No paper that runs out.</p>
       <div class="h-choose" role="group" aria-label="Who is the card for?">
-        <a class="h-choice primary" href="/login">
+        <a class="h-choice primary" href="/signup">
           <b>For me</b>
           <span>Free card in two minutes</span>
         </a>
@@ -85,15 +85,14 @@
   </div>
 </section>
 
-<section class="h-nfc">
+<section class="h-nfc" id="nfc">
   <div class="wrap h-nfc-grid">
-    <img class="h-nfc-img" src="/brand/nfc-mockup.webp" width="1200" height="863" alt="HollaTap NFC tap card, orange front with the HollaTap logo and navy back with name and QR code" loading="lazy">
+    <img class="h-nfc-img" src="/brand/nfc-mockup.webp" width="1200" height="863" alt="HollaTap NFC business card, orange front with the HollaTap logo and navy back with name and QR code" loading="lazy">
     <div>
-      <h2>The HollaTap tap card</h2>
+      <h2>The HollaTap NFC tap card</h2>
       <p class="h-lead">Hold it near the back of any phone and your card opens. No app on their side, no pairing, no battery.</p>
       <div class="h-price">
         <span class="h-price-now"><%= naira(config.pricing.nfcCard) %></span>
-        <span class="h-price-vs">Others in Nigeria charge ₦25,000 to ₦35,000.</span>
       </div>
       <ul class="ticks">
         <li>Works on iPhone and Android</li>
@@ -103,7 +102,7 @@
       </ul>
       <div class="btn-row">
         <a class="btn primary" href="/checkout/nfc">Order my tap card</a>
-        <a class="btn" href="/for-teams">Free for teams of 20 or more</a>
+        <a class="btn" href="/for-teams">Included for teams of 20+</a>
       </div>
     </div>
   </div>
@@ -137,16 +136,16 @@
       <li><b>Share your QR or link</b><span>Print the QR, add it to your email signature, or tap a HollaTap card on any phone.</span></li>
       <li><b>They save you in one tap</b><span>Your contact lands in their phone, and they can send their details back to you.</span></li>
     </ol>
-    <a class="btn primary" href="/login">Make my free card</a>
+    <a class="btn primary" href="/signup">Make my free card</a>
   </div>
 </section>
 
 <section class="h-pricing" id="pricing">
   <div class="wrap">
-    <h2>Simple pricing in naira</h2>
+    <h2>Digital business card prices in naira</h2>
     <p class="h-lead">Pay once a year. Cancel any time and your free card stays.</p>
     <div class="grid c3">
-      <div class="plan-card"><h3>Free</h3><div class="price">₦0</div><ul><li>2 cards with QR and link</li><li>WhatsApp button and 5 links</li><li>10 shared contacts a month</li><li>A small "Made free with HollaTap" line under your card</li></ul><a class="btn" href="/login">Start free</a></div>
+      <div class="plan-card"><h3>Free</h3><div class="price">₦0</div><ul><li>2 cards with QR and link</li><li>WhatsApp button and 5 links</li><li>10 people a month can send you their details</li><li>A small "Made free with HollaTap" line under your card</li></ul><a class="btn" href="/signup">Start free</a></div>
       <div class="plan-card featured"><span class="badge orange"><% if (founding.open) { %>Founding price ends <%= founding.endsLabel %><% } else { %>Most popular<% } %></span><h3>Pro</h3><div class="price"><% if (founding.open) { %><s>₦25,000</s>₦20,000<% } else { %>₦25,000<% } %><span class="small muted">/year</span></div><p class="small muted" style="margin:0">About <%= naira(Math.round((founding.open ? 20000 : 25000) / 12)) %> a month</p><ul><li>Up to 5 cards, no HollaTap line</li><li>See who viewed and saved you</li><li>Unlimited shared contacts</li><li>Send scans to your menu, bookings or reviews</li><li>Your logo inside the QR code</li></ul><a class="btn primary" href="/checkout/pro">Get Pro</a></div>
       <div class="plan-card"><h3>Teams</h3><div class="price">₦30,000<span class="small muted">/staff/year</span></div><p class="small muted" style="margin:0">₦20,000 per staff from 50 staff</p><ul><li>One dashboard for every staff card</li><li>Locked company design</li><li>Verified company badge</li><li>Switch off cards when staff leave</li><li>Tap cards included for 20+ staff</li></ul><a class="btn" href="/for-teams">See Teams</a></div>
     </div>
@@ -157,7 +156,6 @@
 <section class="h-trust">
   <div class="wrap trust">
     <div><b>Pay your way</b><span>Card, bank transfer or USSD, through Paystack.</span></div>
-    <div><b>30-day refund</b><span>Not happy with a paid plan? Ask within 30 days.</span></div>
     <div><b>Your data, your call</b><span>Delete a card or your whole account in one click, under Nigeria's data protection law.</span></div>
     <div><b>Made in Lagos</b><span>A Rhinowinks product, with WhatsApp support.</span></div>
   </div>
@@ -181,7 +179,7 @@
   <div class="wrap h-end-inner">
     <h2>Just holla.</h2>
     <p>Your free card is two minutes away.</p>
-    <a class="btn dark" href="/login">Make my free card</a>
+    <a class="btn dark" href="/signup">Make my free card</a>
   </div>
 </section>
 

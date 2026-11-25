@@ -71,6 +71,11 @@ app.use((req, res, next) => {
   if (req.session.flash) delete req.session.flash;
   next();
 });
+// "Keep me logged in": 90 days if ticked, otherwise 30.
+app.use((req, res, next) => {
+  if (req.session && req.session.keep90) req.sessionOptions.maxAge = 90 * 24 * 3600 * 1000;
+  next();
+});
 app.use((req, res, next) => loadUser(req, res, next).catch(next));
 app.use((req, res, next) => {
   res.locals.isAdmin = isAdmin(req.user);
@@ -79,7 +84,7 @@ app.use((req, res, next) => {
 app.use(csrf);
 
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: config.env === 'test' ? 500 : 20, standardHeaders: true, legacyHeaders: false, skip: (req) => req.method !== 'POST' });
-app.use(['/login', '/verify'], authLimiter);
+app.use(['/login', '/verify', '/signup', '/forgot-password', '/reset-password'], authLimiter);
 
 app.get('/health', (req, res) => res.json({ ok: true }));
 app.use(require('./routes/auth'));

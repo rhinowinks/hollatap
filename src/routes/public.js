@@ -8,13 +8,24 @@ const { effectivePlan } = require('../lib/auth');
 const { buildVCard, leadVCard } = require('../lib/vcard');
 const { showFooter, publicUrl, TEMPLATES } = require('../lib/cards');
 const { onColour } = require('../lib/images');
-const { clean, cleanEmail, cleanPhone, waNumber, isFuture } = require('../lib/util');
+const { clean, cleanEmail, cleanPhone, waNumber, isFuture, naira } = require('../lib/util');
 const { foundingAvailable } = require('../lib/billing');
 
 const QRCode = require('qrcode');
 const router = express.Router();
 const leadLimiter = rateLimit({ windowMs: 60 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false });
 const enquiryLimiter = rateLimit({ windowMs: 60 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false });
+
+// Mirrors the FAQ on the home page (kept here so search engines get the same answers).
+const HOME_FAQ = [
+  ['Do the people I meet need an app?', "No. Your card opens in their phone's browser, from a QR scan or a tap. Saving you takes one tap on iPhone and Android."],
+  ['Is it really free?', 'Yes. The free plan gives you 2 cards with QR, link, WhatsApp button and 5 links, for as long as you want. You only pay for more cards, no HollaTap line, statistics or a tap card.'],
+  ['How does the tap card work?', 'It has a small NFC chip inside. When someone holds it near the back of their phone, the phone opens your HollaTap page. The QR code on the back works for every other phone.'],
+  ['What happens after my 14-day Pro trial?', 'Your account goes back to the free plan on its own. Nothing is charged, and your cards keep working.'],
+  ['Can I change my details after sharing my card?', 'Yes. Edit your card and the same QR, link and tap card show the new details straight away.'],
+  ['What is an Instant Card?', "A one-off card made on your phone with no sign-up. We store nothing. You download the QR and contact file and you're done."],
+  ["Can my company manage everyone's cards?", 'Yes, with Teams. You set the design once, invite staff from a spreadsheet, and switch cards off when people leave.'],
+];
 
 // The address people can actually reach right now (hollatap.com once DNS is live, onrender.com before).
 function siteUrl(req) {
@@ -32,15 +43,48 @@ async function qrSvg(url) {
 
 router.get('/', async (req, res) => {
   const founding = await foundingAvailable();
+  const B = config.baseUrl;
+  const P = config.pricing;
   res.render('home', {
     title: 'HollaTap: your business card, one tap away',
+    seoTitle: 'Free Digital Business Card & NFC Card in Nigeria | HollaTap',
+    description: `Make a free digital business card with a QR code in 2 minutes. NFC tap business cards from ${naira(P.nfcCard)}, delivered in Lagos. Works on iPhone and Android, no app needed.`,
+    canonical: '/',
     founding, marketing: true, demoQr: await qrSvg(`${siteUrl(req)}/demo`),
+    jsonld: {
+      '@context': 'https://schema.org',
+      '@graph': [
+        { '@type': 'Organization', '@id': `${B}/#org`, name: 'HollaTap', url: `${B}/`, logo: `${B}/brand/app-icon-192.png`, email: config.supportEmail,
+          parentOrganization: { '@type': 'Organization', name: config.company }, areaServed: 'NG',
+          contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: config.supportEmail, areaServed: 'NG', availableLanguage: 'en' } },
+        { '@type': 'WebSite', '@id': `${B}/#site`, url: `${B}/`, name: 'HollaTap', publisher: { '@id': `${B}/#org` }, inLanguage: 'en-NG' },
+        { '@type': 'SoftwareApplication', name: 'HollaTap digital business card', applicationCategory: 'BusinessApplication', operatingSystem: 'Web, iOS, Android',
+          offers: [
+            { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'NGN' },
+            { '@type': 'Offer', name: 'Pro (yearly)', price: String(founding.open ? P.proFounding : P.proAnnual), priceCurrency: 'NGN' },
+          ], publisher: { '@id': `${B}/#org` } },
+        { '@type': 'Product', name: 'HollaTap NFC business card', description: 'A tap-to-share NFC business card with a QR code on the back. Opens your HollaTap digital business card on any phone, no app needed.',
+          image: `${B}/brand/nfc-mockup.png`, brand: { '@type': 'Brand', name: 'HollaTap' },
+          offers: { '@type': 'Offer', price: String(P.nfcCard), priceCurrency: 'NGN', availability: 'https://schema.org/InStock', areaServed: 'NG', url: `${B}/#nfc` } },
+        { '@type': 'FAQPage', mainEntity: HOME_FAQ.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
+      ],
+    },
   });
 });
 
 router.get('/for-teams', async (req, res) => {
   res.render('for-teams', {
     title: 'HollaTap for companies: staff business cards on one dashboard',
+    seoTitle: 'Digital Business Cards for Companies & Staff in Nigeria | HollaTap',
+    canonical: '/for-teams',
+    jsonld: {
+      '@context': 'https://schema.org', '@type': 'Service', name: 'HollaTap Teams: digital and NFC business cards for staff',
+      provider: { '@type': 'Organization', name: 'HollaTap', url: `${config.baseUrl}/` }, areaServed: 'NG',
+      offers: [
+        { '@type': 'Offer', name: 'Teams, per staff per year', price: String(config.pricing.teamSeat), priceCurrency: 'NGN' },
+        { '@type': 'Offer', name: 'Teams 50+ staff, per staff per year', price: String(config.pricing.teamSeat50), priceCurrency: 'NGN' },
+      ],
+    },
     description: 'Digital and NFC business cards for your whole team. One dashboard, locked company design, verified badge, cards switched off when staff leave. From ₦20,000 per staff a year.',
     marketing: true,
   });
@@ -62,14 +106,19 @@ router.get('/demo/contact.vcf', async (req, res) => {
 router.get('/demo', (req, res) => {
   res.render('card-public', {
     title: 'HollaTap live demo card', card: DEMO,
-    links: [{ label: 'Make my free card', url: '/login' }, { label: 'For companies', url: '/for-teams' }],
+    links: [{ label: 'Make my free card', url: '/signup' }, { label: 'For companies', url: '/for-teams' }],
     footer: true, verified: false, teamName: null, founding: false, onAccent: '#FFFFFF',
     wa: waNumber(DEMO.whatsapp), url: `${siteUrl(req)}/demo`, leadsOpen: false, leadSent: false, isOwner: false, demo: true,
   });
 });
 
 router.get('/instant', (req, res) => {
-  res.render('instant', { title: 'Make an Instant Card: nothing stored', TEMPLATES });
+  res.render('instant', {
+    title: 'Make an Instant Card: nothing stored', TEMPLATES,
+    seoTitle: 'Free QR Code Business Card Maker, No Sign-up | HollaTap',
+    description: 'Make a QR code business card on your phone in a minute. No sign-up, nothing stored. Download your QR code, contact file (vCard) and card image for free.',
+    canonical: '/instant',
+  });
 });
 
 router.get('/privacy', (req, res) => res.render('privacy', { title: 'Privacy notice' }));
@@ -77,7 +126,22 @@ router.get('/terms', (req, res) => res.render('terms', { title: 'Terms of servic
 router.get('/affiliates', (req, res) => res.render('affiliates', { title: 'Earn with HollaTap' }));
 
 router.get('/robots.txt', (req, res) => {
-  res.type('text/plain').send('User-agent: *\nAllow: /$\nAllow: /instant\nAllow: /upgrade\nAllow: /affiliates\nAllow: /privacy\nAllow: /terms\nDisallow: /\n');
+  res.type('text/plain').send([
+    'User-agent: *',
+    'Allow: /$', 'Allow: /instant', 'Allow: /upgrade', 'Allow: /for-teams', 'Allow: /demo', 'Allow: /affiliates',
+    'Allow: /signup', 'Allow: /privacy', 'Allow: /terms', 'Allow: /brand/', 'Allow: /css/', 'Allow: /js/',
+    'Disallow: /',
+    `Sitemap: ${config.baseUrl}/sitemap.xml`,
+  ].join('\n') + '\n');
+});
+
+router.get('/sitemap.xml', (req, res) => {
+  const pages = [['/', '1.0', 'weekly'], ['/for-teams', '0.9', 'weekly'], ['/upgrade', '0.8', 'weekly'], ['/instant', '0.8', 'monthly'],
+    ['/demo', '0.6', 'monthly'], ['/signup', '0.6', 'monthly'], ['/affiliates', '0.4', 'monthly'], ['/privacy', '0.2', 'yearly'], ['/terms', '0.2', 'yearly']];
+  const today = new Date().toISOString().slice(0, 10);
+  res.type('application/xml').send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages
+    .map(([u, pr, f]) => `  <url><loc>${config.baseUrl}${u}</loc><lastmod>${today}</lastmod><changefreq>${f}</changefreq><priority>${pr}</priority></url>`)
+    .join('\n')}\n</urlset>\n`);
 });
 
 router.get('/go/:id', async (req, res) => {

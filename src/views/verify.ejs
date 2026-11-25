@@ -1,14 +1,20 @@
 <%- include('partials/header') %>
-<section class="section"><div class="narrow" style="max-width:480px">
-  <h1 style="font-size:32px">Check your email</h1>
-  <p class="muted">We sent a 6-digit code to <b><%= email %></b>. It expires in 15 minutes. Check spam if you can't see it.</p>
+<section class="section"><div class="narrow auth">
+  <h1>Check your email</h1>
+  <p class="lead-code">We sent a 6-digit code to <b><%= email %></b>.</p>
+  <% if (existed) { %><div class="flash success" role="status">You already have an account with this email, so this code will log you in.</div><% } %>
+  <p class="muted small">It can take a minute to arrive. Look in spam or promotions if you can't see it. The code works for 15 minutes.</p>
   <% if (devHint) { %><div class="flash warn">Test mode: email isn't set up, so the code is printed in the server log.</div><% } %>
   <% if (error) { %><div class="flash error" role="alert"><%= error %></div><% } %>
   <form method="post" action="/verify" class="card-box">
     <input type="hidden" name="_csrf" value="<%= csrf %>">
-    <div class="field"><label for="code">Code</label><input id="code" class="code-input" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required></div>
-    <button class="btn primary" type="submit" style="width:100%">Continue</button>
+    <div class="field"><label for="code">Type the 6 numbers</label><input id="code" class="code-input" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required autofocus></div>
+    <button class="btn primary big" type="submit"><%= mode === 'reset' ? 'Continue' : mode === 'signup' ? 'Create my account' : 'Log in' %></button>
   </form>
-  <p class="small" style="margin-top:12px"><a href="/login">Use a different email or resend</a></p>
+  <form method="post" action="/verify/resend" style="margin-top:14px">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <button class="btn" type="submit" style="width:100%">Send a new code</button>
+  </form>
+  <p class="auth-switch small"><a href="<%= mode.startsWith('company') ? '/login/company' : mode === 'signup' ? '/signup' : '/login' %>">Use a different email</a></p>
 </div></section>
 <%- include('partials/footer') %>

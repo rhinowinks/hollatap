@@ -1,0 +1,12 @@
+<%- include('partials/header') %>
+<section class="section"><div class="narrow auth">
+  <h1>Choose a new password</h1>
+  <% if (error) { %><div class="flash error" role="alert"><%= error %></div><% } %>
+  <form method="post" action="/reset-password" class="card-box">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="field"><label for="pw">New password</label><input id="pw" name="password" type="password" required minlength="8" autocomplete="new-password"><span class="hint">At least 8 characters, with a letter and a number.</span></div>
+    <div class="field"><label for="pw2">Type it again</label><input id="pw2" name="password2" type="password" required minlength="8" autocomplete="new-password"></div>
+    <button class="btn primary big" type="submit">Save my new password</button>
+  </form>
+</div></section>
+<%- include('partials/footer') %>

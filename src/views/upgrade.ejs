@@ -5,7 +5,7 @@
 </div></section>
 <section class="section"><div class="wrap">
   <div class="grid c3">
-    <div class="plan-card"><h3>Free</h3><div class="price">₦0</div><ul><li>Instant Card, or an account with 2 cards</li><li>QR code, link and save-contact button</li><li>WhatsApp button and 5 link buttons</li><li>10 shared contacts a month</li><li>"Made free with HollaTap" footer</li></ul><% if (!user) { %><a class="btn" href="/login">Start free</a><% } %></div>
+    <div class="plan-card"><h3>Free</h3><div class="price">₦0</div><ul><li>Instant Card, or an account with 2 cards</li><li>QR code, link and save-contact button</li><li>WhatsApp button and 5 link buttons</li><li>10 people a month can send you their details</li><li>"Made free with HollaTap" footer</li></ul><% if (!user) { %><a class="btn" href="/signup">Start free</a><% } %></div>
     <div class="plan-card featured">
       <% if (founding.open) { %><span class="badge orange">Founding member price ends <%= founding.endsLabel %></span><% } %>
       <h3>Pro</h3>
@@ -14,7 +14,7 @@
       <ul><li>Up to 5 cards, no HollaTap footer</li><li>Views and saves statistics</li><li>Unlimited shared contacts + CSV export</li><li>Card modes: reviews, menu, WhatsApp, bookings</li><li>Up to 50 link buttons</li><li>No Rhinowinks promos on your cards</li></ul>
       <% if (plan === 'team') { %><p class="small muted">Included in your company plan.</p><% } else if (user && user.plan === 'pro') { %><a class="btn" href="/checkout/pro">Renew for another year</a><% } else { %><a class="btn primary" href="/checkout/pro">Get Pro</a><% } %>
     </div>
-    <div class="plan-card"><h3>Teams</h3><div class="price">₦30,000<span class="small muted">/staff/year</span></div><p class="small muted" style="margin:0">₦20,000 per staff from 50 staff. Minimum 5.</p><ul><li>Everything in Pro for every staff member</li><li>Company dashboard and locked design</li><li>Verified company badge</li><li>Bulk invite from a spreadsheet</li><li>Switch off cards when staff leave</li><li><b>NFC card included</b> for 20+ staff</li></ul><a class="btn" href="/teams">Set up Teams</a></div>
+    <div class="plan-card"><h3>Teams</h3><div class="price">₦30,000<span class="small muted">/staff/year</span></div><p class="small muted" style="margin:0">₦20,000 per staff from 50 staff. Minimum 5.</p><ul><li>Everything in Pro for every staff member</li><li>Company dashboard and locked design</li><li>Verified company badge</li><li>Bulk invite from a spreadsheet</li><li>Switch off cards when staff leave</li><li><b>NFC card included</b> for 20+ staff</li></ul><a class="btn" href="<%= user ? '/teams' : '/signup/company' %>">Set up Teams</a></div>
   </div>
 
   <h2 style="margin-top:40px">Add-ons</h2>

@@ -6,6 +6,7 @@ const { quote, fulfil, foundingAvailable } = require('../lib/billing');
 const paystack = require('../lib/paystack');
 const { randomCode, clean, cleanPhone } = require('../lib/util');
 
+const { naira } = require('../lib/util');
 const router = express.Router();
 const KINDS = ['pro', 'footer', 'team', 'nfc', 'nfc_replacement'];
 
@@ -33,7 +34,7 @@ router.get('/upgrade', async (req, res) => {
   const plan = req.user ? await effectivePlan(req.user) : 'free';
   const founding = await foundingAvailable();
   const cards = req.user ? await db('cards').where({ user_id: req.user.id }).orderBy('id') : [];
-  res.render('upgrade', { title: 'Plans and services', plan, founding, cards, sent: req.query.sent === '1' });
+  res.render('upgrade', { title: 'Plans and services', plan, founding, cards, sent: req.query.sent === '1', seoTitle: 'Digital Business Card Prices in Naira: Free, Pro, Teams | HollaTap', description: `HollaTap pricing in naira: free digital business card, Pro from ${naira(config.pricing.proFounding)} a year, Teams for staff, and NFC tap cards at ${naira(config.pricing.nfcCard)}.`, canonical: '/upgrade' });
 });
 
 router.get('/checkout/:kind', requireUser, async (req, res) => {
