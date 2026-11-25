@@ -32,22 +32,22 @@
 
 <section class="more-rw" id="services"><div class="wrap">
   <div class="more-head">
-    <svg class="more-arrow" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23" fill="#FF5A1F"/><path d="M24 13v20M15 25l9 9 9-9" fill="none" stroke="#0F1B2D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg class="more-arrow" width="48" height="48" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23" fill="#FF5A1F"/><path d="M24 13v20M15 25l9 9 9-9" fill="none" stroke="#0F1B2D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <div>
       <h2>Want more for your business?</h2>
       <p class="h-lead" style="margin:0">HollaTap is made by Rhinowinks. We also build these tools for businesses across Nigeria. Tell us what you need and we'll reply within one working day.</p>
     </div>
   </div>
   <% if (sent) { %><div class="flash success">Thanks. We'll reply within one working day.</div><% } %>
-  <div class="grid c2">
-    <div class="grid" style="gap:12px">
+  <div class="more-grid">
+    <div class="more-list">
       <div class="card-box"><h3>AI Agents &amp; Trainings</h3><p class="small muted">AI agents that answer customers and do routine work, and AI training for leadership teams.</p></div>
       <div class="card-box"><h3>rhinoRETAIL</h3><p class="small muted">Online store, stock and sales in one system.</p></div>
       <div class="card-box"><h3>RhinoVMS</h3><p class="small muted">Visitor management for offices, estates and hotels.</p></div>
       <div class="card-box"><h3>rhinoEVENTS</h3><p class="small muted">Event registration, tickets and attendee cards.</p></div>
       <div class="card-box"><h3>Websites</h3><p class="small muted">Fast business websites with WhatsApp built in.</p></div>
     </div>
-    <form method="post" action="/enquiry" class="card-box">
+    <form method="post" action="/enquiry" class="card-box more-form">
       <input type="hidden" name="_csrf" value="<%= csrf %>">
       <h3>Talk to us</h3>
       <div class="field"><label for="ep">Interested in:</label><select id="ep" name="product" required><option>AI Agents &amp; Trainings</option><option>rhinoRETAIL</option><option>RhinoVMS</option><option>rhinoEVENTS</option><option>Website</option></select></div>

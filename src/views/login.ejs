@@ -1,6 +1,6 @@
 <%- include('partials/header') %>
 <% const tab = typeof active !== 'undefined' ? active : 'personal'; %>
-<section class="section"><div class="narrow auth">
+<section class="auth-wrap"><div class="auth-grid"><%- include('partials/auth-side', { sideTitle: 'Welcome back.' }) %><div class="auth-main"><div class="auth">
   <h1>Log in</h1>
   <div class="tabs" role="tablist" aria-label="Who is logging in?">
     <a role="tab" href="/login" data-tab="personal" aria-selected="<%= tab === 'personal' %>" class="<%= tab === 'personal' ? 'on' : '' %>">Personal or staff</a>
@@ -47,6 +47,6 @@
   </div>
 
   <%- include('partials/enterprise-box') %>
-</div></section>
-<script src="/js/tabs.js"></script>
+</div></div></div></section>
+<script src="/js/tabs.js?v=<%= v %>"></script>
 <%- include('partials/footer') %>

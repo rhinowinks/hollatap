@@ -22,8 +22,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet" href="/css/app.css?v=<%= v %>">
 <% if (typeof jsonld !== 'undefined' && jsonld) { %><script type="application/ld+json"><%- JSON.stringify(jsonld).replace(/</g, '\\u003c') %></script><% } %>
-<% if (typeof marketing !== 'undefined' && marketing) { %><link rel="stylesheet" href="/css/site.css"><% } %>
+<% if (typeof marketing !== 'undefined' && marketing) { %><link rel="stylesheet" href="/css/site.css?v=<%= v %>"><% } %>
 </head>
 <body>

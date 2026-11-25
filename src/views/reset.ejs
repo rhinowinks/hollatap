@@ -1,5 +1,5 @@
 <%- include('partials/header') %>
-<section class="section"><div class="narrow auth">
+<section class="auth-wrap"><div class="auth-grid"><%- include('partials/auth-side') %><div class="auth-main"><div class="auth">
   <h1>Choose a new password</h1>
   <% if (error) { %><div class="flash error" role="alert"><%= error %></div><% } %>
   <form method="post" action="/reset-password" class="card-box">
@@ -8,5 +8,5 @@
     <div class="field"><label for="pw2">Type it again</label><input id="pw2" name="password2" type="password" required minlength="8" autocomplete="new-password"></div>
     <button class="btn primary big" type="submit">Save my new password</button>
   </form>
-</div></section>
+</div></div></div></section>
 <%- include('partials/footer') %>

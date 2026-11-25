@@ -1,5 +1,5 @@
 <%- include('partials/header') %>
-<section class="section"><div class="narrow auth">
+<section class="auth-wrap"><div class="auth-grid"><%- include('partials/auth-side') %><div class="auth-main"><div class="auth">
   <h1>Check your email</h1>
   <p class="lead-code">We sent a 6-digit code to <b><%= email %></b>.</p>
   <% if (existed) { %><div class="flash success" role="status">You already have an account with this email, so this code will log you in.</div><% } %>
@@ -16,5 +16,5 @@
     <button class="btn" type="submit" style="width:100%">Send a new code</button>
   </form>
   <p class="auth-switch small"><a href="<%= mode.startsWith('company') ? '/login/company' : mode === 'signup' ? '/signup' : '/login' %>">Use a different email</a></p>
-</div></section>
+</div></div></div></section>
 <%- include('partials/footer') %>

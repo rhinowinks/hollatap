@@ -1,4 +1,22 @@
 </main>
+<%
+  const _wa = config.whatsappNumber ? 'https://wa.me/' + config.whatsappNumber : null;
+  let _band = typeof endBand !== 'undefined' ? endBand : null;
+  if (_band !== false && !_band) {
+    _band = user
+      ? { title: 'Just holla.', text: 'Questions, or need a hand with your card? We reply fast on WhatsApp.', btns: [_wa ? { href: _wa, label: 'Chat on WhatsApp', cls: 'dark', ext: true } : { href: 'mailto:' + config.supportEmail, label: 'Email us', cls: 'dark' }, { href: '/dashboard', label: 'My cards', cls: 'clear' }] }
+      : { title: 'Just holla.', text: 'Your free card is two minutes away.', btns: [{ href: '/signup', label: 'Make my free card', cls: 'dark' }, { href: '/for-teams', label: 'For companies', cls: 'clear' }] };
+  }
+%>
+<% if (_band) { %>
+<section class="end-band" style="background:#FF5A1F;color:#0F1B2D">
+  <div class="wrap">
+    <h2><%= _band.title %></h2>
+    <p><%= _band.text %></p>
+    <div class="btn-row"><% _band.btns.forEach(b => { %><a class="btn <%= b.cls %>" href="<%= b.href %>"<% if (b.ext) { %> target="_blank" rel="noopener"<% } %>><%= b.label %></a><% }) %></div>
+  </div>
+</section>
+<% } %>
 <footer class="site-footer">
   <div class="wrap">
     <div>

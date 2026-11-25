@@ -7,5 +7,5 @@
   <td class="btn-row"><% if (r.status === 'payable') { %><form method="post" action="/admin/commissions/<%= r.id %>/paid"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn small" type="submit">Mark paid</button></form><% } %><% if (['pending','payable'].includes(r.status)) { %><form method="post" action="/admin/commissions/<%= r.id %>/void" data-confirm="Void this commission (for example after a refund)?"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn small danger" type="submit">Void</button></form><% } %></td></tr><% }) %>
   </tbody></table></div>
 </div></section>
-<script src="/js/ui.js"></script>
+<script src="/js/ui.js?v=<%= v %>"></script>
 <%- include('../partials/footer') %>

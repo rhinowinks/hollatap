@@ -9,5 +9,5 @@
   <td><div class="btn-row" style="flex-wrap:nowrap"><a class="btn small primary" href="/cards/<%= card.id %>/leads/<%= l.id %>.vcf">Save to contacts</a><form method="post" action="/cards/<%= card.id %>/leads/<%= l.id %>/delete" data-confirm="Delete this contact?"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn small danger" type="submit">Delete</button></form></div></td></tr><% }) %>
   </tbody></table></div><% } %>
 </div></section>
-<script src="/js/ui.js"></script>
+<script src="/js/ui.js?v=<%= v %>"></script>
 <%- include('partials/footer') %>

@@ -75,6 +75,12 @@ router.get('/', async (req, res) => {
 router.get('/for-teams', async (req, res) => {
   res.render('for-teams', {
     sent: req.query.sent === '1',
+    endBand: {
+      title: 'Give your team a card worth tapping.',
+      text: "Set-up takes minutes. We're on WhatsApp if you want help.",
+      btns: [{ href: '/signup/company', label: 'Set up my team', cls: 'dark' },
+        config.whatsappNumber ? { href: `https://wa.me/${config.whatsappNumber}`, label: 'Chat on WhatsApp', cls: 'clear', ext: true } : { href: '#enterprise', label: 'Enterprise quote', cls: 'clear' }],
+    },
     title: 'HollaTap for companies: staff business cards on one dashboard',
     seoTitle: 'Digital Business Cards for Companies & Staff in Nigeria | HollaTap',
     canonical: '/for-teams',

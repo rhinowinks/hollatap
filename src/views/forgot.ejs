@@ -1,5 +1,5 @@
 <%- include('partials/header') %>
-<section class="section"><div class="narrow auth">
+<section class="auth-wrap"><div class="auth-grid"><%- include('partials/auth-side') %><div class="auth-main"><div class="auth">
   <h1>Reset your password</h1>
   <% if (notice === 'sent') { %>
     <div class="flash success" role="status">If that username or email has a company login, we've sent a code to its email. Check your inbox and spam.</div>
@@ -11,5 +11,5 @@
     <button class="btn primary big" type="submit">Email me a code</button>
   </form>
   <p class="auth-switch"><a href="/login/company">Back to company log in</a></p>
-</div></section>
+</div></div></div></section>
 <%- include('partials/footer') %>

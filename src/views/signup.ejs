@@ -1,6 +1,6 @@
 <%- include('partials/header') %>
 <% const tab = typeof active !== 'undefined' ? active : 'personal'; const li = typeof loggedIn !== 'undefined' && loggedIn; %>
-<section class="section"><div class="narrow auth">
+<section class="auth-wrap"><div class="auth-grid"><%- include('partials/auth-side', { sideTitle: 'Two minutes to a card people actually keep.' }) %><div class="auth-main"><div class="auth">
   <h1>Sign up free</h1>
   <% if (!li) { %>
   <div class="tabs" role="tablist" aria-label="Who is the account for?">
@@ -50,6 +50,6 @@
   </div>
 
   <%- include('partials/enterprise-box') %>
-</div></section>
-<script src="/js/tabs.js"></script>
+</div></div></div></section>
+<script src="/js/tabs.js?v=<%= v %>"></script>
 <%- include('partials/footer') %>

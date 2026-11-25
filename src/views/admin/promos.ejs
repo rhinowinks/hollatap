@@ -21,5 +21,5 @@
   <% if (p.id) { %><form method="post" action="/admin/promos/<%= p.id %>/delete" data-confirm="Delete this promotion?" style="margin:-6px 0 18px"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn small danger" type="submit">Delete</button></form><% } %>
   <% }) %>
 </div></section>
-<script src="/js/ui.js"></script>
+<script src="/js/ui.js?v=<%= v %>"></script>
 <%- include('../partials/footer') %>

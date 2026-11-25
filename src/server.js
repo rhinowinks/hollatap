@@ -12,6 +12,8 @@ const { naira } = require('./lib/util');
 const jobs = require('./jobs');
 
 const app = express();
+// Changes on every deploy, so browsers fetch fresh styles and scripts.
+const ASSET_V = (process.env.RENDER_GIT_COMMIT || Date.now().toString(36)).slice(0, 10);
 app.set('trust proxy', 1);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -53,7 +55,11 @@ app.use(
     secure: config.isProd,
   })
 );
-app.use('/', express.static(path.join(__dirname, '..', 'public'), { maxAge: config.isProd ? '7d' : 0 }));
+// Styles and scripts are re-checked on every visit (cheap 304s) so updates show at once; images can cache for a week.
+app.use('/', express.static(path.join(__dirname, '..', 'public'), {
+  maxAge: config.isProd ? '7d' : 0,
+  setHeaders: (res, file) => { if (/\.(css|js|mjs)$/.test(file)) res.setHeader('Cache-Control', 'no-cache'); },
+}));
 
 // Capture referral codes (?ref=XXXX) for 30 days.
 app.use((req, res, next) => {
@@ -65,6 +71,7 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
   res.locals.config = config;
+  res.locals.v = ASSET_V;
   res.locals.naira = naira;
   res.locals.path = req.path;
   res.locals.flash = req.session.flash || null;
