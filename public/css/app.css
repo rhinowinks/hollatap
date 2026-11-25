@@ -15,8 +15,8 @@ p{margin:0 0 1em}
 .narrow{max-width:720px;margin:0 auto;padding:0 20px}
 .section{padding:56px 0}.section.sand{background:var(--sand)}.section.navy{background:var(--navy);color:#fff}.section.navy .muted{color:var(--mist)}.section.navy a:not(.btn){color:var(--orange)}
 .site-header{border-bottom:1px solid var(--border);background:#fff;position:sticky;top:0;z-index:20}
-.site-header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:64px;flex-wrap:wrap}
-.site-header .logo img{height:42px;width:auto;display:block}
+.site-header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:84px;flex-wrap:wrap}
+.site-header .logo img{height:54px;width:auto;display:block}
 .nav{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .nav a{color:var(--navy);text-decoration:none;padding:8px 10px;border-radius:var(--r-md);font-weight:600;font-size:15px}
 .nav a:hover{background:var(--sand)}
@@ -205,7 +205,7 @@ hr{border:none;border-top:1px solid var(--border);margin:28px 0}
 
 /* Log in / sign up layout */
 .auth-wrap{background:var(--sand)}
-.auth-grid{display:grid;grid-template-columns:minmax(320px,.9fr) 1.1fr;min-height:calc(100vh - 64px)}
+.auth-grid{display:grid;grid-template-columns:minmax(320px,.9fr) 1.1fr;min-height:calc(100vh - 84px)}
 .auth-side{position:relative;overflow:hidden;display:flex;align-items:center}
 .auth-side::after{content:"";position:absolute;right:-180px;bottom:-200px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(255,90,31,.28),rgba(255,90,31,0) 65%)}
 .auth-side-in{position:relative;z-index:1;padding:56px clamp(28px,5vw,64px);max-width:520px;margin-left:auto}
@@ -246,7 +246,7 @@ hr{border:none;border-top:1px solid var(--border);margin:28px 0}
 .mnav-wrap{display:none}
 @media (max-width:760px){
   .site-header .wrap{flex-wrap:nowrap;min-height:58px;gap:8px}
-  .site-header .logo img{height:40px;width:auto}
+  .site-header .logo img{height:42px;width:auto}
   .nav{display:none}
   .mnav-wrap{display:flex;align-items:center;gap:6px;margin-left:auto}
   .mnav-link{color:var(--navy);font-weight:700;font-size:15px;padding:8px 8px;text-decoration:none}
