@@ -2,6 +2,8 @@
 <%
   const _wa = config.whatsappNumber ? 'https://wa.me/' + config.whatsappNumber : null;
   let _band = typeof endBand !== 'undefined' ? endBand : null;
+  // No band on log-in / sign-up pages: nothing should pull people away from the form.
+  if (/^\/(login|signup|verify|forgot-password|reset-password)/.test(path || '')) _band = false;
   if (_band !== false && !_band) {
     _band = user
       ? { title: 'Just holla.', text: 'Questions, or need a hand with your card? We reply fast on WhatsApp.', btns: [_wa ? { href: _wa, label: 'Chat on WhatsApp', cls: 'dark', ext: true } : { href: 'mailto:' + config.supportEmail, label: 'Email us', cls: 'dark' }, { href: '/dashboard', label: 'My cards', cls: 'clear' }] }
