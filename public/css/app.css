@@ -178,8 +178,9 @@ hr{border:none;border-top:1px solid var(--border);margin:28px 0}
 @keyframes nudge{0%,70%,100%{transform:translateY(0)}80%{transform:translateY(6px)}90%{transform:translateY(0)}}
 @media (prefers-reduced-motion:reduce){.more-arrow{animation:none}}
 
-.more-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
-.more-list{display:grid;gap:12px}
+.more-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch}
+.more-list{display:flex;flex-direction:column;gap:12px}
+.more-list .card-box{flex:1;display:flex;flex-direction:column;justify-content:center}
 .more-list .card-box{padding:16px 18px}
 .more-list h3{margin:0 0 4px;font-size:17px}
 .more-list p{margin:0}
