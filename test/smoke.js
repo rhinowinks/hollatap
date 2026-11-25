@@ -95,7 +95,15 @@ async function pngLogo() {
       const v = await new Client().get('/demo/contact.vcf');
       assert(/FN:HollaTap/.test(v.text) && /PHOTO/.test(v.text), 'demo vcf');
     }
-    ok('public pages load (home, for-teams, live demo card + vcf)');
+    {
+      const v = new Client();
+      const r = await v.post('/enquiry', { product: 'HollaTap Enterprise / branded cards', back: 'for-teams', name: 'Bank Ltd', email: 'it@bank.example', company: 'Bank', message: '400 staff' }, '/for-teams');
+      assert.strictEqual(r.location, '/for-teams?sent=1#enterprise');
+      assert(await db('enquiries').where({ product: 'HollaTap Enterprise / branded cards' }).first(), 'enterprise enquiry saved');
+      const t = await new Client().get('/login/company');
+      assert(/Company admin/.test(t.text) && /data-panel="company"/.test(t.text), 'company tab');
+    }
+    ok('public pages load (home, for-teams, live demo card + vcf), Enterprise quote form, login tabs');
 
     // Affiliate signs up and joins programme
     const aff = new Client();

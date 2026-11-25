@@ -89,12 +89,12 @@ router.get('/signup', (req, res) => {
 
 router.get('/signup/company', (req, res) => {
   if (req.user && req.user.password_hash) return res.redirect('/teams');
-  render(res, 'signup-company', "Set up your company's cards", { email: req.user ? req.user.email : '', username: '', loggedIn: !!req.user });
+  render(res, 'signup', "Set up your company's cards", { active: 'company', email: req.user ? req.user.email : '', username: '', loggedIn: !!req.user, seoTitle: "Set Up Your Company's Digital Business Cards | HollaTap", canonical: '/signup/company' });
 });
 
 router.get('/login/company', (req, res) => {
   if (req.user) return res.redirect('/teams');
-  render(res, 'login-company', 'Company admin log in', { username: '' });
+  render(res, 'login', 'Company admin log in', { active: 'company', username: '' });
 });
 
 router.get('/forgot-password', (req, res) => render(res, 'forgot', 'Reset your password'));
@@ -120,7 +120,7 @@ router.post('/login', async (req, res) => {
 router.post('/signup', async (req, res) => {
   const email = cleanEmail(req.body.email);
   const keep90 = req.body.keep === 'on';
-  if (!email) return res.status(400).render('signup', { title: 'Create your free account', email: req.body.email || '', error: 'Type your email address, for example name@gmail.com.', notice: null, industries: INDUSTRIES, google: config.googleEnabled });
+  if (!email) return res.status(400).render('signup', { active: 'personal', title: 'Create your free account', email: req.body.email || '', error: 'Type your email address, for example name@gmail.com.', notice: null, industries: INDUSTRIES, google: config.googleEnabled });
   const user = await db('users').where({ email }).first();
   if (user && user.password_hash) {
     return res.status(400).render('login', { title: 'Log in', email, error: null, google: config.googleEnabled, notice: 'company' });
@@ -137,7 +137,7 @@ router.post('/signup/company', async (req, res) => {
   const email = loggedIn ? req.user.email : cleanEmail(req.body.email);
   const username = cleanUsername(req.body.username);
   const keep90 = req.body.keep === 'on';
-  const again = (error) => res.status(400).render('signup-company', { title: "Set up your company's cards", email: email || req.body.email || '', username: req.body.username || '', loggedIn, error, notice: null, google: config.googleEnabled });
+  const again = (error) => res.status(400).render('signup', { active: 'company', industries: INDUSTRIES, title: "Set up your company's cards", email: email || req.body.email || '', username: req.body.username || '', loggedIn, error, notice: null, google: config.googleEnabled });
   if (!email) return again('Type your work email address, for example name@yourcompany.com.');
   if (!username) return again('Choose a username of 3 to 30 letters or numbers. You can also use dots, dashes and underscores.');
   const pwErr = passwordProblem(req.body.password, req.body.password2);
@@ -157,7 +157,7 @@ router.post('/login/company', async (req, res) => {
   const user = id ? await db('users').where(id.includes('@') ? { email: id } : { username: id }).first() : null;
   const ok = user && user.password_hash && checkPassword(req.body.password || '', user.password_hash);
   if (!ok) {
-    return res.status(400).render('login-company', { title: 'Company admin log in', username: req.body.username || '', error: "That username or password isn't right. Check them and try again, or reset your password.", notice: null, google: config.googleEnabled });
+    return res.status(400).render('login', { active: 'company', email: '', title: 'Company admin log in', username: req.body.username || '', error: "That username or password isn't right. Check them and try again, or reset your password.", notice: null, google: config.googleEnabled });
   }
   await sendCode(user.email, 'login');
   req.session.pending = { email: user.email, mode: 'company-login', keep90, uid: user.id };

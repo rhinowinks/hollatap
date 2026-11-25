@@ -1,28 +1,52 @@
 <%- include('partials/header') %>
+<% const tab = typeof active !== 'undefined' ? active : 'personal'; %>
 <section class="section"><div class="narrow auth">
   <h1>Log in</h1>
-  <p class="muted">Welcome back. Type your email and we'll send you a 6-digit code.</p>
-  <% if (notice === 'unknown') { %>
-    <div class="flash warn" role="alert">We don't have an account for <b><%= email %></b> yet.</div>
-    <form method="post" action="/signup" class="card-box" style="margin-bottom:18px">
-      <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="email" value="<%= email %>">
-      <p style="margin-top:0">Is this your first time? Create your free account with this email.</p>
-      <button class="btn primary big" type="submit">Sign up with this email</button>
-    </form>
-  <% } else if (notice === 'company') { %>
-    <div class="flash warn" role="alert">This is a company admin account. <a href="/login/company">Log in with your username and password</a>.</div>
-  <% } %>
-  <% if (error) { %><div class="flash error" role="alert"><%= error %></div><% } %>
-  <div class="card-box">
-    <%- include('partials/google-btn', { gLabel: 'Log in with Google' }) %>
-    <form method="post" action="/login">
-      <input type="hidden" name="_csrf" value="<%= csrf %>">
-      <div class="field"><label for="em">Your email address</label><input id="em" name="email" type="email" required autocomplete="email" value="<%= email %>" placeholder="name@gmail.com"></div>
-      <%- include('partials/keep') %>
-      <button class="btn primary big" type="submit">Email me a code</button>
-    </form>
+  <div class="tabs" role="tablist" aria-label="Who is logging in?">
+    <a role="tab" href="/login" data-tab="personal" aria-selected="<%= tab === 'personal' %>" class="<%= tab === 'personal' ? 'on' : '' %>">Personal or staff</a>
+    <a role="tab" href="/login/company" data-tab="company" aria-selected="<%= tab === 'company' %>" class="<%= tab === 'company' ? 'on' : '' %>">Company admin</a>
   </div>
-  <p class="auth-switch">New to HollaTap? <a href="/signup">Sign up free</a></p>
-  <p class="auth-switch small">Company admin? <a href="/login/company">Log in with your username</a></p>
+
+  <div class="tabpanel" data-panel="personal" data-title="Log in" <%= tab !== 'personal' ? 'hidden' : '' %>>
+    <p class="muted">Type your email and we'll send you a 6-digit code.</p>
+    <% if (tab === 'personal' && notice === 'unknown') { %>
+      <div class="flash warn" role="alert">We don't have an account for <b><%= email %></b> yet.</div>
+      <form method="post" action="/signup" class="card-box" style="margin-bottom:18px">
+        <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="email" value="<%= email %>">
+        <p style="margin-top:0">Is this your first time? Create your free account with this email.</p>
+        <button class="btn primary big" type="submit">Sign up with this email</button>
+      </form>
+    <% } else if (tab === 'personal' && notice === 'company') { %>
+      <div class="flash warn" role="alert">This is a company admin account. Use the <a href="/login/company">Company admin</a> tab and log in with your username and password.</div>
+    <% } %>
+    <% if (tab === 'personal' && error) { %><div class="flash error" role="alert"><%= error %></div><% } %>
+    <div class="card-box">
+      <%- include('partials/google-btn', { gLabel: 'Log in with Google' }) %>
+      <form method="post" action="/login">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <div class="field"><label for="em">Your email address</label><input id="em" name="email" type="email" required autocomplete="email" value="<%= email %>" placeholder="name@gmail.com"></div>
+        <%- include('partials/keep') %>
+        <button class="btn primary big" type="submit">Email me a code</button>
+      </form>
+    </div>
+    <p class="auth-switch">New to HollaTap? <a href="/signup">Sign up free</a></p>
+  </div>
+
+  <div class="tabpanel" data-panel="company" data-title="Company admin log in" <%= tab !== 'company' ? 'hidden' : '' %>>
+    <p class="muted">Type your username and password. We'll then send a 6-digit code to your email.</p>
+    <% if (tab === 'company' && error) { %><div class="flash error" role="alert"><%= error %></div><% } %>
+    <form method="post" action="/login/company" class="card-box">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <div class="field"><label for="un">Username or work email</label><input id="un" name="username" type="text" required autocomplete="username" value="<%= typeof username !== 'undefined' ? username : '' %>"></div>
+      <div class="field"><label for="pw">Password</label><input id="pw" name="password" type="password" required autocomplete="current-password"></div>
+      <%- include('partials/keep') %>
+      <button class="btn primary big" type="submit">Continue</button>
+      <p class="small" style="margin:14px 0 0"><a href="/forgot-password">Forgot your password?</a></p>
+    </form>
+    <p class="auth-switch">New company? <a href="/signup/company">Set up your company's cards</a></p>
+  </div>
+
+  <%- include('partials/enterprise-box') %>
 </div></section>
+<script src="/js/tabs.js"></script>
 <%- include('partials/footer') %>

@@ -74,6 +74,7 @@ router.get('/', async (req, res) => {
 
 router.get('/for-teams', async (req, res) => {
   res.render('for-teams', {
+    sent: req.query.sent === '1',
     title: 'HollaTap for companies: staff business cards on one dashboard',
     seoTitle: 'Digital Business Cards for Companies & Staff in Nigeria | HollaTap',
     canonical: '/for-teams',
@@ -161,7 +162,7 @@ router.post('/enquiry', enquiryLimiter, async (req, res) => {
   const email = cleanEmail(req.body.email);
   if (!product || !name || !email) {
     req.session.flash = { type: 'warn', text: 'Add your name and a valid email so we can reply.' };
-    return res.redirect('/upgrade#services');
+    return res.redirect(req.body.back === 'for-teams' ? '/for-teams#enterprise' : '/upgrade#services');
   }
   const row = { user_id: req.user ? req.user.id : null, product, name, email, phone: cleanPhone(req.body.phone), company: clean(req.body.company, 160), message: clean(req.body.message, 2000) };
   await db('enquiries').insert(row);
@@ -170,11 +171,11 @@ router.post('/enquiry', enquiryLimiter, async (req, res) => {
       to: admin,
       subject: `New enquiry: ${product}`,
       title: `New ${product} enquiry`,
-      html: `<p><b>${row.name}</b> (${row.email}${row.phone ? ', ' + row.phone : ''})${row.company ? ' at ' + row.company : ''}</p><p>${(row.message || '').replace(/</g, '&lt;')}</p>`,
+      html: (() => { const e = (v) => String(v || '').replace(/&/g, '&amp;').replace(/</g, '&lt;'); return `<p><b>${e(row.name)}</b> (${e(row.email)}${row.phone ? ', ' + e(row.phone) : ''})${row.company ? ' at ' + e(row.company) : ''}</p><p>${e(row.message)}</p>`; })(),
       text: `${row.name} ${row.email} ${row.phone || ''} ${row.company || ''}: ${row.message || ''}`,
     }).catch(() => {});
   }
-  res.redirect('/upgrade?sent=1#services');
+  res.redirect(req.body.back === 'for-teams' ? '/for-teams?sent=1#enterprise' : '/upgrade?sent=1#services');
 });
 
 // NFC tag: unclaimed -> claim flow; claimed -> the card

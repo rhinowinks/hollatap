@@ -46,7 +46,7 @@
           <input type="range" id="staff-range" min="<%= P.teamMinSeats %>" max="200" value="25" aria-label="Number of staff">
           <input type="number" id="staff" min="<%= P.teamMinSeats %>" max="5000" value="25">
         </div>
-        <p class="small muted" style="margin:16px 0 0">More than 200 staff, or want cards printed with your own design? <a href="<%= wa %>" target="_blank" rel="noopener">Ask us for a quote</a>.</p>
+        <p class="small muted" style="margin:16px 0 0">More than 200 staff, or want cards printed with your own design? <a href="#enterprise">See HollaTap Enterprise</a>.</p>
       </div>
       <div class="calc-out" aria-live="polite">
         <span class="muted" id="calc-rate"></span>
@@ -67,6 +67,37 @@
       <li><b>Invite your staff</b><span>Paste emails or upload a spreadsheet.</span></li>
       <li><b>Hand out tap cards</b><span>Delivered in Lagos in 2 to 3 working days. Staff tap once to link theirs.</span></li>
     </ol>
+  </div>
+</section>
+
+<section class="t-ent" id="enterprise">
+  <div class="wrap t-ent-grid">
+    <div>
+      <p class="h-kicker">HollaTap Enterprise</p>
+      <h2>Your brand on every card, for 200 staff or more.</h2>
+      <p class="h-lead" style="color:var(--mist)">For banks, oil and gas, telcos, hospitals, schools and government agencies that want staff cards to look like the company, not like HollaTap.</p>
+      <ul class="ticks light">
+        <li>NFC cards printed in your own design and colours</li>
+        <li>Cards on your own web address, for example cards.yourcompany.com</li>
+        <li>No HollaTap name on staff cards</li>
+        <li>We set it up and onboard your staff for you</li>
+        <li>Invoice billing, data processing agreement and a named contact</li>
+      </ul>
+      <a class="btn ghost-light" href="<%= wa %>" target="_blank" rel="noopener">Chat on WhatsApp instead</a>
+    </div>
+    <form method="post" action="/enquiry" class="card-box t-ent-form">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <input type="hidden" name="product" value="HollaTap Enterprise / branded cards">
+      <input type="hidden" name="back" value="for-teams">
+      <h3>Get an Enterprise quote</h3>
+      <% if (typeof sent !== 'undefined' && sent) { %><div class="flash success" role="status">Thanks. We'll reply within one working day.</div><% } %>
+      <div class="field"><label for="xn">Your name</label><input id="xn" name="name" type="text" maxlength="120" required></div>
+      <div class="field"><label for="xe">Work email</label><input id="xe" name="email" type="email" required placeholder="name@yourcompany.com"></div>
+      <div class="field"><label for="xp">Phone or WhatsApp</label><input id="xp" name="phone" type="tel" maxlength="40"></div>
+      <div class="field"><label for="xc">Company</label><input id="xc" name="company" type="text" maxlength="160" required></div>
+      <div class="field"><label for="xm">How many staff, and anything else we should know?</label><textarea id="xm" name="message" maxlength="2000" placeholder="For example: 350 staff across Lagos and Abuja"></textarea></div>
+      <button class="btn primary big" type="submit">Request my quote</button>
+    </form>
   </div>
 </section>
 

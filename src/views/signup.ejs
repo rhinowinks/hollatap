@@ -1,22 +1,55 @@
 <%- include('partials/header') %>
+<% const tab = typeof active !== 'undefined' ? active : 'personal'; const li = typeof loggedIn !== 'undefined' && loggedIn; %>
 <section class="section"><div class="narrow auth">
-  <h1>Create your free account</h1>
-  <p class="muted">Free forever, and you get <%= config.pricing.trialDays %> days of Pro free. No bank card needed.</p>
-  <% if (error) { %><div class="flash error" role="alert"><%= error %></div><% } %>
-  <div class="card-box">
-    <%- include('partials/google-btn', { gLabel: 'Sign up with Google' }) %>
-    <form method="post" action="/signup">
+  <h1>Sign up free</h1>
+  <% if (!li) { %>
+  <div class="tabs" role="tablist" aria-label="Who is the account for?">
+    <a role="tab" href="/signup" data-tab="personal" aria-selected="<%= tab === 'personal' %>" class="<%= tab === 'personal' ? 'on' : '' %>">For me</a>
+    <a role="tab" href="/signup/company" data-tab="company" aria-selected="<%= tab === 'company' %>" class="<%= tab === 'company' ? 'on' : '' %>">For my company</a>
+  </div>
+  <% } %>
+
+  <% if (!li) { %>
+  <div class="tabpanel" data-panel="personal" data-title="Create your free account" <%= tab !== 'personal' ? 'hidden' : '' %>>
+    <p class="muted">Free forever, and you get <%= config.pricing.trialDays %> days of Pro free. No bank card needed.</p>
+    <% if (tab === 'personal' && error) { %><div class="flash error" role="alert"><%= error %></div><% } %>
+    <div class="card-box">
+      <%- include('partials/google-btn', { gLabel: 'Sign up with Google' }) %>
+      <form method="post" action="/signup">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <div class="field"><label for="em">Your email address</label><input id="em" name="email" type="email" required autocomplete="email" value="<%= tab === 'personal' ? email : '' %>" placeholder="name@gmail.com"></div>
+        <div class="field"><label for="ind">What kind of business are you in? <span class="hint">(optional)</span></label>
+          <select id="ind" name="industry"><option value="">Choose…</option><% industries.forEach(i => { %><option><%= i %></option><% }) %></select></div>
+        <div class="field"><label class="check"><input type="checkbox" name="marketing_opt_in"> <span>Send me occasional tips and offers from HollaTap and Rhinowinks. Unsubscribe any time.</span></label></div>
+        <%- include('partials/keep') %>
+        <button class="btn primary big" type="submit">Email me a code</button>
+        <p class="tiny muted" style="margin:12px 0 0">By continuing you agree to the <a href="/terms">terms</a> and <a href="/privacy">privacy notice</a>.</p>
+      </form>
+    </div>
+    <p class="auth-switch">Already have an account? <a href="/login">Log in</a></p>
+  </div>
+  <% } %>
+
+  <div class="tabpanel" data-panel="company" data-title="Set up your company's cards" <%= tab !== 'company' ? 'hidden' : '' %>>
+    <p class="muted">Create the admin login for your company. You'll log in with a username and password, and we'll also send a code to your email each time, so nobody else can get in.</p>
+    <% if (tab === 'company' && error) { %><div class="flash error" role="alert"><%= error %></div><% } %>
+    <form method="post" action="/signup/company" class="card-box">
       <input type="hidden" name="_csrf" value="<%= csrf %>">
-      <div class="field"><label for="em">Your email address</label><input id="em" name="email" type="email" required autocomplete="email" value="<%= email %>" placeholder="name@gmail.com"></div>
-      <div class="field"><label for="ind">What kind of business are you in? <span class="hint">(optional)</span></label>
-        <select id="ind" name="industry"><option value="">Choose…</option><% industries.forEach(i => { %><option><%= i %></option><% }) %></select></div>
-      <div class="field"><label class="check"><input type="checkbox" name="marketing_opt_in"> <span>Send me occasional tips and offers from HollaTap and Rhinowinks. Unsubscribe any time.</span></label></div>
+      <div class="field"><label for="cem">Your work email</label>
+        <input id="cem" name="email" type="email" required autocomplete="email" value="<%= tab === 'company' ? email : '' %>" placeholder="name@yourcompany.com" <%= li ? 'readonly' : '' %>>
+        <span class="hint">Use your company email so staff and customers trust the verified badge.</span></div>
+      <div class="field"><label for="un">Choose a username</label><input id="un" name="username" type="text" required minlength="3" maxlength="30" autocomplete="username" value="<%= typeof username !== 'undefined' ? username : '' %>" placeholder="for example lekkilogistics"></div>
+      <div class="field"><label for="pw">Choose a password</label><input id="pw" name="password" type="password" required minlength="8" autocomplete="new-password"><span class="hint">At least 8 characters, with a letter and a number.</span></div>
+      <div class="field"><label for="pw2">Type the password again</label><input id="pw2" name="password2" type="password" required minlength="8" autocomplete="new-password"></div>
+      <div class="field"><label class="check"><input type="checkbox" name="marketing_opt_in"> <span>Send me occasional tips and offers from HollaTap and Rhinowinks.</span></label></div>
       <%- include('partials/keep') %>
       <button class="btn primary big" type="submit">Email me a code</button>
       <p class="tiny muted" style="margin:12px 0 0">By continuing you agree to the <a href="/terms">terms</a> and <a href="/privacy">privacy notice</a>.</p>
     </form>
+    <% if (!li) { %><p class="auth-switch">Already set up? <a href="/login/company">Company admin log in</a></p><% } %>
   </div>
-  <p class="auth-switch">Already have an account? <a href="/login">Log in</a></p>
-  <p class="auth-switch small">Setting up cards for your staff? <a href="/signup/company">Sign up as a company</a></p>
+
+  <%- include('partials/enterprise-box') %>
 </div></section>
+<script src="/js/tabs.js"></script>
 <%- include('partials/footer') %>

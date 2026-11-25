@@ -178,13 +178,25 @@ section h2{font-size:clamp(28px,3.6vw,44px);letter-spacing:-.025em;line-height:1
 .calc-out .muted{color:var(--mist)}
 .calc-out .btn{margin-top:auto;align-self:flex-start}
 
+/* ---------- Enterprise ---------- */
+.h-ent{background:var(--teal);color:var(--navy);padding:46px 0}
+.h-ent-inner{display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap}
+.h-ent h2{font-size:clamp(24px,2.8vw,34px);margin:0 0 8px;max-width:24ch}
+.h-ent p{margin:0;max-width:60ch;font-size:17px}
+.h-ent .btn.dark{min-height:50px;padding:12px 22px}
+.t-ent{background:var(--navy);color:#fff;padding:80px 0}
+.t-ent-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:start}
+.t-ent h2{color:#fff}
+.t-ent-form{color:var(--navy)}
+.ticks.light li{color:#fff}
+
 /* ---------- Responsive ---------- */
 .only-mob{display:none}
 @media (max-width:900px){
   .h-hero-grid,.t-hero-grid{grid-template-columns:1fr;padding-top:48px;padding-bottom:40px;gap:16px}
   .h-scene{height:500px;transform:scale(.86);transform-origin:top center;margin-bottom:-70px}
   .t-stack{height:360px;transform:scale(.85);transform-origin:top center}
-  .h-try-grid,.h-nfc-grid,.calc{grid-template-columns:1fr;gap:28px}
+  .h-try-grid,.h-nfc-grid,.calc,.t-ent-grid{grid-template-columns:1fr;gap:28px}
   .uses{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:16px;padding-bottom:10px;margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px}
   .use{flex:0 0 76%;scroll-snap-align:start}
   .how,.t-feats{grid-template-columns:1fr}
