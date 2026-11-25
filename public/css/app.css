@@ -237,3 +237,6 @@ hr{border:none;border-top:1px solid var(--border);margin:28px 0}
 
 .foot-links{text-align:right;margin-left:auto}
 @media (max-width:700px){.foot-links{text-align:left;margin-left:0}}
+
+.site-footer a{text-decoration:none}
+.site-footer a:hover,.site-footer a:focus-visible{text-decoration:underline;color:#FF5A1F}
