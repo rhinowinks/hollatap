@@ -7,7 +7,7 @@ const { requireUser, effectivePlan, limitsFor } = require('../lib/auth');
 const { processLogo } = require('../lib/images');
 const { TEMPLATES, MODES, uniqueSlug, cardFieldsFrom, publicUrl } = require('../lib/cards');
 const { pickPromo, INDUSTRIES } = require('../lib/promos');
-const { clean, slugify, RESERVED, isFuture } = require('../lib/util');
+const { clean, slugify, RESERVED, isFuture, naira } = require('../lib/util');
 const { foundingAvailable } = require('../lib/billing');
 const { deleteUserEverything } = require('../jobs');
 
@@ -54,7 +54,20 @@ router.get('/dashboard', requireUser, async (req, res) => {
   const promo = await pickPromo(req.query.created ? 'created' : 'dashboard', req.user.industry);
   const leadCount = await monthLeadCount(req.user.id);
   const founding = await foundingAvailable();
+  const cardIds = cards.map((c) => c.id);
+  const hasTapCard = !!(await db('nfc_orders').where({ user_id: req.user.id }).first())
+    || (cardIds.length ? !!(await db('nfc_tags').whereIn('card_id', cardIds).first()) : false);
+  const first = cards[0];
+  const steps = [
+    { key: 'card', label: 'Make your first card', href: '/cards/new', done: cards.length > 0 },
+    { key: 'logo', label: 'Add your logo', href: first ? `/cards/${first.id}/edit` : '/cards/new', done: cards.some((c) => !!c.logo) },
+    { key: 'qr', label: 'Download your QR code', href: first ? `/cards/${first.id}/share` : '/cards/new', done: false },
+    { key: 'sig', label: 'Add your card to your email signature', href: '/signature', done: false },
+    { key: 'nfc', label: `Get your tap card (${naira(config.pricing.nfcCard)})`, href: '/checkout/nfc', done: hasTapCard },
+    { key: 'ref', label: `Invite a friend and earn ${naira(config.pricing.userCredit)}`, href: '#invite', done: false },
+  ];
   res.render('dashboard', {
+    steps,
     title: 'Your cards',
     plan,
     limits: limitsFor(plan),

@@ -43,7 +43,7 @@ config.pricing = {
   teamSeat50: 20000,
   teamMinSeats: 5,
   teamCardIncludedFrom: 20,
-  nfcCard: 10000,
+  nfcCard: 15000,
   nfcReplacement: 5000,
   friendDiscountPct: 10,
   userCredit: 5000,

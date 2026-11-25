@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><%= title %> | HollaTap</title>
-<meta name="description" content="Free digital business cards with QR and NFC. Your business card, one tap away.">
+<meta name="description" content="<%= typeof description !== 'undefined' ? description : 'Free digital business cards with QR and NFC tap cards, made in Lagos. People tap or scan and your details save straight to their phone. No app needed.' %>">
 <% if (typeof noindex !== 'undefined' && noindex) { %><meta name="robots" content="noindex"><% } %>
 <link rel="icon" href="/brand/favicon.ico" sizes="any">
 <link rel="icon" href="/brand/hollatap-favicon.svg" type="image/svg+xml">
@@ -16,5 +16,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/app.css">
+<% if (typeof marketing !== 'undefined' && marketing) { %><link rel="stylesheet" href="/css/site.css"><% } %>
 </head>
 <body>

@@ -1,0 +1,203 @@
+/* HollaTap marketing pages: home and for-teams.
+   One loud moment (the tap animation in the hero); everything else stays quiet. */
+
+.h-lead{font-size:clamp(17px,1.6vw,19px);color:var(--slate);max-width:62ch}
+section h2{font-size:clamp(28px,3.6vw,44px);letter-spacing:-.025em;line-height:1.08;max-width:22ch}
+
+/* ---------- Hero ---------- */
+.h-hero{background:var(--navy);color:#fff;overflow:hidden;position:relative}
+.h-hero::after{content:"";position:absolute;right:-220px;bottom:-320px;width:760px;height:760px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,90,31,.20) 0,rgba(255,90,31,0) 62%);pointer-events:none}
+.h-hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;padding-top:72px;padding-bottom:80px;position:relative;z-index:1}
+.h-kicker{color:var(--orange);font-weight:700;font-size:15px;margin:0 0 18px}
+.h-title{font-size:clamp(44px,6.6vw,84px);line-height:.98;letter-spacing:-.04em;font-weight:800;margin:0 0 22px;max-width:11ch}
+.h-sub{font-size:clamp(17px,1.7vw,20px);color:var(--mist);max-width:46ch;margin:0 0 30px}
+.h-choose{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:520px}
+.h-choice{display:flex;flex-direction:column;gap:2px;padding:16px 18px;border-radius:14px;border:1.5px solid rgba(255,255,255,.28);color:#fff;text-decoration:none;transition:border-color .15s,background .15s}
+.h-choice b{font-size:18px}
+.h-choice span{font-size:14px;color:var(--mist)}
+.h-choice:hover{text-decoration:none;border-color:#fff;background:rgba(255,255,255,.06)}
+.h-choice.primary{background:var(--orange);border-color:var(--orange);color:var(--navy)}
+.h-choice.primary span{color:rgba(15,27,45,.78)}
+.h-choice.primary:hover{background:#ff6c36}
+.h-choice:focus-visible,.h-try-btn:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.h-alt{margin:18px 0 0;font-size:14px;color:var(--mist)}
+.h-alt a{color:#fff;font-weight:700}
+
+/* The tap scene */
+.h-scene{position:relative;height:500px;max-width:460px;width:100%;justify-self:center}
+.phone{position:absolute;left:40px;top:30px;width:236px;height:460px;border-radius:38px;background:#1B2A42;border:2px solid #2F4060;
+  box-shadow:0 30px 60px rgba(0,0,0,.35),inset 0 0 0 6px #121F33;z-index:2}
+.notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:76px;height:20px;border-radius:12px;background:#0B1424;z-index:4}
+.screen{position:absolute;inset:8px;border-radius:31px;background:linear-gradient(180deg,#24395A,#132239);overflow:hidden}
+.lock-time{position:absolute;top:70px;width:100%;text-align:center;font-size:52px;font-weight:300;color:#fff;letter-spacing:-.02em;animation:t-time 7s infinite}
+.banner{position:absolute;left:10px;right:10px;top:42px;display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.94);color:var(--navy);
+  border-radius:16px;padding:10px 12px;font-size:12px;line-height:1.3;transform:translateY(-140%);opacity:0;animation:t-banner 7s infinite}
+.banner img{width:28px;height:28px;border-radius:7px;background:#fff}
+.banner b{display:block;font-size:12px}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;color:var(--navy);border-radius:24px 24px 0 0;padding:0 0 18px;transform:translateY(105%);animation:t-sheet 7s infinite}
+.sheet-top{background:var(--navy);color:#fff;padding:18px 16px 14px;border-radius:24px 24px 0 0;display:flex;flex-direction:column;gap:2px}
+.sheet-top b{font-size:17px}
+.sheet-top span{font-size:11px;color:var(--mist)}
+.sheet-logo{width:38px;height:38px;border-radius:10px;background:#fff;color:var(--navy)!important;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px!important;margin-bottom:8px}
+.sheet-row{font-size:11.5px;padding:9px 16px;border-bottom:1px solid #EFE9E0}
+.sheet-btn{position:relative;margin:14px 14px 0;height:40px;border-radius:12px;background:var(--navy);color:#fff;font-weight:700;font-size:13px;overflow:hidden;animation:t-btnbg 7s infinite}
+.sheet-btn span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.sheet-btn .b2{opacity:0;color:var(--navy);animation:t-b2 7s infinite}
+.sheet-btn .b1{animation:t-b1 7s infinite}
+.tap-card{position:absolute;left:150px;top:0;width:250px;z-index:3;filter:drop-shadow(0 18px 24px rgba(0,0,0,.35));animation:t-card 7s infinite;transform-origin:30% 80%}
+.tap-card img{width:100%;display:block}
+.ripples{position:absolute;left:236px;top:96px;width:0;height:0;z-index:1}
+.ripples i{position:absolute;left:-80px;top:-80px;width:160px;height:160px;border-radius:50%;border:3px solid var(--orange);opacity:0;transform:scale(.2)}
+.ripples i:nth-child(1){animation:t-r1 7s infinite}
+.ripples i:nth-child(2){animation:t-r2 7s infinite}
+.ripples i:nth-child(3){animation:t-r3 7s infinite}
+
+@keyframes t-card{0%{transform:translate(170px,-60px) rotate(22deg);opacity:0}8%{opacity:1}20%,58%{transform:translate(30px,10px) rotate(-9deg);opacity:1}
+  70%,100%{transform:translate(170px,-60px) rotate(22deg);opacity:0}}
+@keyframes t-r1{0%,20%{opacity:0;transform:scale(.2)}21%{opacity:.9}38%,100%{opacity:0;transform:scale(1.9)}}
+@keyframes t-r2{0%,25%{opacity:0;transform:scale(.2)}26%{opacity:.8}43%,100%{opacity:0;transform:scale(1.9)}}
+@keyframes t-r3{0%,30%{opacity:0;transform:scale(.2)}31%{opacity:.7}48%,100%{opacity:0;transform:scale(1.9)}}
+@keyframes t-banner{0%,24%{transform:translateY(-140%);opacity:0}29%,40%{transform:translateY(0);opacity:1}45%,100%{transform:translateY(-140%);opacity:0}}
+@keyframes t-sheet{0%,40%{transform:translateY(105%)}48%,90%{transform:translateY(0)}98%,100%{transform:translateY(105%)}}
+@keyframes t-time{0%,40%{opacity:1}46%,90%{opacity:.25}98%,100%{opacity:1}}
+@keyframes t-btnbg{0%,62%{background:var(--navy)}66%,94%{background:var(--teal)}100%{background:var(--navy)}}
+@keyframes t-b1{0%,62%{opacity:1}65%,96%{opacity:0}100%{opacity:1}}
+@keyframes t-b2{0%,63%{opacity:0;transform:translateY(8px)}67%,94%{opacity:1;transform:translateY(0)}97%,100%{opacity:0}}
+
+@media (prefers-reduced-motion:reduce){
+  .tap-card,.ripples i,.banner,.sheet,.lock-time,.sheet-btn,.sheet-btn span{animation:none!important}
+  .tap-card{transform:translate(30px,10px) rotate(-9deg)}
+  .sheet{transform:none}.lock-time{opacity:.25}
+  .sheet-btn{background:var(--teal)}.sheet-btn .b1{opacity:0}.sheet-btn .b2{opacity:1}
+}
+
+/* ---------- Try it ---------- */
+.h-try{padding:72px 0;background:#fff}
+.h-try-grid{display:grid;grid-template-columns:auto 1fr;gap:56px;align-items:center}
+.h-qr-frame{background:var(--orange);border-radius:28px;padding:22px 22px 14px;text-align:center;transform:rotate(-3deg)}
+.h-qr{background:#fff;border-radius:16px;padding:16px;width:230px;height:230px}
+.h-qr svg{width:100%;height:100%;display:block}
+.h-qr-frame p{margin:10px 0 0;font-weight:800;color:var(--navy)}
+.h-try-btn{display:none}
+
+/* ---------- Use cases ---------- */
+.h-uses{padding:80px 0;background:var(--sand)}
+.uses{display:grid;grid-template-columns:repeat(3,1fr);gap:28px 22px;margin-top:34px}
+.use{margin:0}
+.use-card{background:#fff;border-radius:18px;overflow:hidden;border:1px solid var(--border)}
+.use-top{background:var(--c);color:#fff;padding:18px 18px 16px;display:flex;flex-direction:column;gap:1px}
+.use-top b{font-size:17px}
+.use-top span{font-size:13px;opacity:.85}
+.use-logo{width:36px;height:36px;border-radius:9px;background:#fff;color:var(--c)!important;opacity:1!important;font-weight:800;font-size:13px!important;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.use-btn{margin:14px;padding:11px;border-radius:11px;background:var(--c);color:#fff;font-weight:700;font-size:14px;text-align:center}
+.use figcaption{font-size:14.5px;color:var(--slate);margin-top:10px;padding:0 4px}
+
+/* ---------- NFC card ---------- */
+.h-nfc{padding:88px 0;background:#fff}
+.h-nfc-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center}
+.h-nfc-img{width:100%;height:auto}
+.h-price{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin:6px 0 18px}
+.h-price-now{font-size:clamp(44px,5vw,60px);font-weight:800;letter-spacing:-.035em;color:var(--navy)}
+.h-price-vs{font-size:15px;color:var(--slate);max-width:20ch;line-height:1.35}
+.ticks{list-style:none;padding:0;margin:0 0 26px;display:grid;gap:10px}
+.ticks li{padding-left:30px;position:relative}
+.ticks li::before{content:"";position:absolute;left:0;top:5px;width:18px;height:18px;border-radius:50%;background:var(--teal)}
+.ticks li::after{content:"";position:absolute;left:5px;top:10px;width:8px;height:4px;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(-45deg)}
+
+/* ---------- Paper vs HollaTap ---------- */
+.h-vs{padding:80px 0;background:var(--navy);color:#fff}
+.vs{width:100%;border-collapse:collapse;margin-top:30px;font-size:16px;min-width:560px}
+.vs th,.vs td{padding:15px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,.12);vertical-align:top}
+.vs thead th{font-size:14px;color:var(--mist);font-weight:600}
+.vs thead th:last-child{color:var(--orange);font-weight:800;font-size:16px}
+.vs tbody th{font-weight:600;color:var(--mist);width:30%}
+.vs td:nth-child(2){color:#93A0B4}
+.vs td:last-child{font-weight:700}
+
+/* ---------- How it works ---------- */
+.h-how{padding:80px 0;background:#fff}
+.how{list-style:none;counter-reset:h;padding:0;margin:34px 0 34px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.how li{counter-increment:h;display:flex;flex-direction:column;gap:6px;border-top:3px solid var(--navy);padding-top:16px}
+.how li::before{content:counter(h);font-size:44px;font-weight:800;line-height:1;color:var(--orange);letter-spacing:-.03em;margin-bottom:6px}
+.how b{font-size:19px}
+.how span{color:var(--slate)}
+
+/* ---------- Pricing, trust, FAQ ---------- */
+.h-pricing{padding:80px 0;background:var(--sand)}
+.h-pricing .grid{margin-top:30px}
+.h-trust{padding:44px 0;background:#fff;border-bottom:1px solid var(--border)}
+.trust{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.trust div{display:flex;flex-direction:column;gap:4px}
+.trust b{font-size:16px}
+.trust span{font-size:14px;color:var(--slate)}
+.h-faq{padding:80px 0;background:#fff}
+.h-faq h2{margin-bottom:24px}
+.h-faq details{border-bottom:1px solid var(--border)}
+.h-faq summary{cursor:pointer;list-style:none;padding:18px 36px 18px 0;font-weight:700;font-size:17px;position:relative}
+.h-faq summary::-webkit-details-marker{display:none}
+.h-faq summary::after{content:"+";position:absolute;right:4px;top:12px;font-size:26px;font-weight:400;color:var(--orange-strong);transition:transform .2s}
+.h-faq details[open] summary::after{transform:rotate(45deg)}
+.h-faq summary:focus-visible{outline:3px solid #FFD3C2;outline-offset:2px}
+.h-faq details p{margin:0 0 18px;color:var(--slate);max-width:64ch}
+
+/* ---------- Closing ---------- */
+.h-end{background:var(--orange);color:var(--navy);padding:84px 0}
+.h-end-inner{display:flex;flex-direction:column;align-items:flex-start}
+.h-end h2{font-size:clamp(48px,8vw,104px);letter-spacing:-.045em;line-height:.95;margin:0 0 12px}
+.h-end p{font-size:20px;font-weight:600;margin:0 0 26px}
+.h-end .btn.dark{min-height:52px;padding:12px 26px;font-size:16px}
+
+/* ---------- For teams ---------- */
+.t-hero .h-title{max-width:14ch;font-size:clamp(40px,5.6vw,72px)}
+.t-hero-grid{grid-template-columns:1.1fr .9fr}
+.t-cta{display:flex;gap:12px;flex-wrap:wrap}
+.t-cta .btn{min-height:50px;padding:12px 22px}
+.btn.ghost-light{background:transparent;border-color:rgba(255,255,255,.5);color:#fff}
+.btn.ghost-light:hover{background:rgba(255,255,255,.08)}
+.t-stack{position:relative;height:420px;max-width:420px;width:100%;justify-self:center}
+.t-stack .tc{position:absolute;width:230px;border-radius:18px;overflow:hidden;background:#fff;color:var(--navy);box-shadow:0 20px 40px rgba(0,0,0,.3)}
+.t-stack .tc .use-top{background:#0F766E}
+.t-stack .tc .use-btn{background:#0F766E}
+.t-stack .tc:nth-child(1){left:0;top:70px;transform:rotate(-9deg)}
+.t-stack .tc:nth-child(2){left:150px;top:0;transform:rotate(4deg)}
+.t-stack .tc:nth-child(3){left:110px;top:190px;transform:rotate(-2deg)}
+.t-verified{display:inline-block;margin-top:6px;font-size:11px;font-weight:700;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:999px;align-self:flex-start}
+.t-feats{display:grid;grid-template-columns:repeat(3,1fr);gap:34px 28px;margin-top:34px}
+.t-feats div{border-top:3px solid var(--navy);padding-top:14px}
+.t-feats b{display:block;font-size:18px;margin-bottom:4px}
+.t-feats span{color:var(--slate)}
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:stretch;margin-top:30px}
+.calc-in{background:#fff;border-radius:20px;padding:26px;border:1px solid var(--border)}
+.calc-in label{font-size:16px}
+.calc-staff{display:flex;align-items:center;gap:14px;margin-top:10px}
+.calc-staff input[type=range]{flex:1;accent-color:var(--orange)}
+.calc-staff input[type=number]{width:96px;font-size:20px;font-weight:800;text-align:center}
+.calc-out{background:var(--navy);color:#fff;border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:8px}
+.calc-total{font-size:clamp(36px,4.4vw,52px);font-weight:800;letter-spacing:-.03em;line-height:1.05}
+.calc-out .muted{color:var(--mist)}
+.calc-out .btn{margin-top:auto;align-self:flex-start}
+
+/* ---------- Responsive ---------- */
+.only-mob{display:none}
+@media (max-width:900px){
+  .h-hero-grid,.t-hero-grid{grid-template-columns:1fr;padding-top:48px;padding-bottom:40px;gap:16px}
+  .h-scene{height:500px;transform:scale(.86);transform-origin:top center;margin-bottom:-70px}
+  .t-stack{height:360px;transform:scale(.85);transform-origin:top center}
+  .h-try-grid,.h-nfc-grid,.calc{grid-template-columns:1fr;gap:28px}
+  .uses{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:16px;padding-bottom:10px;margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px}
+  .use{flex:0 0 76%;scroll-snap-align:start}
+  .how,.t-feats{grid-template-columns:1fr}
+  .trust{grid-template-columns:1fr 1fr}
+}
+@media (max-width:700px){
+  .h-qr-frame{display:none}
+  .h-try-btn{display:inline-flex;min-height:52px;font-size:16px}
+  .only-mob{display:block}.only-desk{display:none}
+  .h-try{padding:52px 0}
+}
+@media (max-width:520px){
+  .h-choose{grid-template-columns:1fr}
+  .trust{grid-template-columns:1fr}
+  .h-scene{transform:scale(.76);height:500px;margin-bottom:-120px}
+}

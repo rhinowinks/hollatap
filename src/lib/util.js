@@ -37,7 +37,7 @@ const RESERVED = new Set([
   'admin', 'api', 'login', 'logout', 'verify', 'dashboard', 'cards', 'card', 'pay', 'teams', 'team', 'instant',
   'privacy', 'terms', 'upgrade', 'services', 'go', 't', 'c', 'vendor', 'brand', 'css', 'js', 'static', 'public',
   'signature', 'affiliates', 'affiliate', 'account', 'help', 'pricing', 'join', 'invite', 'webhooks', 'health',
-  'leads', 'hollatap', 'support', 'about', 'contact', 'favicon.ico', 'robots.txt', 'sitemap.xml',
+  'leads', 'hollatap', 'demo', 'for-teams', 'for-business', 'faq', 'nfc', 'support', 'about', 'contact', 'favicon.ico', 'robots.txt', 'sitemap.xml',
 ]);
 
 function clean(s, max = 255) {

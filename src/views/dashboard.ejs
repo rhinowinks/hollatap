@@ -26,6 +26,17 @@
   </div>
   <% } } %>
 
+  <% if (steps.some(s => !s.done)) { %>
+  <section class="checklist card-box" id="getstarted" aria-labelledby="gs-title" style="margin-top:20px">
+    <div class="gs-head"><h2 id="gs-title" style="font-size:20px;margin:0">Get the most from HollaTap</h2><button type="button" class="btn link small" id="gs-hide">Hide</button></div>
+    <p class="small muted" style="margin:4px 0 12px"><span id="gs-count"><%= steps.filter(s => s.done).length %></span> of <%= steps.length %> done</p>
+    <div class="gs-bar"><span id="gs-fill" style="width:<%= Math.round(100 * steps.filter(s => s.done).length / steps.length) %>%"></span></div>
+    <ol class="gs-list">
+      <% steps.forEach(s => { %><li class="<%= s.done ? 'done' : '' %>" data-step="<%= s.key %>" data-server="<%= s.done ? 1 : 0 %>"><a href="<%= s.href %>"><%= s.label %></a></li><% }) %>
+    </ol>
+  </section>
+  <% } %>
+
   <% if (promo) { %>
   <div class="promo" style="margin-top:20px"><div><b><%= promo.title %></b><div class="muted small"><%= promo.body %></div></div><a class="btn primary small" href="/go/<%= promo.id %>" target="_blank" rel="noopener"><%= promo.cta %></a></div>
   <% } %>
@@ -58,9 +69,10 @@
 
   <div class="grid c3" style="margin-top:28px">
     <div class="card-box"><h3>Email signature</h3><p class="small muted">Add your card link to Gmail, Outlook or Zoho.</p><a class="btn small" href="/signature">Make my signature</a></div>
-    <div class="card-box"><h3>Invite friends, get ₦5,000</h3><p class="small muted">You get ₦5,000 credit when a friend buys; they get 10% off.</p><input type="text" readonly value="<%= refLink %>" aria-label="Your invite link" data-copy></div>
+    <div class="card-box" id="invite"><h3>Invite friends, get ₦5,000</h3><p class="small muted">You get ₦5,000 credit when a friend buys; they get 10% off.</p><input type="text" readonly value="<%= refLink %>" aria-label="Your invite link" data-copy></div>
     <div class="card-box"><h3>NFC tap card</h3><p class="small muted">A plastic card people tap with their phone. <%= naira(config.pricing.nfcCard) %>, delivered in Lagos in 2–3 days.</p><a class="btn small" href="/checkout/nfc">Order an NFC card</a></div>
   </div>
 </div></section>
 <script src="/js/ui.js"></script>
+<script src="/js/checklist.js"></script>
 <%- include('partials/footer') %>

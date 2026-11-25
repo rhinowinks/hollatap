@@ -10,7 +10,7 @@ Free digital business cards with QR and NFC. A Rhinowinks LLC product. Node.js (
 - **Public card page** (`/your-name`): save contact (.vcf with logo), call/WhatsApp, "Share my details" lead capture with consent, footer on free cards, verified company and founding-member badges, views/saves counts.
 - **Card modes** (Pro/Teams): scans go to Google reviews, a menu, WhatsApp or a booking page; `?view=card` always shows the card.
 - **QR & share**: PNG and print-ready SVG, WhatsApp share, printing tips. **Email signature** generator.
-- **Payments** (Paystack): Pro (₦25,000; founding ₦20,000 for the first 5,000 buyers until 31 Dec 2026; spots-left counter shown only in Admin), footer removal (₦5,000/card/year), Teams (₦30,000/staff/year; ₦20,000 from 50; NFC cards included from 20), NFC cards (₦10,000) and replacements (₦5,000). Webhook + callback, idempotent.
+- **Payments** (Paystack): Pro (₦25,000; founding ₦20,000 for the first 5,000 buyers until 31 Dec 2026; spots-left counter shown only in Admin), footer removal (₦5,000/card/year), Teams (₦30,000/staff/year; ₦20,000 from 50; NFC cards included from 20), NFC cards (₦15,000) and replacements (₦5,000). Webhook + callback, idempotent.
 - **Referrals**: friends get 10% off their first purchase; normal users earn ₦5,000 credit; affiliates earn 20% (25% until 28 Feb 2027, 30% for 20+ paid referrals a quarter, 10% on NFC), payable after 30 days.
 - **Teams**: company design lock, bulk invites (paste or CSV), claim links, verified badge after payment, remove staff (card switched off), company-email prompt, NFC delivery details.
 - **NFC**: admin generates serial batches (CSV for the factory: serial + URL). Tapping an unclaimed card links it to the user's card.

@@ -76,11 +76,17 @@ async function pngLogo() {
   const ok = (m) => console.log('  ✓', m);
   try {
     // Public pages
-    for (const u of ['/', '/instant', '/upgrade', '/privacy', '/terms', '/affiliates']) {
+    for (const u of ['/', '/instant', '/upgrade', '/privacy', '/terms', '/affiliates', '/for-teams', '/demo']) {
       const r = await new Client().get(u);
       assert.strictEqual(r.status, 200, u);
     }
-    ok('public pages load');
+    {
+      const home = await new Client().get('/');
+      assert(/<svg/.test(home.text) && /The HollaTap tap card/.test(home.text) && /₦15,000/.test(home.text), 'home has demo QR and NFC section');
+      const v = await new Client().get('/demo/contact.vcf');
+      assert(/FN:HollaTap/.test(v.text) && /PHOTO/.test(v.text), 'demo vcf');
+    }
+    ok('public pages load (home, for-teams, live demo card + vcf)');
 
     // Affiliate signs up and joins programme
     const aff = new Client();

@@ -1,54 +1,188 @@
 <%- include('partials/header') %>
-<section class="hero">
-  <div class="wrap grid c2">
-    <div>
-      <span class="badge orange">Free · Made in Lagos</span>
-      <h1 style="margin-top:14px">Your business card, one tap away.</h1>
-      <p class="lead">Make a digital business card with a QR code in two minutes. People scan or tap, and your details save straight to their phone.</p>
-      <div class="btn-row">
-        <a class="btn primary" href="/login">Create my free card</a>
-        <a class="btn" href="/instant">Try Instant Card, nothing stored</a>
+
+<section class="h-hero">
+  <div class="wrap h-hero-grid">
+    <div class="h-hero-copy">
+      <p class="h-kicker">Made in Lagos. Free forever.</p>
+      <h1 class="h-title">Your business card, one tap away.</h1>
+      <p class="h-sub">Tap a HollaTap card on any phone, or let them scan your QR. Your name, number and WhatsApp land straight in their contacts. No app. No typing. No paper that runs out.</p>
+      <div class="h-choose" role="group" aria-label="Who is the card for?">
+        <a class="h-choice primary" href="/login">
+          <b>For me</b>
+          <span>Free card in two minutes</span>
+        </a>
+        <a class="h-choice" href="/for-teams">
+          <b>For my company</b>
+          <span>Staff cards on one dashboard</span>
+        </a>
       </div>
-      <p class="small muted" style="margin-top:14px">No app needed. Works on every phone. Delete your data any time.</p>
+      <p class="h-alt">Just need a card for today? <a href="/instant">Make an Instant Card</a> with no sign-up. Nothing is stored.</p>
+    </div>
+
+    <div class="h-scene" aria-hidden="true">
+      <div class="tap-card">
+        <img src="/brand/nfc-front.svg" alt="">
+      </div>
+      <div class="ripples"><i></i><i></i><i></i></div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="lock-time">9:41</div>
+          <div class="banner"><img src="/brand/hollatap-mark-colour.svg" alt=""><div><b>HollaTap</b><span>Open Adaeze's card</span></div></div>
+          <div class="sheet">
+            <div class="sheet-top">
+              <span class="sheet-logo">AO</span>
+              <b>Adaeze Okafor</b>
+              <span>Head of Partnerships, Lekki Logistics</span>
+            </div>
+            <div class="sheet-row">+234 801 234 5678</div>
+            <div class="sheet-row">adaeze@lekkilogistics.com</div>
+            <div class="sheet-btn"><span class="b1">Save contact</span><span class="b2">✓ Saved to contacts</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="h-try">
+  <div class="wrap h-try-grid">
+    <div class="h-qr-frame">
+      <div class="h-qr"><%- demoQr %></div>
+      <p>Point your camera here</p>
     </div>
     <div>
-      <article class="hc tpl-classic" style="--accent:#0F1B2D;--on:#fff" aria-label="Example card">
-        <div class="hc-top"><div class="hc-logo"><img src="/brand/hollatap-mark-colour.svg" alt=""></div><h2 class="hc-name">Adaeze Okafor</h2><p class="hc-title">Head of Partnerships · Lekki Logistics</p></div>
-        <div class="hc-body">
-          <span class="hc-row"><%- include('partials/icon',{name:'phone'}) %><span>+234 801 234 5678</span></span>
-          <span class="hc-row"><%- include('partials/icon',{name:'mail'}) %><span>adaeze@lekkilogistics.com</span></span>
-          <span class="hc-row"><%- include('partials/icon',{name:'map'}) %><span>Admiralty Way, Lekki Phase I</span></span>
+      <h2>Try it on your own phone.</h2>
+      <p class="h-lead only-desk">Scan this QR with your phone camera. It opens HollaTap's own card. Tap <b>Save contact</b> and you'll see exactly what your customers see when they scan you.</p>
+      <p class="h-lead only-mob">Open HollaTap's own card and tap <b>Save contact</b>. That's exactly what your customers see when they scan or tap you.</p>
+      <a class="btn primary h-try-btn" href="/demo">Open the live card</a>
+    </div>
+  </div>
+</section>
+
+<section class="h-uses">
+  <div class="wrap">
+    <h2>One card. Whatever your business needs.</h2>
+    <p class="h-lead">Choose what happens when someone scans or taps: save your contact, open your menu, book a slot, leave a review or start a WhatsApp chat.</p>
+    <div class="uses" tabindex="0" aria-label="Examples of HollaTap cards">
+      <% [
+        { n: 'Tolu Adebayo', r: 'Estate agent, Lekki', c: '#0F1B2D', a: 'Save contact', d: 'Buyers save Tolu before they leave the viewing.' },
+        { n: "Mama Ronke's Kitchen", r: 'Restaurant, Yaba', c: '#B42318', a: 'Open our menu', d: 'A card on every table opens today\'s menu.' },
+        { n: 'Glow Studio', r: 'Hair and nails, Ikeja', c: '#6D28D9', a: 'Book an appointment', d: 'Clients book the next visit from the mirror.' },
+        { n: 'Chika Phones', r: 'Computer Village', c: '#047857', a: 'Leave a Google review', d: 'Happy customers review you at the counter.' },
+        { n: 'Ade Bakare', r: 'Photographer', c: '#0E7490', a: 'Chat on WhatsApp', d: 'Enquiries go straight to WhatsApp.' },
+        { n: 'Grace Assembly', r: 'Church, Surulere', c: '#1D4ED8', a: 'Join our WhatsApp group', d: 'First-timers join the group in one tap.' },
+      ].forEach(u => { %>
+      <figure class="use" style="--c:<%= u.c %>">
+        <div class="use-card">
+          <div class="use-top"><span class="use-logo"><%= u.n.split(/\s+/).map(w => w[0]).slice(0,2).join('') %></span><b><%= u.n %></b><span><%= u.r %></span></div>
+          <div class="use-btn"><%= u.a %></div>
         </div>
-        <div class="hc-actions"><span class="hc-save" style="background:#FF5A1F;color:#0F1B2D">Save contact</span></div>
-      </article>
+        <figcaption><%= u.d %></figcaption>
+      </figure>
+      <% }) %>
     </div>
   </div>
 </section>
-<section class="section">
+
+<section class="h-nfc">
+  <div class="wrap h-nfc-grid">
+    <img class="h-nfc-img" src="/brand/nfc-mockup.webp" width="1200" height="863" alt="HollaTap NFC tap card, orange front with the HollaTap logo and navy back with name and QR code" loading="lazy">
+    <div>
+      <h2>The HollaTap tap card</h2>
+      <p class="h-lead">Hold it near the back of any phone and your card opens. No app on their side, no pairing, no battery.</p>
+      <div class="h-price">
+        <span class="h-price-now"><%= naira(config.pricing.nfcCard) %></span>
+        <span class="h-price-vs">Others in Nigeria charge ₦25,000 to ₦35,000.</span>
+      </div>
+      <ul class="ticks">
+        <li>Works on iPhone and Android</li>
+        <li>Linked to your HollaTap page, so changing your number never means reprinting</li>
+        <li>Delivered in Lagos in 2 to 3 working days</li>
+        <li>Lost it? A replacement is <%= naira(config.pricing.nfcReplacement) %>, and the old one is switched off</li>
+      </ul>
+      <div class="btn-row">
+        <a class="btn primary" href="/checkout/nfc">Order my tap card</a>
+        <a class="btn" href="/for-teams">Free for teams of 20 or more</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="h-vs">
   <div class="wrap">
-    <h2>How it works</h2>
-    <div class="grid c3" style="margin-top:20px">
-      <div class="card-box"><h3>1. Add your details</h3><p class="muted">Name, company, phone, email, address and logo. Or upload your current card as a PDF and we fill it in.</p></div>
-      <div class="card-box"><h3>2. Share your QR or link</h3><p class="muted">Print the QR, put it in your email signature, or tap an NFC card on any phone.</p></div>
-      <div class="card-box"><h3>3. They save you in one tap</h3><p class="muted">Your contact lands in their phone. They can send you their details back, too.</p></div>
+    <h2>Paper cards run out. HollaTap doesn't.</h2>
+    <div class="table-wrap">
+      <table class="vs">
+        <thead><tr><th scope="col"><span class="sr-only">Feature</span></th><th scope="col">Paper card</th><th scope="col">HollaTap</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Cost</th><td>New box every time you run out</td><td>Free, forever</td></tr>
+          <tr><th scope="row">Changed your number?</th><td>Reprint the lot</td><td>Edit once, every card updates</td></tr>
+          <tr><th scope="row">Getting into their phone</th><td>They type it in, if they ever do</td><td>One tap and you're saved</td></tr>
+          <tr><th scope="row">WhatsApp</th><td>They copy the number</td><td>A button that opens the chat</td></tr>
+          <tr><th scope="row">Their details back to you</th><td>Only if they hand you a card</td><td>They share theirs in one form</td></tr>
+          <tr><th scope="row">Knowing it worked</th><td>No idea</td><td>See views and saves</td></tr>
+          <tr><th scope="row">App needed</th><td>No</td><td>No</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </section>
-<section class="section sand">
+
+<section class="h-how">
   <div class="wrap">
-    <h2>Simple pricing</h2>
-    <p class="muted">Annual plans. Cancel any time; your free card stays.</p>
-    <div class="grid c3" style="margin-top:20px">
-      <div class="plan-card"><h3>Free</h3><div class="price">₦0</div><ul><li>2 cards, QR and link</li><li>WhatsApp button, 5 links</li><li>10 shared contacts a month</li><li>"Made free with HollaTap" footer</li></ul><a class="btn" href="/login">Start free</a></div>
-      <div class="plan-card featured"><span class="badge orange"><% if (founding.open) { %>Founding price ends <%= founding.endsLabel %><% } else { %>Most popular<% } %></span><h3>Pro</h3><div class="price"><% if (founding.open) { %><s>₦25,000</s>₦20,000<% } else { %>₦25,000<% } %><span class="small muted">/year</span></div><ul><li>Up to 5 cards, no footer</li><li>Scan statistics and unlimited leads</li><li>Card modes: reviews, menu, bookings</li><li>Your logo inside the QR code</li></ul><a class="btn primary" href="/checkout/pro">Get Pro</a></div>
-      <div class="plan-card"><h3>Teams</h3><div class="price">₦30,000<span class="small muted">/staff/year</span></div><ul><li>Company dashboard and locked design</li><li>Verified company badge</li><li>Switch off cards when staff leave</li><li><b>NFC card included</b> for 20+ staff</li></ul><a class="btn" href="/teams">Set up my team</a></div>
+    <h2>Ready in two minutes</h2>
+    <ol class="how">
+      <li><b>Add your details</b><span>Name, company, phone, email, address and logo. Or upload your current card as a PDF and we fill it in for you.</span></li>
+      <li><b>Share your QR or link</b><span>Print the QR, add it to your email signature, or tap a HollaTap card on any phone.</span></li>
+      <li><b>They save you in one tap</b><span>Your contact lands in their phone, and they can send their details back to you.</span></li>
+    </ol>
+    <a class="btn primary" href="/login">Make my free card</a>
+  </div>
+</section>
+
+<section class="h-pricing" id="pricing">
+  <div class="wrap">
+    <h2>Simple pricing in naira</h2>
+    <p class="h-lead">Pay once a year. Cancel any time and your free card stays.</p>
+    <div class="grid c3">
+      <div class="plan-card"><h3>Free</h3><div class="price">₦0</div><ul><li>2 cards with QR and link</li><li>WhatsApp button and 5 links</li><li>10 shared contacts a month</li><li>A small "Made free with HollaTap" line under your card</li></ul><a class="btn" href="/login">Start free</a></div>
+      <div class="plan-card featured"><span class="badge orange"><% if (founding.open) { %>Founding price ends <%= founding.endsLabel %><% } else { %>Most popular<% } %></span><h3>Pro</h3><div class="price"><% if (founding.open) { %><s>₦25,000</s>₦20,000<% } else { %>₦25,000<% } %><span class="small muted">/year</span></div><p class="small muted" style="margin:0">About <%= naira(Math.round((founding.open ? 20000 : 25000) / 12)) %> a month</p><ul><li>Up to 5 cards, no HollaTap line</li><li>See who viewed and saved you</li><li>Unlimited shared contacts</li><li>Send scans to your menu, bookings or reviews</li><li>Your logo inside the QR code</li></ul><a class="btn primary" href="/checkout/pro">Get Pro</a></div>
+      <div class="plan-card"><h3>Teams</h3><div class="price">₦30,000<span class="small muted">/staff/year</span></div><p class="small muted" style="margin:0">₦20,000 per staff from 50 staff</p><ul><li>One dashboard for every staff card</li><li>Locked company design</li><li>Verified company badge</li><li>Switch off cards when staff leave</li><li>Tap cards included for 20+ staff</li></ul><a class="btn" href="/for-teams">See Teams</a></div>
     </div>
+    <p class="small muted" style="margin-top:14px">Every new account gets 14 days of Pro free. No card needed.</p>
   </div>
 </section>
-<section class="section navy">
-  <div class="wrap grid c2">
-    <div><h2>Your data, your call</h2><p class="muted">Instant Card builds your card on your phone and stores nothing with us. With an account, you can delete any card or your whole account in one click, permanently.</p></div>
-    <div><h2>Earn up to 30%</h2><p class="muted">Become a HollaTap affiliate and earn cash on every paid plan you refer. Everyone else gets ₦5,000 credit per paying friend.</p><a class="btn primary" href="/affiliates">See how</a></div>
+
+<section class="h-trust">
+  <div class="wrap trust">
+    <div><b>Pay your way</b><span>Card, bank transfer or USSD, through Paystack.</span></div>
+    <div><b>30-day refund</b><span>Not happy with a paid plan? Ask within 30 days.</span></div>
+    <div><b>Your data, your call</b><span>Delete a card or your whole account in one click, under Nigeria's data protection law.</span></div>
+    <div><b>Made in Lagos</b><span>A Rhinowinks product, with WhatsApp support.</span></div>
   </div>
 </section>
+
+<section class="h-faq" id="faq">
+  <div class="narrow">
+    <h2>Questions people ask</h2>
+    <details><summary>Do the people I meet need an app?</summary><p>No. Your card opens in their phone's browser, from a QR scan or a tap. Saving you takes one tap on iPhone and Android.</p></details>
+    <details><summary>Is it really free?</summary><p>Yes. The free plan gives you 2 cards with QR, link, WhatsApp button and 5 links, for as long as you want. You only pay if you want more cards, no HollaTap line, statistics or a tap card.</p></details>
+    <details><summary>How does the tap card work?</summary><p>It has a small chip inside. When someone holds it near the back of their phone, the phone opens your HollaTap page. Most phones from the last five years can read it. The QR on the back works for every other phone.</p></details>
+    <details><summary>What happens after my 14-day Pro trial?</summary><p>Your account goes back to the free plan on its own. Nothing is charged, and your cards keep working.</p></details>
+    <details><summary>Can I change my details after sharing my card?</summary><p>Yes. Edit your card and the same QR, link and tap card show the new details straight away.</p></details>
+    <details><summary>What is an Instant Card?</summary><p>A one-off card made on your phone with no sign-up. We store nothing. You download the QR and contact file and you're done. Make an account if you want a card you can update later.</p></details>
+    <details><summary>Can my company manage everyone's cards?</summary><p>Yes, with Teams. You set the design once, invite staff from a spreadsheet, and switch cards off when people leave. <a href="/for-teams">See Teams</a>.</p></details>
+    <details><summary>Can I earn by referring people?</summary><p>Yes. You get ₦5,000 credit for every friend who pays, and they get 10% off. Affiliates earn cash: up to 30% of first-year payments. <a href="/affiliates">How it works</a>.</p></details>
+  </div>
+</section>
+
+<section class="h-end">
+  <div class="wrap h-end-inner">
+    <h2>Just holla.</h2>
+    <p>Your free card is two minutes away.</p>
+    <a class="btn dark" href="/login">Make my free card</a>
+  </div>
+</section>
+
 <%- include('partials/footer') %>

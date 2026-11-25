@@ -1,0 +1,93 @@
+<%- include('partials/header') %>
+<% const P = config.pricing; const wa = config.whatsappNumber ? 'https://wa.me/' + config.whatsappNumber + '?text=' + encodeURIComponent('Hello HollaTap, I want staff cards for my company.') : '/upgrade#enquiry'; %>
+
+<section class="h-hero t-hero">
+  <div class="wrap h-hero-grid t-hero-grid">
+    <div class="h-hero-copy">
+      <p class="h-kicker">HollaTap for companies</p>
+      <h1 class="h-title">Every staff card on brand, in one dashboard.</h1>
+      <p class="h-sub">Set your company design once. Invite staff from a spreadsheet. Everyone gets a card with your logo and a verified badge, and when someone leaves, you switch their card off.</p>
+      <div class="t-cta">
+        <a class="btn primary" href="/teams">Set up my team</a>
+        <a class="btn ghost-light" href="<%= wa %>" target="_blank" rel="noopener">Get a quote on WhatsApp</a>
+      </div>
+      <p class="h-alt">From <%= naira(P.teamSeat50) %> per staff a year. Tap cards included for teams of <%= P.teamCardIncludedFrom %> or more.</p>
+    </div>
+    <div class="t-stack" aria-hidden="true">
+      <% [['Amaka Eze','Sales Manager'],['Bayo Martins','Head of Operations'],['Halima Bello','Customer Success']].forEach(p => { %>
+      <div class="tc"><div class="use-top"><span class="use-logo" style="--c:#0F766E">LL</span><b><%= p[0] %></b><span><%= p[1] %>, Lekki Logistics</span><span class="t-verified">✓ Verified, Lekki Logistics</span></div><div class="use-btn">Save contact</div></div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="h-how">
+  <div class="wrap">
+    <h2>What your company gets</h2>
+    <div class="t-feats">
+      <div><b>One locked design</b><span>Your logo, colours and card style on every staff card. Staff fill in their own details but can't change the brand.</span></div>
+      <div><b>Verified company badge</b><span>Customers see "Verified, your company" on every card, so they know it's really your staff.</span></div>
+      <div><b>Invite from a spreadsheet</b><span>Paste emails or upload a CSV. Staff get an email and set up their card in two minutes.</span></div>
+      <div><b>Switch off leavers</b><span>Remove someone and their card stops working at once. Their QR and tap card can't be used to pose as your company.</span></div>
+      <div><b>Every contact they collect</b><span>Prospects share their details from each staff card. Staff can save them to their phone or export them.</span></div>
+      <div><b>Tap cards for everyone</b><span>Teams of <%= P.teamCardIncludedFrom %> or more get a HollaTap tap card per staff, included. Smaller teams add them for <%= naira(P.nfcCard) %> each.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="h-pricing" id="calculator">
+  <div class="wrap">
+    <h2>What it costs your team</h2>
+    <p class="h-lead">Pay once a year per staff member. Minimum <%= P.teamMinSeats %> staff.</p>
+    <div class="calc" data-seat="<%= P.teamSeat %>" data-seat50="<%= P.teamSeat50 %>" data-min="<%= P.teamMinSeats %>" data-cardfrom="<%= P.teamCardIncludedFrom %>" data-nfc="<%= P.nfcCard %>">
+      <div class="calc-in">
+        <label for="staff">How many staff need cards?</label>
+        <div class="calc-staff">
+          <input type="range" id="staff-range" min="<%= P.teamMinSeats %>" max="200" value="25" aria-label="Number of staff">
+          <input type="number" id="staff" min="<%= P.teamMinSeats %>" max="5000" value="25">
+        </div>
+        <p class="small muted" style="margin:16px 0 0">More than 200 staff, or want cards printed with your own design? <a href="<%= wa %>" target="_blank" rel="noopener">Ask us for a quote</a>.</p>
+      </div>
+      <div class="calc-out" aria-live="polite">
+        <span class="muted" id="calc-rate"></span>
+        <span class="calc-total" id="calc-total"></span>
+        <span id="calc-cards"></span>
+        <a class="btn primary" href="/teams">Set up my team</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="h-how">
+  <div class="wrap">
+    <h2>Live in an afternoon</h2>
+    <ol class="how" style="grid-template-columns:repeat(4,1fr)">
+      <li><b>Create your team</b><span>Add your company name, logo and colours.</span></li>
+      <li><b>Pay for your seats</b><span>Card, transfer or USSD through Paystack. You get a receipt by email.</span></li>
+      <li><b>Invite your staff</b><span>Paste emails or upload a spreadsheet.</span></li>
+      <li><b>Hand out tap cards</b><span>Delivered in Lagos in 2 to 3 working days. Staff tap once to link theirs.</span></li>
+    </ol>
+  </div>
+</section>
+
+<section class="h-faq">
+  <div class="narrow">
+    <h2>Questions companies ask</h2>
+    <details><summary>Who owns the contacts staff collect?</summary><p>Each staff member sees the contacts shared with their card. When you remove someone from the team, their card is switched off.</p></details>
+    <details><summary>Can staff use their personal email?</summary><p>They can, but HollaTap reminds them to use their company email so the verified badge makes sense to customers.</p></details>
+    <details><summary>What if someone loses their tap card?</summary><p>Order a replacement for <%= naira(P.nfcReplacement) %>. The lost card is switched off when the new one is linked.</p></details>
+    <details><summary>Do you handle data protection?</summary><p>Yes. HollaTap follows the Nigeria Data Protection Act 2023, and we sign a data processing agreement with Teams customers on request.</p></details>
+    <details><summary>Can we try it first?</summary><p>Yes. Every account gets 14 days of Pro free, so you can make your own card and see it before you invite anyone.</p></details>
+  </div>
+</section>
+
+<section class="h-end">
+  <div class="wrap h-end-inner">
+    <h2>Give your team a card worth tapping.</h2>
+    <p>Set up takes minutes. We're on WhatsApp if you want help.</p>
+    <div class="btn-row"><a class="btn dark" href="/teams">Set up my team</a><a class="btn" href="<%= wa %>" target="_blank" rel="noopener" style="background:transparent">Chat on WhatsApp</a></div>
+  </div>
+</section>
+
+<script src="/js/teams-calc.js"></script>
+<%- include('partials/footer') %>

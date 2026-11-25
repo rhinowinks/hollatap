@@ -11,13 +11,61 @@ const { onColour } = require('../lib/images');
 const { clean, cleanEmail, cleanPhone, waNumber, isFuture } = require('../lib/util');
 const { foundingAvailable } = require('../lib/billing');
 
+const QRCode = require('qrcode');
 const router = express.Router();
 const leadLimiter = rateLimit({ windowMs: 60 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false });
 const enquiryLimiter = rateLimit({ windowMs: 60 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false });
 
+// The address people can actually reach right now (hollatap.com once DNS is live, onrender.com before).
+function siteUrl(req) {
+  const host = req.get('host') || '';
+  if (/^(localhost|127\.0\.0\.1)(:\d+)?$/.test(host)) return `${req.protocol}://${host}`;
+  return `https://${host}`;
+}
+const qrCache = new Map();
+async function qrSvg(url) {
+  if (!qrCache.has(url)) {
+    qrCache.set(url, await QRCode.toString(url, { type: 'svg', margin: 0, errorCorrectionLevel: 'M', color: { dark: '#0F1B2D', light: '#FFFFFF' } }));
+  }
+  return qrCache.get(url);
+}
+
 router.get('/', async (req, res) => {
   const founding = await foundingAvailable();
-  res.render('home', { title: 'HollaTap: your business card, one tap away', founding });
+  res.render('home', {
+    title: 'HollaTap: your business card, one tap away',
+    founding, marketing: true, demoQr: await qrSvg(`${siteUrl(req)}/demo`),
+  });
+});
+
+router.get('/for-teams', async (req, res) => {
+  res.render('for-teams', {
+    title: 'HollaTap for companies: staff business cards on one dashboard',
+    description: 'Digital and NFC business cards for your whole team. One dashboard, locked company design, verified badge, cards switched off when staff leave. From ₦20,000 per staff a year.',
+    marketing: true,
+  });
+});
+
+// Live demo: HollaTap's own card. Saving it saves HollaTap's contact.
+const DEMO = {
+  id: 0, slug: 'demo', template: 'classic', accent: '#0F1B2D', logo: true,
+  full_name: 'HollaTap', job_title: 'Your business card, one tap away', company: 'Rhinowinks',
+  bio: 'This is a live HollaTap card. Tap Save contact to see what your customers will see when they scan your QR or tap your NFC card.',
+  phone: '+234 904 736 3235', whatsapp: '+234 904 736 3235', email: 'global@hollatap.com', website: 'https://hollatap.com',
+};
+router.get('/demo/logo', (req, res) => res.sendFile(require('path').join(__dirname, '..', '..', 'public', 'brand', 'app-icon-180.png')));
+router.get('/demo/contact.vcf', async (req, res) => {
+  const logoBase64 = (await sharp(require('path').join(__dirname, '..', '..', 'public', 'brand', 'app-icon-180.png')).flatten({ background: '#ffffff' }).jpeg({ quality: 85 }).toBuffer()).toString('base64');
+  res.setHeader('Content-Disposition', 'attachment; filename="hollatap.vcf"');
+  res.type('text/vcard').send(buildVCard({ ...DEMO, full_name: 'HollaTap', company: 'HollaTap' }, { url: `${siteUrl(req)}/demo`, logoBase64 }));
+});
+router.get('/demo', (req, res) => {
+  res.render('card-public', {
+    title: 'HollaTap live demo card', card: DEMO,
+    links: [{ label: 'Make my free card', url: '/login' }, { label: 'For companies', url: '/for-teams' }],
+    footer: true, verified: false, teamName: null, founding: false, onAccent: '#FFFFFF',
+    wa: waNumber(DEMO.whatsapp), url: `${siteUrl(req)}/demo`, leadsOpen: false, leadSent: false, isOwner: false, demo: true,
+  });
 });
 
 router.get('/instant', (req, res) => {
