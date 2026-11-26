@@ -1,0 +1,81 @@
+<%- include('_top') %><%- include('_head') %>
+<% if (!smsEnabled) { %><div class="flash warn">SMS is in test mode: add TERMII_API_KEY and TERMII_SENDER_ID on Render to send real SMS. Until then, SMS are recorded but not sent.</div><% } %>
+<div class="side">
+  <div>
+    <div class="panel">
+      <h2>1. Choose who gets it</h2>
+      <form method="get" action="/admin/messages" class="pform row">
+        <div class="pf"><label for="m-st">Stage</label><select id="m-st" name="stage"><option value="">Any</option><% C.CONTACT_STAGES.forEach(([k, l]) => { %><option value="<%= k %>" <%= seg.stage === k ? 'selected' : '' %>><%= l %></option><% }) %></select></div>
+        <div class="pf"><label for="m-pl">Plan</label><select id="m-pl" name="plan"><option value="">Any</option><% [['paid','Paying'],['trial','On trial'],['free','Free'],['founding','Founding member'],['affiliate','Affiliate']].forEach(([k,l]) => { %><option value="<%= k %>" <%= seg.plan === k ? 'selected' : '' %>><%= l %></option><% }) %></select></div>
+        <div class="pf"><label for="m-in">Industry</label><select id="m-in" name="industry"><option value="">Any</option><% industries.forEach(i => { %><option <%= seg.industry === i ? 'selected' : '' %>><%= i %></option><% }) %></select></div>
+        <div class="pf"><label for="m-so">Source</label><select id="m-so" name="source"><option value="">Any</option><% C.SOURCES.forEach(([k, l]) => { %><option value="<%= k %>" <%= seg.source === k ? 'selected' : '' %>><%= l %></option><% }) %></select></div>
+        <div class="pf"><label for="m-tg">Tag</label><input id="m-tg" name="tag" value="<%= seg.tag || '' %>"></div>
+        <div class="pf"><label for="m-ci">City</label><input id="m-ci" name="city" value="<%= seg.city || '' %>"></div>
+        <div><button class="pbtn" type="submit">Count people</button></div>
+      </form>
+      <% if (audience !== null) { %><p style="margin:14px 0 0"><b><%= audience.toLocaleString() %></b> people in this list. <b><%= reach.sms %></b> can get SMS and <b><%= reach.email %></b> can get email (they agreed and have a number or address).</p><% } else { %><p class="muted small" style="margin:14px 0 0">Pick filters above, or tick "everyone" below to message everyone who agreed.</p><% } %>
+    </div>
+
+    <% if (perms.includes('bulk')) { %>
+    <div class="panel">
+      <h2>2. Write and send to the list</h2>
+      <form method="post" action="/admin/campaigns" class="pform" data-confirm="Send this message to everyone in the list now?">
+        <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="segment" value="<%= JSON.stringify(seg) %>">
+        <div class="pform row">
+          <div class="pf"><label for="c-name">Name for this send</label><input id="c-name" name="name" placeholder="December offer to estate agents"></div>
+          <div class="pf"><label for="c-ch">Send by</label><select id="c-ch" name="channel" data-channel-switch><option value="sms">SMS</option><option value="email">Email</option><option value="both">SMS and email</option></select></div>
+          <div class="pf"><label for="c-tpl">Template</label><select id="c-tpl" data-template="c-body" data-subject="c-subj"><option value="">Write my own</option><% templates.forEach(t => { %><option value="<%= t.id %>" data-body="<%= t.body %>" data-subject="<%= t.subject || '' %>"><%= t.name %></option><% }) %></select></div>
+        </div>
+        <div class="pf" data-for="email both"><label for="c-subj">Email subject</label><input id="c-subj" name="subject" maxlength="200"></div>
+        <div class="pf"><label for="c-body">Message</label><textarea id="c-body" name="body" required data-sms-count="c-count" placeholder="Hi {first_name}, …"></textarea><span class="hint" id="c-count"></span><span class="hint">Only people who agreed to messages get it. Emails include an unsubscribe link.</span></div>
+        <% if (!Object.keys(seg).length) { %><label class="pcheck"><input type="checkbox" name="everyone" value="yes"> Send to everyone who agreed to messages</label><% } %>
+        <div><button class="pbtn primary" type="submit">Send now</button></div>
+      </form>
+    </div>
+    <% } else { %><div class="panel"><p class="muted">Sending to a whole list is for owners. You can message one person from their contact page.</p></div><% } %>
+
+    <div class="panel">
+      <h2>Recent messages</h2>
+      <div class="tw"><table class="pt"><thead><tr><th>When</th><th>To</th><th>Channel</th><th>Type</th><th>Status</th><th>Message</th></tr></thead><tbody>
+        <% if (!history.length) { %><tr><td colspan="6" class="empty">No messages yet.</td></tr><% } %>
+        <% history.forEach(m => { %><tr><td class="small"><%= new Date(m.created_at).toLocaleString('en-GB', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) %></td>
+        <td><% if (m.contact_id) { %><a href="/admin/contacts/<%= m.contact_id %>"><%= m.contact_name || m.to %></a><% } else { %><%= m.to %><% } %></td>
+        <td><%= m.channel.toUpperCase() %></td><td class="small"><%= m.kind %></td><td><span class="badge b-<%= m.status %>"><%= m.status %></span><% if (m.error) { %><br><span class="small" style="color:var(--bad)"><%= m.error %></span><% } %></td>
+        <td class="small"><%= (m.subject ? m.subject + ': ' : '') + (m.body || '').slice(0, 90) %></td></tr><% }) %>
+      </tbody></table></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel"><h2>Sent to lists</h2>
+      <% if (!campaigns.length) { %><p class="empty">None yet.</p><% } %>
+      <% campaigns.forEach(x => { %><p class="small" style="margin:0 0 10px"><b><%= x.name %></b><br><%= x.channel.toUpperCase() %> · <%= x.sent_count %> sent<%= x.failed_count ? ', ' + x.failed_count + ' failed' : '' %> · <%= x.sent_at ? new Date(x.sent_at).toLocaleDateString('en-GB') : x.status %></p><% }) %>
+    </div>
+    <div class="panel" id="templates"><h2>Templates</h2>
+      <% templates.forEach(t => { %>
+        <details style="margin-bottom:10px"><summary style="cursor:pointer;font-weight:700"><%= t.name %> <span class="badge"><%= t.channel %></span></summary>
+          <form method="post" action="/admin/templates" class="pform" style="margin-top:10px">
+            <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="id" value="<%= t.id %>">
+            <div class="pf"><label>Name</label><input name="name" value="<%= t.name %>"></div>
+            <div class="pf"><label>Channel</label><select name="channel"><% ['sms','email','whatsapp'].forEach(ch => { %><option <%= t.channel === ch ? 'selected' : '' %>><%= ch %></option><% }) %></select></div>
+            <div class="pf"><label>Subject (email)</label><input name="subject" value="<%= t.subject || '' %>"></div>
+            <div class="pf"><label>Message</label><textarea name="body"><%= t.body %></textarea></div>
+            <div style="display:flex;gap:8px"><button class="pbtn sm" type="submit">Save</button></div>
+          </form>
+          <% if (perms.includes('bulk')) { %><form method="post" action="/admin/templates/<%= t.id %>/delete" data-confirm="Delete this template?"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="pbtn sm danger ghost" type="submit">Delete</button></form><% } %>
+        </details>
+      <% }) %>
+      <details><summary style="cursor:pointer;font-weight:700;color:var(--link)">New template</summary>
+        <form method="post" action="/admin/templates" class="pform" style="margin-top:10px">
+          <input type="hidden" name="_csrf" value="<%= csrf %>">
+          <div class="pf"><label for="nt-n">Name</label><input id="nt-n" name="name"></div>
+          <div class="pf"><label for="nt-c">Channel</label><select id="nt-c" name="channel"><option>sms</option><option>email</option><option>whatsapp</option></select></div>
+          <div class="pf"><label for="nt-s">Subject (email)</label><input id="nt-s" name="subject"></div>
+          <div class="pf"><label for="nt-b">Message</label><textarea id="nt-b" name="body" placeholder="Hi {first_name}, …"></textarea></div>
+          <button class="pbtn sm primary" type="submit">Save template</button>
+        </form>
+      </details>
+    </div>
+  </div>
+</div>
+<%- include('_bottom') %>

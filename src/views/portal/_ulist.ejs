@@ -1,0 +1,4 @@
+<div class="tw"><table class="pt"><thead><tr><th>Customer</th><th>Plan</th><th><%= dateLabel %></th><th>Phone</th><th></th></tr></thead><tbody>
+<% if (!list.length) { %><tr><td colspan="5" class="empty">Nobody here right now.</td></tr><% } %>
+<% list.forEach(u => { %><tr><td><%= u.name || u.email %><br><span class="small muted"><%= u.email %></span></td><td class="small"><%= u.plan %><%= u.founding_member ? ' · founding' : '' %></td><td class="small"><%= new Date(u[dateField]).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %></td><td class="small"><%= u.contact && u.contact.phone || '' %></td><td><% if (u.contact) { %><a class="pbtn sm" href="/admin/contacts/<%= u.contact.id %>#message">Contact</a><% } %></td></tr><% }) %>
+</tbody></table></div>

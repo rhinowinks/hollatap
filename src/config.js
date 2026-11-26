@@ -25,6 +25,7 @@ const config = {
     secret: env('PAYSTACK_SECRET_KEY', ''),
     public: env('PAYSTACK_PUBLIC_KEY', ''),
   },
+  termii: { apiKey: env('TERMII_API_KEY', ''), senderId: env('TERMII_SENDER_ID', 'HollaTap'), baseUrl: env('TERMII_BASE_URL', 'https://api.ng.termii.com').replace(/\/$/, '') },
   google: { clientId: env('GOOGLE_CLIENT_ID', ''), clientSecret: env('GOOGLE_CLIENT_SECRET', '') },
   turnstile: { site: env('TURNSTILE_SITE_KEY', ''), secret: env('TURNSTILE_SECRET_KEY', '') },
 };
@@ -65,5 +66,6 @@ config.limits = {
   team: { cards: 5, links: 50, leadsPerMonth: 100000 },
 };
 
+config.smsEnabled = !!config.termii.apiKey;
 config.googleEnabled = !!(config.google.clientId && config.google.clientSecret);
 module.exports = config;

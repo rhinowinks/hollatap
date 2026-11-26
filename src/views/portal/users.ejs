@@ -1,0 +1,6 @@
+<%- include('_top') %><%- include('_head') %>
+<form method="get" class="panel" style="display:flex;gap:10px"><input class="pinput" name="q" value="<%= q || '' %>" placeholder="Search by email" aria-label="Search by email"><button class="pbtn" type="submit">Search</button></form>
+<div class="tw"><table class="pt"><thead><tr><th>Email</th><th>Plan</th><th>Industry</th><th>Signed up</th><th>Last seen</th><th></th></tr></thead><tbody>
+<% users.forEach(u => { %><tr><td><%= u.email %><%= u.is_demo ? ' (demo)' : '' %><%= u.staff_role ? ' · staff: ' + u.staff_role : '' %></td><td class="small"><%= u.plan %><%= u.founding_member ? ' · founding' : '' %><%= u.plan_expires_at ? ' · to ' + new Date(u.plan_expires_at).toLocaleDateString('en-GB') : '' %></td><td class="small"><%= u.industry || '' %></td><td class="small"><%= new Date(u.created_at).toLocaleDateString('en-GB') %></td><td class="small"><%= u.last_seen_at ? new Date(u.last_seen_at).toLocaleDateString('en-GB') : '' %></td><td><% if (u.contact_id) { %><a class="pbtn sm" href="/admin/contacts/<%= u.contact_id %>">Open</a><% } %></td></tr><% }) %>
+</tbody></table></div>
+<%- include('_bottom') %>

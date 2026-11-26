@@ -1,0 +1,10 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title><%= title %></title>
+<style>body{font-family:Arial,sans-serif;margin:30px;color:#0F1B2D}.box{border:2px solid #0F1B2D;border-radius:12px;padding:24px;max-width:560px}h1{font-size:22px;margin:0 0 4px}.big{font-size:20px;font-weight:bold;margin:16px 0 6px}p{margin:4px 0}.muted{color:#5B6573}@media print{button{display:none}}</style></head>
+<body><div class="box">
+<img src="/brand/hollatap-logo-horizontal-colour.svg" alt="HollaTap" height="40">
+<h1>Delivery note #<%= o.id %></h1><p class="muted"><%= new Date().toLocaleDateString('en-GB') %></p>
+<p class="big"><%= o.ship_name || '' %></p><p><%= o.ship_phone || '' %></p><p style="white-space:pre-wrap"><%= o.ship_address || '' %></p>
+<p class="big"><%= o.quantity %> × HollaTap NFC card<%= o.quantity > 1 ? 's' : '' %></p>
+<p class="muted">Questions: WhatsApp <%= config.whatsappNumber ? '+' + config.whatsappNumber : '' %> · <%= config.supportEmail %></p>
+</div><p><button type="button" id="pr">Print</button></p>
+<script src="/js/print.js"></script></body></html>

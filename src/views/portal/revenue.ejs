@@ -1,0 +1,27 @@
+<%- include('_top') %><%- include('_head') %>
+<div class="tiles">
+  <div class="tile" style="--c:var(--good)"><div class="k">This month</div><div class="v"><%= nairaShort(thisMonth) %></div></div>
+  <div class="tile" style="--c:var(--accent)"><div class="k">This year</div><div class="v"><%= nairaShort(thisYear) %></div></div>
+  <div class="tile" style="--c:var(--violet)"><div class="k">All time</div><div class="v"><%= nairaShort(all) %></div></div>
+  <div class="tile" style="--c:var(--warn)"><div class="k">Founding spots left</div><div class="v"><%= founding.left.toLocaleString() %></div><div class="d">of <%= founding.limit.toLocaleString() %> · <%= founding.used.toLocaleString() %> taken · <%= founding.expired ? 'ended' : 'ends ' + founding.endsLabel %></div></div>
+</div>
+<div class="panel"><h2>Money in, last 12 months</h2>
+  <% const max = Math.max(1, ...months.map(m => m.total)); %>
+  <div class="vbars"><% months.forEach(m => { %><div><b><%= m.total ? (m.total >= 1e6 ? '₦' + (m.total / 1e6).toFixed(1) + 'm' : '₦' + Math.round(m.total / 1000) + 'k') : '' %></b><i style="height:<%= Math.round(100 * m.total / max) %>%"></i><span><%= m.label %></span></div><% }) %></div>
+</div>
+<div class="grid2">
+  <div class="panel"><h2>By product</h2>
+    <% const labels = { pro: 'Pro', team: 'Teams', footer: 'Footer removal', nfc: 'NFC cards', nfc_replacement: 'NFC replacements' }; const kmax = Math.max(1, ...Object.values(byKind)); %>
+    <div class="bars"><% Object.entries(byKind).sort((a, b) => b[1] - a[1]).forEach(([k, v]) => { %><div class="bar"><span><%= labels[k] || k %></span><span class="track"><span class="fill" style="width:<%= Math.round(100 * v / kmax) %>%"></span></span><span class="n"><%= naira(v) %></span></div><% }) %></div>
+    <% if (!Object.keys(byKind).length) { %><p class="empty">No payments yet.</p><% } %>
+  </div>
+  <div class="panel"><h2>Deals won (all time)</h2>
+    <% if (!deals.length) { %><p class="empty">No deals won yet.</p><% } %>
+    <div class="bars"><% const dmax = Math.max(1, ...deals.map(x => Number(x.v))); deals.forEach(x => { %><div class="bar" style="--c:var(--good)"><span><%= x.product %></span><span class="track"><span class="fill" style="width:<%= Math.round(100 * Number(x.v) / dmax) %>%"></span></span><span class="n"><%= naira(Number(x.v)) %></span></div><% }) %></div>
+  </div>
+</div>
+<div class="panel"><h2>Expected from open deals</h2>
+  <% if (!forecast.length) { %><p class="empty">Add an expected month to deals to see the forecast.</p><% } %>
+  <div class="bars"><% const fmax = Math.max(1, ...forecast.map(x => Number(x.v))); forecast.forEach(x => { %><div class="bar" style="--c:var(--warn)"><span><%= new Date(x.expected_month + '-01').toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) %></span><span class="track"><span class="fill" style="width:<%= Math.round(100 * Number(x.v) / fmax) %>%"></span></span><span class="n"><%= naira(Number(x.v)) %></span></div><% }) %></div>
+</div>
+<%- include('_bottom') %>

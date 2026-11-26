@@ -85,7 +85,7 @@ app.use((req, res, next) => {
 });
 app.use((req, res, next) => loadUser(req, res, next).catch(next));
 app.use((req, res, next) => {
-  res.locals.isAdmin = isAdmin(req.user);
+  res.locals.isAdmin = !!require('./lib/crm').roleOf(req.user);
   next();
 });
 app.use(csrf);
@@ -113,6 +113,7 @@ app.use((err, req, res, next) => {
 async function start() {
   await migrate();
   await seedPromos();
+  await require('./lib/crm').seedDefaults();
   // Ensure admin emails are flagged as admin
   if (config.adminEmails.length) await db('users').whereIn('email', config.adminEmails).update({ is_admin: true });
   jobs.start();

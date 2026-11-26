@@ -1,0 +1,42 @@
+<%- include('_top') %><%- include('_head') %>
+<% if (!smsEnabled) { %><div class="flash warn">SMS is in test mode until the Termii key is added on Render. Email greetings work now.</div><% } %>
+<div class="side">
+  <div>
+    <% occasions.forEach(o => { %>
+    <div class="panel">
+      <form method="post" action="/admin/occasions" class="pform">
+        <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="id" value="<%= o.id %>">
+        <div class="panel-head" style="margin:0"><h2><%= o.is_birthday ? '🎂 Birthdays' : o.name %> <span class="muted small"><%= o.is_birthday ? 'on each contact\'s birthday' : new Date('2000-' + o.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }) %></span></h2>
+          <label class="pcheck"><input type="checkbox" name="auto" <%= o.auto ? 'checked' : '' %>> Send automatically</label></div>
+        <div class="pform row">
+          <% if (!o.is_birthday) { %><div class="pf"><label>Name</label><input name="name" value="<%= o.name %>"></div><div class="pf"><label>Date (MM-DD)</label><input name="date" value="<%= o.date %>"></div><% } %>
+          <div class="pf"><label>Send by</label><select name="channel" data-channel-switch><% [['sms','SMS'],['email','Email'],['both','SMS and email']].forEach(([k,l]) => { %><option value="<%= k %>" <%= o.channel === k ? 'selected' : '' %>><%= l %></option><% }) %></select></div>
+          <div class="pf"><label>Who gets it</label><select name="audience"><% [['all','Everyone who agreed'],['customers','Customers only'],['leads','Leads only']].forEach(([k,l]) => { %><option value="<%= k %>" <%= o.audience === k ? 'selected' : '' %>><%= l %></option><% }) %></select></div>
+        </div>
+        <div class="pf" data-for="email both"><label>Email subject</label><input name="subject" value="<%= o.subject || '' %>" placeholder="<%= o.is_birthday ? 'Happy birthday from HollaTap' : o.name %>"></div>
+        <div class="pf"><label>Message</label><textarea name="body" data-sms-count="oc-<%= o.id %>"><%= o.body %></textarea><span class="hint" id="oc-<%= o.id %>"></span></div>
+        <div style="display:flex;gap:8px;align-items:center;justify-content:space-between"><button class="pbtn sm primary" type="submit">Save</button><% if (o.last_sent_year) { %><span class="small muted">Last sent <%= o.last_sent_year %></span><% } %></div>
+      </form>
+      <% if (!o.is_birthday && perms.includes('bulk')) { %><form method="post" action="/admin/occasions/<%= o.id %>/delete" data-confirm="Remove <%= o.name %>?" style="margin-top:8px"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="pbtn sm danger ghost" type="submit">Remove this day</button></form><% } %>
+    </div>
+    <% }) %>
+    <div class="panel"><h2>Add a special day</h2>
+      <form method="post" action="/admin/occasions" class="pform">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <div class="pform row"><div class="pf"><label for="o-n">Name</label><input id="o-n" name="name" placeholder="Eid al-Fitr"></div><div class="pf"><label for="o-d">Date (MM-DD)</label><input id="o-d" name="date" placeholder="03-20"></div>
+        <div class="pf"><label for="o-c">Send by</label><select id="o-c" name="channel"><option value="sms">SMS</option><option value="email">Email</option><option value="both">SMS and email</option></select></div></div>
+        <div class="pf"><label for="o-b">Message</label><textarea id="o-b" name="body" placeholder="Eid Mubarak, {first_name}! From all of us at HollaTap."></textarea><span class="hint">Eid and Easter dates change each year: update the date before the day.</span></div>
+        <label class="pcheck"><input type="checkbox" name="auto"> Send automatically</label>
+        <div><button class="pbtn primary" type="submit">Add</button></div>
+      </form>
+    </div>
+  </div>
+  <div>
+    <div class="panel"><h2>Birthdays in the next 30 days</h2>
+      <p class="small muted"><%= withBirthday %> contacts have a birthday saved.</p>
+      <% if (!birthdays.length) { %><p class="empty">None coming up.</p><% } %>
+      <% birthdays.forEach(b => { %><p style="margin:0 0 10px"><a href="/admin/contacts/<%= b.id %>"><%= b.name %></a><br><span class="small muted"><%= new Date('2000-' + b.birthday).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) %> · <%= b.sms_ok && b.phone ? 'SMS ✓' : 'no SMS' %> · <%= b.email_ok && b.email ? 'email ✓' : 'no email' %></span></p><% }) %>
+    </div>
+  </div>
+</div>
+<%- include('_bottom') %>

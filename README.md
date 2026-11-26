@@ -60,3 +60,12 @@ Open http://localhost:3000. Without SMTP settings, sign-in codes print in the te
 - [ ] Scan a printed QR with an iPhone and an Android phone.
 - [ ] Have the privacy notice and terms reviewed (DPCO / data-protection lawyer).
 - [ ] Generate the first NFC batch in Admin → NFC cards and send the CSV to the supplier.
+
+## Team Portal (CRM) — /admin
+Staff-only portal for Rhinowinks to run HollaTap: dashboard, contacts (every sign-up, enquiry and lead), deals pipeline, tasks,
+SMS (Termii) and email to one person or a filtered list, birthday and national-day greetings (automatic, 8am Lagos),
+revenue, renewals and trials, NFC order board, affiliates and payouts, reports, staff roles (owner / sales / support),
+activity log, weekly summary email (Mondays), and demo data (Settings → Load / Clear; every demo row is marked is_demo).
+
+Env for SMS: `TERMII_API_KEY`, `TERMII_SENDER_ID` (approved sender ID, e.g. HollaTap), optional `TERMII_BASE_URL`
+(the base URL shown in your Termii dashboard). Without a key, SMS are recorded as "simulated" and not sent.

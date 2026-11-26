@@ -1,9 +1,0 @@
-<%- include('../partials/header') %>
-<section class="section"><div class="wrap">
-  <h1 style="font-size:32px">Enquiries</h1><%- include('_nav') %>
-  <div class="table-wrap"><table class="data"><thead><tr><th>Date</th><th>Product</th><th>Contact</th><th>Message</th><th>Status</th></tr></thead><tbody>
-  <% enquiries.forEach(e => { %><tr><td><%= new Date(e.created_at).toLocaleDateString('en-GB') %></td><td><%= e.product %></td><td><b><%= e.name %></b><br><a href="mailto:<%= e.email %>"><%= e.email %></a><br><%= e.phone || '' %><br><%= e.company || '' %></td><td><%= e.message || '' %></td>
-  <td><form method="post" action="/admin/enquiries/<%= e.id %>" class="btn-row"><input type="hidden" name="_csrf" value="<%= csrf %>"><select name="status" aria-label="Status"><% ['new','contacted','won','lost'].forEach(s => { %><option <%= e.status===s?'selected':'' %>><%= s %></option><% }) %></select><button class="btn small" type="submit">Save</button></form></td></tr><% }) %>
-  </tbody></table></div>
-</div></section>
-<%- include('../partials/footer') %>

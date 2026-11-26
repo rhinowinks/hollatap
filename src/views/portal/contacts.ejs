@@ -1,0 +1,73 @@
+<%- include('_top') %><%- include('_head') %>
+<div class="panel">
+  <form method="get" action="/admin/contacts" class="pform row">
+    <div class="pf"><label for="q">Search</label><input id="q" name="q" value="<%= seg.q || '' %>" placeholder="Name, email, phone or company"></div>
+    <div class="pf"><label for="st">Stage</label><select id="st" name="stage"><option value="">Any</option><% C.CONTACT_STAGES.forEach(([k, l]) => { %><option value="<%= k %>" <%= seg.stage === k ? 'selected' : '' %>><%= l %></option><% }) %></select></div>
+    <div class="pf"><label for="pl">Plan</label><select id="pl" name="plan"><option value="">Any</option><% [['paid','Paying'],['trial','On trial'],['free','Free'],['founding','Founding member'],['affiliate','Affiliate']].forEach(([k,l]) => { %><option value="<%= k %>" <%= seg.plan === k ? 'selected' : '' %>><%= l %></option><% }) %></select></div>
+    <div class="pf"><label for="so">Source</label><select id="so" name="source"><option value="">Any</option><% C.SOURCES.forEach(([k, l]) => { %><option value="<%= k %>" <%= seg.source === k ? 'selected' : '' %>><%= l %></option><% }) %></select></div>
+    <div class="pf"><label for="in">Industry</label><select id="in" name="industry"><option value="">Any</option><% industries.forEach(i => { %><option <%= seg.industry === i ? 'selected' : '' %>><%= i %></option><% }) %></select></div>
+    <div class="pf"><label for="ow">Owner</label><select id="ow" name="owner"><option value="">Anyone</option><option value="none" <%= seg.owner === 'none' ? 'selected' : '' %>>Not assigned</option><% staff.forEach(s => { %><option value="<%= s.id %>" <%= String(seg.owner) === String(s.id) ? 'selected' : '' %>><%= s.name || s.email %></option><% }) %></select></div>
+    <div class="pf"><label for="tg">Tag</label><select id="tg" name="tag"><option value="">Any</option><% tags.forEach(t => { %><option <%= seg.tag === t ? 'selected' : '' %>><%= t %></option><% }) %></select></div>
+    <div class="pf"><label for="ci">City</label><input id="ci" name="city" value="<%= seg.city || '' %>" placeholder="Lagos"></div>
+    <div class="pf"><label for="si">Added in the last</label><select id="si" name="since"><option value="">Any time</option><% [7, 30, 90].forEach(x => { %><option value="<%= x %>" <%= String(seg.since) === String(x) ? 'selected' : '' %>><%= x %> days</option><% }) %></select></div>
+    <div class="pf"><label for="qu">Not contacted for</label><select id="qu" name="quiet"><option value="">Any</option><% [7, 14, 30, 60].forEach(x => { %><option value="<%= x %>" <%= String(seg.quiet) === String(x) ? 'selected' : '' %>><%= x %>+ days</option><% }) %></select></div>
+    <div style="display:flex;gap:8px"><button class="pbtn primary" type="submit">Filter</button><a class="pbtn ghost" href="/admin/contacts">Clear</a></div>
+  </form>
+</div>
+
+<div class="panel">
+  <form method="post" action="/admin/contacts/bulk" id="bulk">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="panel-head">
+      <h2><%= total.toLocaleString() %> contact<%= total === 1 ? '' : 's' %> <span class="muted small"><%= Object.keys(seg).length ? 'in this list' : '' %></span></h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <% if (perms.includes('messages')) { %><a class="pbtn sm" href="/admin/messages?<%= qs %>">Message this list</a><% } %>
+        <select class="pinput" name="action" aria-label="Action for ticked contacts" style="width:auto;min-height:34px">
+          <option value="owner">Assign to…</option><option value="stage">Set stage…</option><option value="tag">Add tag…</option><% if (role === 'owner') { %><option value="delete">Delete (not account holders)</option><% } %>
+        </select>
+        <select class="pinput" name="owner_id" aria-label="Assign to" style="width:auto;min-height:34px"><option value="">Nobody</option><% staff.forEach(s => { %><option value="<%= s.id %>"><%= s.name || s.email %></option><% }) %></select>
+        <select class="pinput" name="stage" aria-label="Stage" style="width:auto;min-height:34px"><% C.CONTACT_STAGES.forEach(([k, l]) => { %><option value="<%= k %>"><%= l %></option><% }) %></select>
+        <input class="pinput" name="tag" placeholder="Tag" aria-label="Tag" style="width:110px;min-height:34px">
+        <button class="pbtn sm" type="submit" data-confirm="Apply this to the ticked contacts?">Apply to ticked</button>
+      </div>
+    </div>
+    <div class="tw"><table class="pt">
+      <thead><tr><th><input type="checkbox" id="select-all" aria-label="Tick all"></th><th>Name</th><th>Company</th><th>Phone</th><th>Stage</th><th>Plan</th><th>Source</th><th>Owner</th><th>Last contact</th></tr></thead>
+      <tbody>
+      <% if (!rows.length) { %><tr><td colspan="9" class="empty">No contacts match. Change the filters or add a contact.</td></tr><% } %>
+      <% const now = new Date(); rows.forEach(c => {
+        const plan = c.user_id ? ((c.plan === 'pro' || c.plan === 'team') && c.plan_expires_at && new Date(c.plan_expires_at) > now ? (c.plan === 'team' ? 'Teams' : 'Pro') : c.trial_ends_at && new Date(c.trial_ends_at) > now ? 'Trial' : 'Free') : ''; %>
+        <tr>
+          <td><input type="checkbox" name="ids" value="<%= c.id %>" aria-label="Tick <%= c.name %>"></td>
+          <td><a href="/admin/contacts/<%= c.id %>"><%= c.name %></a><% if (c.is_demo) { %> <span class="badge b-demo-data">demo</span><% } %><br><span class="small muted"><%= c.email || '' %></span><% if (c.tags) { %><br><% c.tags.split(',').forEach(t => { %><span class="tag"><%= t %></span><% }) %><% } %></td>
+          <td><%= c.company || '' %><br><span class="small muted"><%= [c.industry, c.city].filter(Boolean).join(' · ') %></span></td>
+          <td class="small"><%= c.phone || '' %></td>
+          <td><span class="badge b-<%= c.stage %>"><%= C.label(C.CONTACT_STAGES, c.stage) %></span></td>
+          <td class="small"><%= plan %></td>
+          <td class="small"><%= C.label(C.SOURCES, c.source) %></td>
+          <td class="small"><%= c.owner_name || (c.owner_email ? c.owner_email.split('@')[0] : '') %></td>
+          <td class="small muted"><%= c.last_contacted_at ? new Date(c.last_contacted_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : 'Never' %></td>
+        </tr>
+      <% }) %>
+      </tbody>
+    </table></div>
+  </form>
+  <% if (total > 50) { %><div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px">
+    <% if (pg > 1) { %><a class="pbtn sm" href="?<%= qs %>&page=<%= pg - 1 %>">Previous</a><% } %>
+    <span class="small muted" style="align-self:center">Page <%= pg %> of <%= Math.ceil(total / 50) %></span>
+    <% if (pg * 50 < total) { %><a class="pbtn sm" href="?<%= qs %>&page=<%= pg + 1 %>">Next</a><% } %>
+  </div><% } %>
+</div>
+
+<details class="panel">
+  <summary style="cursor:pointer;font-weight:800">Import contacts (paste from Excel or your phone)</summary>
+  <form method="post" action="/admin/contacts/import" class="pform" style="margin-top:14px">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="pf"><label for="rows">One person per line: name, phone, email, company, city, tags (separated by ;), birthday (MM-DD)</label>
+      <textarea id="rows" name="rows" placeholder="Tunde Bello, 08031234567, tunde@bello.com, Bello Ltd, Lagos, Hot;Event lead, 04-12"></textarea></div>
+    <div class="pf"><label for="src">Where they came from</label><select id="src" name="source"><% C.SOURCES.forEach(([k, l]) => { %><option value="<%= k %>" <%= k === 'import' ? 'selected' : '' %>><%= l %></option><% }) %></select></div>
+    <label class="pcheck"><input type="checkbox" name="consent"> These people agreed to get SMS and email from HollaTap</label>
+    <div><button class="pbtn primary" type="submit">Import</button></div>
+  </form>
+</details>
+<%- include('_bottom') %>

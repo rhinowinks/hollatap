@@ -1,0 +1,27 @@
+<%- include('_top') %><%- include('_head') %>
+<div class="side">
+  <div class="panel"><h2>Team members</h2>
+    <div class="tw"><table class="pt"><thead><tr><th>Person</th><th>Role</th><th></th></tr></thead><tbody>
+    <% staff.forEach(s => { const main = s.is_admin || config.adminEmails.includes(s.email); %><tr><td><%= s.name || '' %><br><span class="small muted"><%= s.email %></span></td>
+    <td><% if (main) { %><span class="badge b-won">Owner (main)</span><% } else { %>
+      <form method="post" action="/admin/staff/<%= s.id %>" style="display:flex;gap:6px"><input type="hidden" name="_csrf" value="<%= csrf %>"><select name="role" class="pinput" style="min-height:34px;width:auto" aria-label="Role for <%= s.email %>"><% ['owner','sales','support'].forEach(r => { %><option <%= s.staff_role === r ? 'selected' : '' %>><%= r %></option><% }) %></select><button class="pbtn sm" type="submit">Save</button></form><% } %></td>
+    <td><% if (!main && s.id !== user.id) { %><form method="post" action="/admin/staff/<%= s.id %>" data-confirm="Remove <%= s.email %> from the Team Portal?"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="remove" value="1"><button class="pbtn sm ghost danger" type="submit">Remove</button></form><% } %></td></tr><% }) %>
+    </tbody></table></div>
+  </div>
+  <div>
+    <form method="post" action="/admin/staff" class="panel pform">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <h2>Add someone</h2>
+      <div class="pf"><label for="se">Email</label><input id="se" name="email" type="email" required></div>
+      <div class="pf"><label for="sn">Name</label><input id="sn" name="name"></div>
+      <div class="pf"><label for="sr">Role</label><select id="sr" name="role"><option value="sales">Sales</option><option value="support">Support</option><option value="owner">Owner</option></select></div>
+      <div><button class="pbtn primary" type="submit">Give access</button></div>
+    </form>
+    <div class="panel small"><h2>What each role can do</h2>
+      <p><b>Owner:</b> everything, including money, payouts, staff, bulk SMS/email and demo data.</p>
+      <p><b>Sales:</b> contacts, deals, tasks, one-to-one SMS/email, birthdays, enquiries and NFC orders. No money pages or bulk sends.</p>
+      <p><b>Support:</b> contacts, tasks, one-to-one messages and NFC orders.</p>
+    </div>
+  </div>
+</div>
+<%- include('_bottom') %>

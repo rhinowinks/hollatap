@@ -1,0 +1,20 @@
+<%- include('_top') %><%- include('_head') %>
+<div class="seg" style="margin-bottom:20px"><% [7, 30, 90, 365].forEach(x => { %><a class="<%= d === x ? 'on' : '' %>" href="?days=<%= x %>"><%= x === 365 ? '12 months' : x + ' days' %></a><% }) %></div>
+<div class="panel"><h2>Funnel: sign-up to paying</h2>
+  <div class="bars"><% const fmax = Math.max(1, funnel[0][1]); funnel.forEach(([l, n], i) => { %><div class="bar" style="--c:<%= ['var(--blue)','var(--violet)','var(--good)'][i] %>"><span><%= l %></span><span class="track"><span class="fill" style="width:<%= Math.round(100 * n / fmax) %>%"></span></span><span class="n"><%= n %><%= i ? ' (' + Math.round(100 * n / fmax) + '%)' : '' %></span></div><% }) %></div>
+</div>
+<div class="grid3">
+  <% [['Where contacts came from', bySource, 'source'], ['By industry', byIndustry, 'industry'], ['By city', byCity, 'city']].forEach(([t, rows, col]) => { const m = Math.max(1, ...rows.map(r => Number(r.n))); %>
+  <div class="panel"><h2><%= t %></h2><% if (!rows.length) { %><p class="empty">No data yet.</p><% } %>
+    <div class="bars"><% rows.forEach(r => { %><div class="bar" style="grid-template-columns:120px 1fr 40px"><span><%= col === 'source' ? C.label(C.SOURCES, r[col]) : (r[col] || 'Not given') %></span><span class="track"><span class="fill" style="width:<%= Math.round(100 * Number(r.n) / m) %>%"></span></span><span class="n"><%= r.n %></span></div><% }) %></div>
+  </div><% }) %>
+</div>
+<div class="panel"><h2>Team</h2>
+  <div class="tw"><table class="pt"><thead><tr><th>Person</th><th>Activities logged</th><th>Contacts owned</th><th>Deals won</th><th>Value won</th></tr></thead><tbody>
+  <% perStaff.forEach(s => { %><tr><td><%= s.name %></td><td><%= s.activities %></td><td><%= s.contacts %></td><td><%= s.won %></td><td><%= naira(s.wonValue) %></td></tr><% }) %>
+  </tbody></table></div>
+</div>
+<div class="panel"><h2>Why deals were lost</h2><% if (!lost.length) { %><p class="empty">No lost deals in this period.</p><% } %>
+  <div class="bars"><% const lm = Math.max(1, ...lost.map(r => Number(r.n))); lost.forEach(r => { %><div class="bar" style="--c:var(--bad)"><span><%= r.lost_reason || 'Not given' %></span><span class="track"><span class="fill" style="width:<%= Math.round(100 * Number(r.n) / lm) %>%"></span></span><span class="n"><%= r.n %></span></div><% }) %></div>
+</div>
+<%- include('_bottom') %>

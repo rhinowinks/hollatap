@@ -184,7 +184,11 @@ async function fulfil(reference, { paidAmountNaira } = {}) {
         title: 'Payment received',
         html: `<p>We received ₦${r.payment.amount_naira.toLocaleString('en-NG')} for <b>${JSON.parse(r.payment.meta_json || '{}').label || r.payment.kind}</b>.</p><p>Reference: ${r.payment.reference}</p><p><a href="${config.baseUrl}/dashboard" style="color:#C2410C">Go to your dashboard</a></p>`,
         text: `We received ₦${r.payment.amount_naira} (ref ${r.payment.reference}).`,
-      }).catch(() => {});
+      }).catch(() => {});      try {
+        const crm = require('./crm');
+        const cid = await crm.upsertFromUser(user);
+        await crm.log(cid, null, 'system', `Paid ₦${r.payment.amount_naira.toLocaleString('en-NG')} for ${JSON.parse(r.payment.meta_json || '{}').label || r.payment.kind} (${r.payment.reference})`);
+      } catch (e) { console.error('[crm]', e.message); }
     }
     return r;
   });

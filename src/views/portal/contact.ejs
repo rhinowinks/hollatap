@@ -1,0 +1,155 @@
+<%- include('_top') %>
+<% const icons = { call: '📞', whatsapp: '💬', email: '✉', sms: '📱', visit: '📍', meeting: '🤝', social: '#', note: '📝', stage: '➜', system: '•' };
+   const fmt = (d) => new Date(d).toLocaleString('en-GB', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+   const now = new Date();
+   const plan = account ? ((account.plan === 'pro' || account.plan === 'team') && account.plan_expires_at && new Date(account.plan_expires_at) > now ? (account.plan === 'team' ? 'Teams' : 'Pro') : account.trial_ends_at && new Date(account.trial_ends_at) > now ? 'Pro trial' : 'Free') : null; %>
+<div class="phead">
+  <div>
+    <p class="crumb"><a href="/admin/contacts">Contacts</a> · <%= C.label(C.SOURCES, c.source) %></p>
+    <h1><%= c.name %></h1>
+    <p><%= [c.job_title, c.company, c.city].filter(Boolean).join(' · ') %></p>
+    <div class="chips" style="margin-top:10px">
+      <span class="badge b-<%= c.stage %>"><%= C.label(C.CONTACT_STAGES, c.stage) %></span>
+      <% if (plan) { %><span class="badge"><%= plan %><%= account.founding_member ? ' · Founding member' : '' %></span><% } %>
+      <% if (c.is_demo) { %><span class="badge b-demo-data">Demo data</span><% } %>
+      <% (c.tags || '').split(',').filter(Boolean).forEach(t => { %><span class="tag"><%= t %></span><% }) %>
+    </div>
+  </div>
+  <div class="pactions">
+    <% if (wa) { %><a class="pbtn" href="https://wa.me/<%= wa %>" target="_blank" rel="noopener">WhatsApp</a><a class="pbtn" href="tel:+<%= wa %>">Call</a><% } %>
+    <% if (c.email) { %><a class="pbtn" href="mailto:<%= c.email %>">Email</a><% } %>
+    <a class="pbtn primary" href="#log">Log activity</a>
+  </div>
+</div>
+
+<div class="side">
+  <div>
+    <div class="panel" id="log">
+      <h2>What happened?</h2>
+      <form method="post" action="/admin/contacts/<%= c.id %>/activity" class="pform">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <div class="chips" role="radiogroup" aria-label="Type">
+          <% C.ACTIVITY_TYPES.forEach(([k, l], i) => { %><label class="chip"><input type="radio" name="type" value="<%= k %>" <%= i === 0 ? 'checked' : '' %>> <%= l %></label><% }) %>
+        </div>
+        <div class="pf"><label for="sum">Notes</label><textarea id="sum" name="summary" placeholder="Called Tunde. Wants 40 cards for his sales team; send the Teams price by Friday." required></textarea></div>
+        <div class="pform row">
+          <div class="pf"><label for="ns">Move stage to</label><select id="ns" name="stage"><option value="">Keep as it is</option><% C.CONTACT_STAGES.forEach(([k, l]) => { %><option value="<%= k %>"><%= l %></option><% }) %></select></div>
+          <div class="pf"><label for="fu">Remind me to follow up on</label><input id="fu" name="follow_up" type="date"></div>
+          <div class="pf"><label for="ft">Follow-up task</label><input id="ft" name="follow_title" placeholder="Follow up with <%= c.name.split(' ')[0] %>"></div>
+        </div>
+        <div><button class="pbtn primary" type="submit">Save</button></div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>Timeline</h2>
+      <% if (!timeline.length) { %><p class="empty">Nothing logged yet.</p><% } %>
+      <ul class="tl">
+        <% timeline.forEach(a => { %><li><span class="ic" aria-hidden="true"><%= icons[a.type] || '•' %></span><div>
+          <div class="meta"><b><%= C.label(C.ACTIVITY_TYPES, a.type) === a.type ? (a.type === 'stage' ? 'Stage change' : 'System') : C.label(C.ACTIVITY_TYPES, a.type) %></b> · <%= fmt(a.created_at) %><%= a.staff_email ? ' · ' + (a.staff_name || a.staff_email.split('@')[0]) : '' %></div>
+          <p><%= a.summary %></p></div></li><% }) %>
+      </ul>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel" id="message">
+      <h2>Send SMS or email</h2>
+      <% if (!c.phone && !c.email) { %><p class="muted">Add a phone number or email first.</p><% } else { %>
+      <form method="post" action="/admin/contacts/<%= c.id %>/message" class="pform">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <div class="pf"><label for="ch">Send by</label><select id="ch" name="channel" data-channel-switch><% if (c.phone) { %><option value="sms">SMS (Termii)</option><% } %><% if (c.email) { %><option value="email">Email</option><% } %></select></div>
+        <div class="pf"><label for="tpl">Use a template</label><select id="tpl" data-template="mbody" data-subject="msubj"><option value="">Write my own</option><% templates.forEach(t => { %><option value="<%= t.id %>" data-body="<%= t.body %>" data-subject="<%= t.subject || '' %>"><%= t.name %> (<%= t.channel %>)</option><% }) %></select></div>
+        <div class="pf" data-for="email"><label for="msubj">Subject</label><input id="msubj" name="subject" maxlength="200"></div>
+        <div class="pf"><label for="mbody">Message</label><textarea id="mbody" name="body" required data-sms-count="mcount" placeholder="Hi {first_name}, …"></textarea><span class="hint" id="mcount"></span><span class="hint">{first_name}, {name} and {company} are filled in for you.</span></div>
+        <div><button class="pbtn primary" type="submit">Send</button></div>
+      </form>
+      <% } %>
+    </div>
+
+    <% if (account) { %>
+    <div class="panel">
+      <h2>HollaTap account</h2>
+      <p class="small">
+        Plan: <b><%= plan %></b><% if (account.plan_expires_at) { %> · renews <%= new Date(account.plan_expires_at).toLocaleDateString('en-GB') %><% } %><br>
+        <% if (account.trial_ends_at && new Date(account.trial_ends_at) > now) { %>Trial ends <%= new Date(account.trial_ends_at).toLocaleDateString('en-GB') %><br><% } %>
+        Signed up <%= new Date(account.created_at).toLocaleDateString('en-GB') %> · last seen <%= account.last_seen_at ? new Date(account.last_seen_at).toLocaleDateString('en-GB') : 'never' %><br>
+        Industry: <%= account.industry || 'not given' %> · Credit: <%= naira(account.credit_naira || 0) %><br>
+        <% if (referrer) { %>Referred by <%= referrer.email %><br><% } %>
+        <% if (team) { %>Team: <b><%= team.name %></b> (<%= account.team_role %>)<br><% } %>
+        Marketing emails: <%= account.marketing_opt_in ? 'yes' : 'no' %>
+      </p>
+      <% if (cards && cards.length) { %><p class="small" style="margin-bottom:4px"><b>Cards</b></p><% cards.forEach(k => { %><p class="small" style="margin:2px 0"><a href="/<%= k.slug %>?view=card" target="_blank" rel="noopener"><%= k.full_name %></a> · <%= k.views %> views · <%= k.saves %> saves</p><% }) %><% } %>
+      <% if (payments && payments.length && perms.includes('money')) { %><p class="small" style="margin-bottom:4px"><b>Payments</b></p><% payments.forEach(p => { %><p class="small" style="margin:2px 0"><%= new Date(p.paid_at || p.created_at).toLocaleDateString('en-GB') %> · <%= naira(p.amount_naira) %> · <%= p.kind %></p><% }) %><% } %>
+      <% if (nfc && nfc.length) { %><p class="small" style="margin-bottom:4px"><b>NFC orders</b></p><% nfc.forEach(o => { %><p class="small" style="margin:2px 0">#<%= o.id %> · <%= o.quantity %> card<%= o.quantity > 1 ? 's' : '' %> · <%= o.status %></p><% }) %><% } %>
+    </div>
+    <% } %>
+
+    <% if (perms.includes('pipeline')) { %>
+    <div class="panel">
+      <h2>Deals</h2>
+      <% deals.forEach(d => { %>
+        <form method="post" action="/admin/deals/<%= d.id %>" class="pform" style="border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:12px">
+          <input type="hidden" name="_csrf" value="<%= csrf %>">
+          <b><%= d.title %></b>
+          <div class="pform row">
+            <div class="pf"><label>Stage</label><select name="stage"><% C.DEAL_STAGES.forEach(([k, l]) => { %><option value="<%= k %>" <%= d.stage === k ? 'selected' : '' %>><%= l %></option><% }) %></select></div>
+            <div class="pf"><label>Value (₦)</label><input name="value_naira" inputmode="numeric" value="<%= d.value_naira %>"></div>
+          </div>
+          <div class="pform row">
+            <div class="pf"><label>Expected month</label><input name="expected_month" type="month" value="<%= d.expected_month || '' %>"></div>
+            <div class="pf"><label>If lost, why?</label><select name="lost_reason"><option value=""></option><% C.LOST_REASONS.forEach(r => { %><option <%= d.lost_reason === r ? 'selected' : '' %>><%= r %></option><% }) %></select></div>
+          </div>
+          <div><button class="pbtn sm" type="submit">Save deal</button></div>
+        </form>
+      <% }) %>
+      <details><summary style="cursor:pointer;font-weight:700;color:var(--link)">Add a deal</summary>
+        <form method="post" action="/admin/deals" class="pform" style="margin-top:12px">
+          <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="contact_id" value="<%= c.id %>">
+          <div class="pf"><label for="dp">Product</label><select id="dp" name="product"><% C.PRODUCTS.forEach(p => { %><option><%= p %></option><% }) %></select></div>
+          <div class="pf"><label for="dt">Deal name</label><input id="dt" name="title" placeholder="<%= c.company || c.name %>: 40 staff cards"></div>
+          <div class="pform row"><div class="pf"><label for="dv">Value (₦)</label><input id="dv" name="value_naira" inputmode="numeric"></div><div class="pf"><label for="dm">Expected month</label><input id="dm" name="expected_month" type="month"></div></div>
+          <div class="pf"><label for="do">Owner</label><select id="do" name="owner_id"><% staff.forEach(s => { %><option value="<%= s.id %>" <%= s.id === user.id ? 'selected' : '' %>><%= s.name || s.email %></option><% }) %></select></div>
+          <div><button class="pbtn primary sm" type="submit">Add deal</button></div>
+        </form>
+      </details>
+    </div>
+    <% } %>
+
+    <div class="panel">
+      <h2>Tasks</h2>
+      <% if (!tasks.length) { %><p class="empty">No tasks.</p><% } %>
+      <% tasks.forEach(t => { %>
+        <form method="post" action="/admin/tasks/<%= t.id %>/done" style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+          <input type="hidden" name="_csrf" value="<%= csrf %>">
+          <button class="pbtn sm" type="submit" aria-label="<%= t.done_at ? 'Mark not done' : 'Mark done' %>"><%= t.done_at ? '↺' : '✓' %></button>
+          <span style="<%= t.done_at ? 'text-decoration:line-through;color:var(--muted)' : '' %>"><%= t.title %><span class="small muted"><%= t.due_at ? ' · ' + new Date(t.due_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '' %></span></span>
+        </form>
+      <% }) %>
+      <form method="post" action="/admin/tasks" class="pform" style="margin-top:12px">
+        <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="contact_id" value="<%= c.id %>">
+        <div class="pf"><label for="tt">New task</label><input id="tt" name="title" placeholder="Send proposal"></div>
+        <div class="pform row"><div class="pf"><label for="td">Due</label><input id="td" name="due" type="date"></div>
+        <div class="pf"><label for="ta">For</label><select id="ta" name="assignee_id"><% staff.forEach(s => { %><option value="<%= s.id %>" <%= s.id === (c.owner_id || user.id) ? 'selected' : '' %>><%= s.name || s.email %></option><% }) %></select></div></div>
+        <div><button class="pbtn sm" type="submit">Add task</button></div>
+      </form>
+    </div>
+
+    <details class="panel">
+      <summary style="cursor:pointer;font-weight:800">Edit details</summary>
+      <form method="post" action="/admin/contacts/<%= c.id %>" class="pform" style="margin-top:14px">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <%- include('_contact-fields') %>
+        <div><button class="pbtn primary" type="submit">Save details</button></div>
+      </form>
+      <% if (role === 'owner' && !c.user_id) { %><form method="post" action="/admin/contacts/<%= c.id %>/delete" data-confirm="Delete <%= c.name %> and their history for good?" style="margin-top:14px"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="pbtn danger sm" type="submit">Delete this contact</button></form><% } %>
+    </details>
+
+    <% if (messages.length) { %>
+    <div class="panel"><h2>Messages sent</h2>
+      <% messages.forEach(m => { %><p class="small" style="margin:0 0 10px"><span class="badge b-<%= m.status %>"><%= m.channel.toUpperCase() %> · <%= m.status %></span> <span class="muted"><%= fmt(m.created_at) %></span><br><%= m.subject ? m.subject + ': ' : '' %><%= (m.body || '').slice(0, 160) %></p><% }) %>
+    </div>
+    <% } %>
+  </div>
+</div>
+<%- include('_bottom') %>

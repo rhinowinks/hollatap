@@ -1,0 +1,6 @@
+<%- include('_top') %><%- include('_head') %>
+<div class="tw"><table class="pt"><thead><tr><th>Date</th><th>Reference</th><th>Customer</th><th>For</th><th>Amount</th><th>Status</th></tr></thead><tbody>
+<% if (!payments.length) { %><tr><td colspan="6" class="empty">No payments yet.</td></tr><% } %>
+<% payments.forEach(p => { %><tr><td class="small"><%= new Date(p.paid_at || p.created_at).toLocaleDateString('en-GB') %></td><td class="small"><%= p.reference %><%= p.is_demo ? ' (demo)' : '' %></td><td><%= p.email || '' %></td><td class="small"><%= (() => { try { return JSON.parse(p.meta_json || '{}').label || p.kind; } catch (e) { return p.kind; } })() %></td><td><b><%= naira(p.amount_naira) %></b><%= p.discount_naira ? ' (−' + naira(p.discount_naira) + ')' : '' %></td><td><span class="badge b-<%= p.status === 'success' ? 'won' : p.status === 'failed' ? 'lost' : 'new' %>"><%= p.status %></span></td></tr><% }) %>
+</tbody></table></div>
+<%- include('_bottom') %>

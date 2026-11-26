@@ -1,0 +1,23 @@
+<%- include('_top') %><%- include('_head') %>
+<div class="panel">
+  <form method="post" action="/admin/tasks" class="pform row">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="pf" style="grid-column:span 2"><label for="tt">New task</label><input id="tt" name="title" required placeholder="Call ABC Bank HR about 60 staff cards"></div>
+    <div class="pf"><label for="td">Due date</label><input id="td" name="due" type="date"></div>
+    <div class="pf"><label for="tm">Time</label><input id="tm" name="time" type="time" value="09:00"></div>
+    <div class="pf"><label for="ta">For</label><select id="ta" name="assignee_id"><% staff.forEach(s => { %><option value="<%= s.id %>" <%= s.id === user.id ? 'selected' : '' %>><%= s.name || s.email %></option><% }) %></select></div>
+    <div><button class="pbtn primary" type="submit">Add task</button></div>
+  </form>
+</div>
+<div class="panel">
+  <div class="panel-head"><div class="seg"><a class="<%= view==='mine'?'on':'' %>" href="?view=mine">Mine</a><a class="<%= view==='all'?'on':'' %>" href="?view=all">Everyone's</a><a class="<%= view==='done'?'on':'' %>" href="?view=done">Done</a></div></div>
+  <div class="tw"><table class="pt"><thead><tr><th></th><th>Task</th><th>Contact</th><th>For</th><th>Due</th></tr></thead><tbody>
+  <% if (!tasks.length) { %><tr><td colspan="5" class="empty">Nothing here.</td></tr><% } %>
+  <% tasks.forEach(t => { const late = !t.done_at && t.due_at && new Date(t.due_at) < new Date(); %>
+    <tr><td><form method="post" action="/admin/tasks/<%= t.id %>/done"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="pbtn sm" type="submit" aria-label="<%= t.done_at ? 'Mark not done' : 'Mark done' %>"><%= t.done_at ? '↺' : '✓' %></button></form></td>
+    <td><%= t.title %></td><td><% if (t.contact_id) { %><a href="/admin/contacts/<%= t.contact_id %>"><%= t.contact_name %></a><% } %></td>
+    <td class="small"><%= t.assignee_name || (t.assignee_email || '').split('@')[0] %></td>
+    <td class="small" style="color:<%= late ? 'var(--bad)' : 'inherit' %>"><%= t.due_at ? new Date(t.due_at).toLocaleString('en-GB', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '' %><%= late ? ' · overdue' : '' %></td></tr>
+  <% }) %></tbody></table></div>
+</div>
+<%- include('_bottom') %>

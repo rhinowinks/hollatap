@@ -1,0 +1,32 @@
+<%- include('_top') %><%- include('_head') %>
+<div class="board" style="grid-template-columns:repeat(5,minmax(220px,1fr))">
+<% stages.forEach(([k, l]) => { const list = orders.filter(o => o.status === k); %>
+  <section class="col" aria-label="<%= l %>"><h3><span><%= l %></span><span class="muted"><%= list.length %></span></h3><p class="sum"><%= list.reduce((a, o) => a + o.quantity, 0) %> cards</p>
+  <% list.forEach(o => { %><article class="dcard">
+    <b>#<%= o.id %> · <%= o.quantity %> card<%= o.quantity > 1 ? 's' : '' %></b>
+    <span class="muted"><%= o.team_name || o.email %><%= o.is_demo ? ' (demo)' : '' %> · <%= o.kind %></span>
+    <p class="small" style="margin:6px 0"><%= o.ship_name || '' %> <%= o.ship_phone || '' %><br><%= o.ship_address || 'Waiting for the delivery address' %></p>
+    <form method="post" action="/admin/nfc/orders/<%= o.id %>"><input type="hidden" name="_csrf" value="<%= csrf %>">
+      <select name="status" aria-label="Move order <%= o.id %> to"><% stages.forEach(([k2, l2]) => { %><option value="<%= k2 %>" <%= o.status === k2 ? 'selected' : '' %>><%= l2 %></option><% }) %></select>
+      <input class="pinput" name="notes" value="<%= o.notes || '' %>" placeholder="Note, e.g. courier" style="margin-top:6px;min-height:32px;font-size:12px">
+      <button class="pbtn sm" type="submit" style="margin-top:6px">Save</button> <a class="small" href="/admin/nfc/orders/<%= o.id %>/label" target="_blank" rel="noopener">Delivery note</a>
+    </form>
+  </article><% }) %></section>
+<% }) %>
+</div>
+<% if (perms.includes('settings')) { %>
+<div class="grid2" style="margin-top:20px">
+  <form method="post" action="/admin/nfc/batch" class="panel pform">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <h2>Make a batch for the factory</h2>
+    <p class="small muted">Creates unique serials and links (<%= config.baseUrl %>/t/SERIAL) and downloads a CSV for the supplier: they program each chip with the link and print the serial.</p>
+    <div class="pform row"><div class="pf"><label for="bq">How many</label><input id="bq" name="qty" type="number" min="1" max="10000" value="1000"></div><div class="pf"><label for="bn">Batch name</label><input id="bn" name="batch" maxlength="40" placeholder="B2026-12-01"></div></div>
+    <div><button class="pbtn primary" type="submit">Make batch and download CSV</button></div>
+  </form>
+  <div class="panel"><h2>Batches</h2>
+    <% if (!batches.length) { %><p class="empty">None yet.</p><% } %>
+    <% batches.forEach(b => { %><p><a href="/admin/nfc/batch/<%= encodeURIComponent(b.batch) %>.csv"><%= b.batch %></a> · <%= b.total %> cards · <%= b.claimed %> linked</p><% }) %>
+  </div>
+</div>
+<% } %>
+<%- include('_bottom') %>

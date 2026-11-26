@@ -1,0 +1,20 @@
+<%- include('_top') %><%- include('_head') %>
+<% promos.concat([{}]).forEach(p => { %>
+<details class="panel" <%= p.id ? '' : 'open' %>><summary style="cursor:pointer;font-weight:800"><%= p.id ? p.title : 'Add a promotion' %><% if (p.id) { %> <span class="muted small"><%= p.industry || 'Everyone' %> · <%= p.impressions %> views · <%= p.clicks %> clicks · <%= p.active ? 'on' : 'off' %></span><% } %></summary>
+  <form method="post" action="/admin/promos" class="pform" style="margin-top:12px">
+    <input type="hidden" name="_csrf" value="<%= csrf %>"><% if (p.id) { %><input type="hidden" name="id" value="<%= p.id %>"><% } %>
+    <div class="pform row">
+      <div class="pf"><label>Title</label><input name="title" maxlength="120" value="<%= p.title || '' %>"></div>
+      <div class="pf"><label>Button text</label><input name="cta" maxlength="40" value="<%= p.cta || 'Learn more' %>"></div>
+      <div class="pf"><label>Link</label><input name="url" value="<%= p.url || '' %>" placeholder="https://rhinowinks.xyz/…"></div>
+      <div class="pf"><label>Show to</label><select name="industry"><option value="">Everyone</option><% industries.forEach(i => { %><option <%= p.industry === i ? 'selected' : '' %>><%= i %></option><% }) %></select></div>
+      <div class="pf"><label>Where</label><select name="slot"><% [['any','Anywhere'],['created','After making a card'],['dashboard','Dashboard']].forEach(([k,l]) => { %><option value="<%= k %>" <%= p.slot === k ? 'selected' : '' %>><%= l %></option><% }) %></select></div>
+    </div>
+    <div class="pf"><label>Text</label><textarea name="body" maxlength="300"><%= p.body || '' %></textarea></div>
+    <label class="pcheck"><input type="checkbox" name="active" <%= p.active !== false ? 'checked' : '' %>> Showing</label>
+    <div><button class="pbtn primary sm" type="submit">Save</button></div>
+  </form>
+  <% if (p.id) { %><form method="post" action="/admin/promos/<%= p.id %>/delete" data-confirm="Delete this promotion?" style="margin-top:8px"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="pbtn sm ghost danger" type="submit">Delete</button></form><% } %>
+</details>
+<% }) %>
+<%- include('_bottom') %>

@@ -1,6 +1,7 @@
 const { db } = require('./db');
 const config = require('./config');
 const mailer = require('./lib/mailer');
+const crm = require('./lib/crm');
 
 const INACTIVE_DAYS = 365;
 const WARN_BEFORE_DAYS = 30;
@@ -21,6 +22,12 @@ async function deleteUserEverything(trx, userId) {
   }
   await trx('teams').where({ owner_id: userId }).del();
   await trx('enquiries').where({ user_id: userId }).update({ user_id: null });
+  // CRM record goes too: the person asked for their data to be deleted.
+  const cc = await trx('crm_contacts').where({ user_id: userId }).first();
+  if (cc) {
+    for (const t of ['crm_activities', 'crm_tasks', 'crm_messages', 'crm_deals']) await trx(t).where({ contact_id: cc.id }).del();
+    await trx('crm_contacts').where({ id: cc.id }).del();
+  }
   const user = await trx('users').where({ id: userId }).first();
   if (user) await trx('login_codes').where({ email: user.email }).del();
   await trx('users').where({ id: userId }).del();
@@ -55,10 +62,47 @@ async function runOnce() {
   }
 }
 
+// Monday-morning summary for the owners.
+async function weeklySummary(now = new Date()) {
+  const lagos = new Date(now.toLocaleString('en-US', { timeZone: 'Africa/Lagos' }));
+  if (lagos.getDay() !== 1 || lagos.getHours() < 8) return false;
+  const stamp = `weekly_${lagos.toISOString().slice(0, 10)}`;
+  if (await crm.getSetting(stamp)) return false;
+  await crm.setSetting(stamp, now.toISOString());
+  const since = new Date(now.getTime() - 7 * 864e5);
+  const n = async (q) => Number((await q.count({ n: '*' }).first()).n || 0);
+  const s = async (q, c) => Number((await q.sum({ s: c }).first()).s || 0);
+  const r = {
+    signups: await n(db('users').where('created_at', '>=', since).where({ is_demo: false })),
+    paid: await n(db('payments').where({ status: 'success', is_demo: false }).where('paid_at', '>=', since)),
+    revenue: await s(db('payments').where({ status: 'success', is_demo: false }).where('paid_at', '>=', since), 'amount_naira'),
+    leads: await n(db('crm_contacts').where({ is_demo: false }).whereNot({ source: 'signup' }).where('created_at', '>=', since)),
+    won: await n(db('crm_deals').where({ stage: 'won', is_demo: false }).where('closed_at', '>=', since)),
+    wonValue: await s(db('crm_deals').where({ stage: 'won', is_demo: false }).where('closed_at', '>=', since), 'value_naira'),
+    nfc: await n(db('nfc_orders').where({ is_demo: false }).where('created_at', '>=', since)),
+  };
+  const naira = (v) => '₦' + Math.round(v).toLocaleString('en-NG');
+  const rows = [['New sign-ups', r.signups], ['Payments', r.paid], ['Revenue', naira(r.revenue)], ['New leads', r.leads], ['Deals won', `${r.won} (${naira(r.wonValue)})`], ['NFC card orders', r.nfc]];
+  const to = config.adminEmails.join(',');
+  if (to) {
+    await mailer.send({
+      to, subject: `HollaTap this week: ${r.signups} sign-ups, ${naira(r.revenue)} revenue`, title: 'Your HollaTap week',
+      html: `<table style="border-collapse:collapse;font-size:15px">${rows.map(([a, b]) => `<tr><td style="padding:6px 16px 6px 0;color:#5B6573">${a}</td><td style="padding:6px 0;font-weight:bold">${b}</td></tr>`).join('')}</table><p><a href="${config.baseUrl}/admin" style="color:#C2410C">Open the Team Portal</a></p>`,
+      text: rows.map(([a, b]) => `${a}: ${b}`).join('\n'),
+    }).catch(() => {});
+  }
+  return true;
+}
+
 function start() {
-  const tick = () => runOnce().catch((e) => console.error('[jobs]', e.message));
+  const tick = async () => {
+    await runOnce().catch((e) => console.error('[jobs]', e.message));
+    await crm.syncAll().catch((e) => console.error('[crm sync]', e.message));
+    await crm.runOccasions().catch((e) => console.error('[occasions]', e.message));
+    await weeklySummary().catch((e) => console.error('[weekly]', e.message));
+  };
   setTimeout(tick, 10 * 1000).unref();
   setInterval(tick, 60 * 60 * 1000).unref();
 }
 
-module.exports = { start, runOnce, deleteUserEverything };
+module.exports = { start, runOnce, deleteUserEverything, weeklySummary };

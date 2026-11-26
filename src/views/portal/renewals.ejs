@@ -1,0 +1,12 @@
+<%- include('_top') %><%- include('_head') %>
+<div class="tiles">
+  <div class="tile" style="--c:var(--warn)"><div class="k">Renew in 30 days</div><div class="v"><%= r30.length %></div></div>
+  <div class="tile" style="--c:var(--blue)"><div class="k">Renew in 31–90 days</div><div class="v"><%= r90.length %></div></div>
+  <div class="tile" style="--c:var(--bad)"><div class="k">Didn't renew (last 60 days)</div><div class="v"><%= lapsed.length %></div></div>
+  <div class="tile" style="--c:var(--violet)"><div class="k">On trial now</div><div class="v"><%= trials.length %></div><div class="d"><%= converted %> trials became paid · <%= endedUnpaid %> ended unpaid</div></div>
+</div>
+<div class="panel"><h2>Renew in the next 30 days</h2><%- include('_ulist', { list: r30, dateField: 'plan_expires_at', dateLabel: 'Renews' }) %></div>
+<div class="panel"><h2>Didn't renew</h2><%- include('_ulist', { list: lapsed, dateField: 'plan_expires_at', dateLabel: 'Ended' }) %></div>
+<div class="panel"><h2>Trials</h2><%- include('_ulist', { list: trials, dateField: 'trial_ends_at', dateLabel: 'Trial ends' }) %></div>
+<div class="panel"><h2>Renew in 31–90 days</h2><%- include('_ulist', { list: r90, dateField: 'plan_expires_at', dateLabel: 'Renews' }) %></div>
+<%- include('_bottom') %>

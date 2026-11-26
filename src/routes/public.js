@@ -142,6 +142,19 @@ router.get('/robots.txt', (req, res) => {
   ].join('\n') + '\n');
 });
 
+router.get('/unsubscribe/:id/:token', async (req, res) => {
+  const crm = require('../lib/crm');
+  const id = Number(req.params.id);
+  const ok = id && req.params.token === crm.unsubToken(id);
+  if (ok) {
+    await db('crm_contacts').where({ id }).update({ email_ok: false, updated_at: new Date() });
+    const c = await db('crm_contacts').where({ id }).first();
+    if (c && c.user_id) await db('users').where({ id: c.user_id }).update({ marketing_opt_in: false });
+    if (c) await crm.log(c.id, null, 'system', 'Unsubscribed from marketing emails');
+  }
+  res.render('error', { title: ok ? 'You are unsubscribed' : 'Link not valid', message: ok ? "You won't get marketing emails from HollaTap again. You'll still get emails you need, such as sign-in codes and receipts." : 'This unsubscribe link is not valid. Email global@hollatap.com and we will remove you.' });
+});
+
 router.get('/sitemap.xml', (req, res) => {
   const pages = [['/', '1.0', 'weekly'], ['/for-teams', '0.9', 'weekly'], ['/upgrade', '0.8', 'weekly'], ['/instant', '0.8', 'monthly'],
     ['/demo', '0.6', 'monthly'], ['/signup', '0.6', 'monthly'], ['/affiliates', '0.4', 'monthly'], ['/privacy', '0.2', 'yearly'], ['/terms', '0.2', 'yearly']];
@@ -171,7 +184,8 @@ router.post('/enquiry', enquiryLimiter, async (req, res) => {
     return res.redirect(req.body.back === 'for-teams' ? '/for-teams#enterprise' : '/upgrade#services');
   }
   const row = { user_id: req.user ? req.user.id : null, product, name, email, phone: cleanPhone(req.body.phone), company: clean(req.body.company, 160), message: clean(req.body.message, 2000) };
-  await db('enquiries').insert(row);
+  const [eid] = await db('enquiries').insert(row).returning('id');
+  await require('../lib/crm').upsertFromEnquiry({ ...row, id: typeof eid === 'object' ? eid.id : eid }).catch((e) => console.error('[crm]', e.message));
   for (const admin of config.adminEmails) {
     await mailer.send({
       to: admin,

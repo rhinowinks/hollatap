@@ -1,0 +1,8 @@
+<%- include('_top') %><%- include('_head') %>
+<% if (typeof error !== 'undefined' && error) { %><div class="flash error"><%= error %></div><% } %>
+<form method="post" action="<%= c.id ? '/admin/contacts/' + c.id : '/admin/contacts' %>" class="panel pform">
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <%- include('_contact-fields') %>
+  <div><button class="pbtn primary" type="submit">Save contact</button> <a class="pbtn ghost" href="/admin/contacts">Cancel</a></div>
+</form>
+<%- include('_bottom') %>

@@ -55,7 +55,9 @@ async function createUser(email, { industry, optIn, ref, username, passwordHash,
     .returning('id');
   const id = typeof created === 'object' ? created.id : created;
   await db('audit').insert({ event: 'signup', user_id: id, detail: referredBy ? `ref ${referredBy}` : '' });
-  return db('users').where({ id }).first();
+  const u = await db('users').where({ id }).first();
+  await require('../lib/crm').upsertFromUser(u).catch(() => {});
+  return u;
 }
 
 function startSession(req, user, keep90) {

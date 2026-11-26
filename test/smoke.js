@@ -308,7 +308,7 @@ async function pngLogo() {
     // Admin + NFC batch + claim
     const admin = new Client();
     await admin.login('admin@hollatap.com');
-    for (const p of ['/admin', '/admin/users', '/admin/payments', '/admin/enquiries', '/admin/promos', '/admin/commissions', '/admin/nfc']) {
+    for (const p of ['/admin', '/admin/users', '/admin/payments', '/admin/enquiries', '/admin/promos', '/admin/affiliates', '/admin/nfc']) {
       r = await admin.get(p);
       assert.strictEqual(r.status, 200, p);
     }
@@ -324,6 +324,88 @@ async function pngLogo() {
     r = await visitor.get(`/t/${tag.code}`);
     assert.strictEqual(r.location, `/${card.slug}?src=nfc`);
     ok('admin pages, NFC batch CSV, tag claim and tap redirect');
+
+    // ---------- Team Portal CRM ----------
+    {
+      const sms = require('../src/lib/sms');
+      assert.strictEqual(sms.intl('0803 123 4567'), '2348031234567');
+      assert.strictEqual(sms.intl('+234 803 123 4567'), '2348031234567');
+      r = await admin.post('/admin/demo/load', {}, '/admin/settings');
+      assert.strictEqual(r.location, '/admin');
+      assert((await db('crm_contacts').where({ is_demo: true }).count({ n: '*' }).first()).n > 50, 'demo contacts loaded');
+      const pages = ['/admin', '/admin/menu', '/admin/contacts', '/admin/contacts?stage=warm&plan=paid', '/admin/contacts/new', '/admin/pipeline', '/admin/tasks?view=all',
+        '/admin/messages', '/admin/messages?stage=warm', '/admin/occasions', '/admin/revenue', '/admin/renewals', '/admin/reports?days=90', '/admin/staff', '/admin/audit', '/admin/settings', '/admin/affiliates', '/admin/users?q=example'];
+      for (const p of pages) { r = await admin.get(p); assert.strictEqual(r.status, 200, `${p} ${r.status} ${r.text.slice(0, 300)}`); }
+      r = await admin.get('/admin/contacts.csv?stage=warm');
+      assert(/^id,name,company/.test(r.text), 'contacts CSV');
+      // a sign-up is already a contact
+      const uc = await db('crm_contacts').where({ email: 'ada@lekkilogistics.com' }).first();
+      assert(uc && uc.user_id && uc.email_ok && uc.stage === 'customer', 'sign-up synced to CRM (opted in, paying)');
+      r = await admin.get(`/admin/contacts/${uc.id}`);
+      assert.strictEqual(r.status, 200);
+      // add a lead by hand, log a call with a follow-up, message them, add a deal and win it
+      r = await admin.post('/admin/contacts', { name: 'Kemi Adeyemi', company: 'Ikeja Realty', phone: '08031234567', email: 'kemi@ikejarealty.example', stage: 'new', source: 'event', birthday: '04-12', sms_ok: 'on', email_ok: 'on' }, '/admin/contacts/new');
+      const cid = Number(r.location.split('/').pop());
+      assert(cid, 'contact created');
+      r = await admin.post(`/admin/contacts/${cid}/activity`, { type: 'call', summary: 'Wants 40 cards', stage: 'warm', follow_up: '2030-01-05' }, `/admin/contacts/${cid}`);
+      const kemi = await db('crm_contacts').where({ id: cid }).first();
+      assert.strictEqual(kemi.stage, 'warm');
+      assert(await db('crm_tasks').where({ contact_id: cid }).first(), 'follow-up task created');
+      r = await admin.post(`/admin/contacts/${cid}/message`, { channel: 'sms', body: 'Hi {first_name}, here is HollaTap' }, `/admin/contacts/${cid}`);
+      const msg = await db('crm_messages').where({ contact_id: cid, channel: 'sms' }).first();
+      assert(msg && msg.status === 'simulated' && msg.body === 'Hi Kemi, here is HollaTap' && msg.to === '2348031234567', 'SMS recorded (Termii not configured)');
+      r = await admin.post(`/admin/contacts/${cid}/message`, { channel: 'email', subject: 'Hello {first_name}', body: 'Hi {first_name}' }, `/admin/contacts/${cid}`);
+      assert(mailer.sentLog.some((m) => m.to === 'kemi@ikejarealty.example' && m.subject === 'Hello Kemi'), 'email sent');
+      r = await admin.post('/admin/deals', { contact_id: String(cid), product: 'HollaTap Teams', title: 'Ikeja Realty: 40 cards', value_naira: '1,200,000' }, `/admin/contacts/${cid}`);
+      const deal = await db('crm_deals').where({ contact_id: cid }).first();
+      assert.strictEqual(deal.value_naira, 1200000);
+      r = await admin.post(`/admin/deals/${deal.id}`, { stage: 'won' }, '/admin/pipeline');
+      assert.strictEqual((await db('crm_contacts').where({ id: cid }).first()).stage, 'customer', 'won deal makes a customer');
+      // bulk send to a list: only people who agreed get it
+      const before = await db('crm_messages').count({ n: '*' }).first();
+      r = await admin.post('/admin/campaigns', { segment: JSON.stringify({ stage: 'customer', q: 'kemi' }), channel: 'sms', name: 'Test', body: 'Hi {first_name}' }, '/admin/messages');
+      const after = await db('crm_messages').count({ n: '*' }).first();
+      assert(Number(after.n) > Number(before.n), 'campaign sent');
+      // birthdays: automatic greeting on the day
+      const crmLib = require('../src/lib/crm');
+      const bday = await db('crm_occasions').where({ is_birthday: true }).first();
+      await db('crm_occasions').where({ id: bday.id }).update({ auto: true, channel: 'email' });
+      await crmLib.runOccasions(new Date('2031-04-12T10:00:00+01:00'));
+      assert(mailer.sentLog.some((m) => m.to === 'kemi@ikejarealty.example' && /birthday/i.test(m.text || '')), 'birthday greeting sent');
+      const n1 = mailer.sentLog.length;
+      await crmLib.runOccasions(new Date('2031-04-12T15:00:00+01:00'));
+      assert.strictEqual(mailer.sentLog.length, n1, 'birthday greeting sent once');
+      // national day saved and editable
+      r = await admin.post('/admin/occasions', { name: 'Eid al-Fitr', date: '03-20', channel: 'sms', body: 'Eid Mubarak {first_name}' }, '/admin/occasions');
+      assert(await db('crm_occasions').where({ name: 'Eid al-Fitr' }).first());
+      // unsubscribe link
+      r = await visitor.get(`/unsubscribe/${cid}/${crmLib.unsubToken(cid)}`);
+      assert(!(await db('crm_contacts').where({ id: cid }).first()).email_ok, 'unsubscribed');
+      // staff roles: sales can't see money or staff
+      r = await admin.post('/admin/staff', { email: 'sales1@hollatap.com', role: 'sales', name: 'Sales One' }, '/admin/staff');
+      const sales = new Client();
+      await sales.login('sales1@hollatap.com');
+      r = await sales.get('/admin/contacts'); assert.strictEqual(r.status, 200, 'sales sees contacts');
+      r = await sales.get('/admin/revenue'); assert.strictEqual(r.status, 403, 'sales blocked from revenue');
+      r = await sales.get('/admin/staff'); assert.strictEqual(r.status, 403, 'sales blocked from staff');
+      r = await sales.post('/admin/campaigns', { segment: '{}', everyone: 'yes', channel: 'sms', body: 'x' }, '/admin/messages');
+      assert.strictEqual(r.status, 403, 'sales cannot bulk send');
+      // tasks, NFC stage, weekly summary
+      r = await admin.post('/admin/tasks', { title: 'Call ABC Bank', due: '2030-01-01', assignee_id: String((await db('users').where({ email: 'sales1@hollatap.com' }).first()).id) }, '/admin/tasks');
+      assert(mailer.sentLog.some((m) => m.to === 'sales1@hollatap.com' && /Call ABC Bank/.test(m.subject)), 'task emailed to assignee');
+      const order = await db('nfc_orders').where({ is_demo: false }).first();
+      if (order) { r = await admin.post(`/admin/nfc/orders/${order.id}`, { status: 'printing' }, '/admin/nfc'); assert.strictEqual((await db('nfc_orders').where({ id: order.id }).first()).status, 'printing'); }
+      r = await admin.get('/admin/nfc'); assert.strictEqual(r.status, 200);
+      const jobs = require('../src/jobs');
+      assert(await jobs.weeklySummary(new Date('2031-06-02T09:00:00+01:00')), 'weekly summary runs on Monday');
+      // clearing demo data leaves real data alone
+      const realContacts = await db('crm_contacts').where({ is_demo: false }).count({ n: '*' }).first();
+      r = await admin.post('/admin/demo/clear', { confirm: 'CLEAR' }, '/admin/settings');
+      assert.strictEqual(Number((await db('crm_contacts').where({ is_demo: true }).count({ n: '*' }).first()).n), 0, 'demo cleared');
+      assert.strictEqual(Number((await db('users').where({ is_demo: true }).count({ n: '*' }).first()).n), 0, 'demo users cleared');
+      assert.strictEqual(Number((await db('crm_contacts').where({ is_demo: false }).count({ n: '*' }).first()).n), Number(realContacts.n), 'real contacts kept');
+    }
+    ok('Team Portal: demo data, all pages, sync, contacts, activity, SMS (Termii) + email, deals, bulk send with consent, birthdays once, unsubscribe, roles, tasks, NFC stages, weekly summary, demo clear');
 
     // Enquiry
     r = await visitor.post('/enquiry', { product: 'RhinoVMS', name: 'Visitor', email: 'v@example.com', message: 'Pricing please' }, '/upgrade');

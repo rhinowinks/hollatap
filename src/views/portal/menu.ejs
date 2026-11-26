@@ -1,0 +1,32 @@
+<%- include('_top') %><%- include('_head') %>
+<% const T = (href, icon, name, sub, perm) => (!perm || perms.includes(perm)) ? `<a class="mtile" href="${href}">${include('_icon', { name: icon })}<b>${name}</b><span>${sub}</span></a>` : ''; %>
+<p class="mgroup">CRM</p>
+<div class="mtiles">
+  <%- T('/admin/contacts', 'users', 'Contacts', 'Everyone, filtered and searchable', 'contacts') %>
+  <%- T('/admin/pipeline', 'board', 'Deals pipeline', 'Deals by stage, in naira', 'pipeline') %>
+  <%- T('/admin/tasks', 'check', 'Tasks', 'Follow-ups and jobs', 'tasks') %>
+  <%- T('/admin/messages', 'send', 'SMS & Email', 'One person or a whole list', 'messages') %>
+  <%- T('/admin/occasions', 'cake', 'Birthdays & special days', 'Automatic greetings', 'occasions') %>
+  <%- T('/admin/enquiries', 'inbox', 'Enquiries', 'Website forms', 'enquiries') %>
+  <%- T('/admin/contacts/new', 'plus', 'Add a contact', 'Someone you met', 'contacts') %>
+</div>
+<p class="mgroup">Business</p>
+<div class="mtiles">
+  <%- T('/admin/revenue', 'money', 'Revenue', 'Money in, by month and plan', 'money') %>
+  <%- T('/admin/renewals', 'refresh', 'Renewals & trials', 'Who to nudge', 'money') %>
+  <%- T('/admin/payments', 'inbox', 'Payments', 'Every Paystack payment', 'money') %>
+  <%- T('/admin/nfc', 'card', 'NFC card orders', 'Print, pack, deliver', 'nfc') %>
+  <%- T('/admin/affiliates', 'gift', 'Affiliates & payouts', 'Referrals and commission', 'affiliates') %>
+  <%- T('/admin/users', 'user', 'All accounts', 'Every HollaTap account', 'users') %>
+  <%- T('/admin/promos', 'megaphone', 'Card promotions', 'Rhinowinks offers on cards', 'promos') %>
+  <%- T('/admin/reports', 'chart', 'Reports', 'Funnel, sources, team', 'reports') %>
+</div>
+<% if (perms.includes('staff')) { %>
+<p class="mgroup">Staff</p>
+<div class="mtiles">
+  <%- T('/admin/staff', 'team', 'Staff & roles', 'Who can use the portal', 'staff') %>
+  <%- T('/admin/audit', 'history', 'Activity log', 'Who did what', 'staff') %>
+  <%- T('/admin/settings', 'cog', 'Settings & demo data', 'Termii, email, demo data', 'settings') %>
+</div>
+<% } %>
+<%- include('_bottom') %>

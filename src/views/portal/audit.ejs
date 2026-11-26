@@ -1,0 +1,6 @@
+<%- include('_top') %><%- include('_head') %>
+<div class="grid2">
+  <div class="panel"><h2>Staff activity</h2><ul class="tl"><% acts.forEach(a => { %><li><span class="ic">•</span><div><div class="meta"><%= (a.email || '').split('@')[0] %> · <%= new Date(a.created_at).toLocaleString('en-GB', { timeZone: 'Africa/Lagos' }) %> · <%= a.type %></div><p><% if (a.contact_id) { %><a href="/admin/contacts/<%= a.contact_id %>"><%= a.contact_name %></a>: <% } %><%= (a.summary || '').slice(0, 200) %></p></div></li><% }) %></ul></div>
+  <div class="panel"><h2>System events</h2><ul class="tl"><% audit.forEach(a => { %><li><span class="ic">•</span><div><div class="meta"><%= a.email || 'system' %> · <%= new Date(a.created_at).toLocaleString('en-GB', { timeZone: 'Africa/Lagos' }) %></div><p><b><%= a.event %></b> <%= (a.detail || '').slice(0, 200) %></p></div></li><% }) %></ul></div>
+</div>
+<%- include('_bottom') %>

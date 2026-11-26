@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title><%= title %> | HollaTap Team Portal</title>
+<link rel="icon" href="/brand/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/portal.css?v=<%= v %>">
+</head>
+<body>
+<% const R = role; const C = (w) => perms.includes(w); const sec = typeof section !== 'undefined' ? section : ''; %>
+<header class="ptop"><div class="pw">
+  <a class="pbrand" href="/admin"><img class="logo-dark" src="/brand/hollatap-logo-horizontal-reversed.svg" alt="HollaTap"><img class="logo-light" src="/brand/hollatap-logo-horizontal-colour.svg" alt="HollaTap"><span>TEAM PORTAL</span></a>
+  <button class="pbtn sm menu-toggle" type="button" aria-expanded="false" aria-controls="pnav">Menu</button>
+  <nav class="pnav" id="pnav" aria-label="Team Portal">
+    <a href="/admin/menu" class="<%= sec==='menu'?'on':'' %>">Menu</a>
+    <a href="/admin" class="<%= sec==='dashboard'?'on':'' %>">Dashboard</a>
+    <details class="<%= sec==='crm'?'on':'' %>"><summary>CRM ▾</summary><div class="dd">
+      <a href="/admin/contacts">Contacts</a>
+      <% if (C('pipeline')) { %><a href="/admin/pipeline">Deals pipeline</a><% } %>
+      <a href="/admin/tasks">Tasks</a>
+      <a href="/admin/messages">SMS &amp; Email</a>
+      <% if (C('occasions')) { %><a href="/admin/occasions">Birthdays &amp; special days</a><% } %>
+      <% if (C('enquiries')) { %><a href="/admin/enquiries">Enquiries</a><% } %>
+    </div></details>
+    <details class="<%= sec==='biz'?'on':'' %>"><summary>Business ▾</summary><div class="dd">
+      <% if (C('money')) { %><a href="/admin/revenue">Revenue</a><a href="/admin/renewals">Renewals &amp; trials</a><a href="/admin/payments">Payments</a><% } %>
+      <% if (C('nfc')) { %><a href="/admin/nfc">NFC card orders</a><% } %>
+      <% if (C('affiliates')) { %><a href="/admin/affiliates">Affiliates &amp; payouts</a><% } %>
+      <% if (C('users')) { %><a href="/admin/users">All accounts</a><% } %>
+      <% if (C('promos')) { %><a href="/admin/promos">Card promotions</a><% } %>
+      <% if (C('reports')) { %><a href="/admin/reports">Reports</a><% } %>
+    </div></details>
+    <% if (C('staff')) { %><details class="<%= sec==='staff'?'on':'' %>"><summary>Staff ▾</summary><div class="dd">
+      <a href="/admin/staff">Staff &amp; roles</a><a href="/admin/audit">Activity log</a><a href="/admin/settings">Settings &amp; demo data</a>
+    </div></details><% } %>
+    <div class="pwho">
+      <button class="theme-btn" type="button" id="theme-btn" aria-label="Switch light or dark">☀</button>
+      <span>Signed in as <b><%= R === 'owner' ? 'Owner' : R === 'sales' ? 'Sales' : 'Support' %></b></span>
+      <a href="/dashboard" class="small">My cards</a>
+      <form method="post" action="/logout"><input type="hidden" name="_csrf" value="<%= csrf %>"><button type="submit">Sign out</button></form>
+    </div>
+  </nav>
+</div></header>
+<main class="pw">
+<% if (flash) { %><div class="flash <%= flash.type %>" role="status"><%= flash.text %></div><% } %>

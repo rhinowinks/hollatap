@@ -1,0 +1,18 @@
+<div class="pform row">
+  <div class="pf"><label for="f-name">Full name</label><input id="f-name" name="name" required maxlength="160" value="<%= c.name || '' %>"></div>
+  <div class="pf"><label for="f-co">Company</label><input id="f-co" name="company" maxlength="160" value="<%= c.company || '' %>"></div>
+  <div class="pf"><label for="f-jt">Job title</label><input id="f-jt" name="job_title" maxlength="120" value="<%= c.job_title || '' %>"></div>
+  <div class="pf"><label for="f-ph">Phone / WhatsApp</label><input id="f-ph" name="phone" maxlength="40" value="<%= c.phone || '' %>" placeholder="0803 123 4567"></div>
+  <div class="pf"><label for="f-em">Email</label><input id="f-em" name="email" type="email" value="<%= c.email || '' %>" <%= c.user_id ? 'readonly' : '' %>><% if (c.user_id) { %><span class="hint">Account email: the customer changes it themselves.</span><% } %></div>
+  <div class="pf"><label for="f-ci">City</label><input id="f-ci" name="city" maxlength="80" value="<%= c.city || '' %>"></div>
+  <div class="pf"><label for="f-in">Industry</label><select id="f-in" name="industry"><option value="">Choose…</option><% industries.forEach(i => { %><option <%= c.industry === i ? 'selected' : '' %>><%= i %></option><% }) %></select></div>
+  <div class="pf"><label for="f-so">Source</label><select id="f-so" name="source"><% C.SOURCES.forEach(([k, l]) => { %><option value="<%= k %>" <%= c.source === k ? 'selected' : '' %>><%= l %></option><% }) %></select></div>
+  <div class="pf"><label for="f-st">Stage</label><select id="f-st" name="stage"><% C.CONTACT_STAGES.forEach(([k, l]) => { %><option value="<%= k %>" <%= c.stage === k ? 'selected' : '' %>><%= l %></option><% }) %></select></div>
+  <div class="pf"><label for="f-ow">Owner</label><select id="f-ow" name="owner_id"><option value="">Not assigned</option><% staff.forEach(s => { %><option value="<%= s.id %>" <%= String(c.owner_id) === String(s.id) ? 'selected' : '' %>><%= s.name || s.email %></option><% }) %></select></div>
+  <div class="pf"><label for="f-bd">Birthday</label><input id="f-bd" name="birthday" placeholder="MM-DD, e.g. 04-12" maxlength="10" value="<%= c.birthday || '' %>"><span class="hint">Month and day only. No year needed.</span></div>
+  <div class="pf"><label for="f-tg">Tags</label><input id="f-tg" name="tags" maxlength="400" value="<%= c.tags || '' %>" placeholder="Hot, Bank, Event lead"><span class="hint">Separate with commas.</span></div>
+</div>
+<div style="display:flex;gap:22px;flex-wrap:wrap">
+  <label class="pcheck"><input type="checkbox" name="sms_ok" <%= c.sms_ok ? 'checked' : '' %>> Agreed to SMS (birthday, offers)</label>
+  <label class="pcheck"><input type="checkbox" name="email_ok" <%= c.email_ok ? 'checked' : '' %>> Agreed to marketing email</label>
+</div>

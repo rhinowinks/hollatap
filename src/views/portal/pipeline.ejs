@@ -1,0 +1,27 @@
+<%- include('_top') %><%- include('_head') %>
+<form method="get" class="panel" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+  <div class="pf"><label for="pp">Product</label><select id="pp" name="product" class="pinput"><option value="">All products</option><% C.PRODUCTS.forEach(p => { %><option <%= product === p ? 'selected' : '' %>><%= p %></option><% }) %></select></div>
+  <div class="pf"><label for="pw2">Owner</label><select id="pw2" name="who" class="pinput"><option value="">Whole team</option><% staff.forEach(s => { %><option value="<%= s.id %>" <%= String(who) === String(s.id) ? 'selected' : '' %>><%= s.name || s.email %></option><% }) %></select></div>
+  <button class="pbtn" type="submit">Show</button>
+</form>
+<div class="board">
+  <% C.DEAL_STAGES.forEach(([k, l]) => { const list = deals.filter(d => d.stage === k); const tot = list.reduce((a, d) => a + d.value_naira, 0); %>
+  <section class="col" data-stage="<%= k %>" aria-label="<%= l %>">
+    <h3><span><%= l %></span><span class="muted"><%= list.length %></span></h3>
+    <p class="sum"><%= naira(tot) %></p>
+    <% list.forEach(d => { %>
+      <article class="dcard" draggable="true" data-stage="<%= d.stage %>">
+        <b><a href="/admin/contacts/<%= d.contact_id %>"><%= d.contact_company || d.contact_name %></a></b>
+        <span class="muted"><%= d.product %><%= d.owner_email ? ' · ' + (d.owner_name || d.owner_email.split('@')[0]) : '' %></span>
+        <div class="val"><%= naira(d.value_naira) %></div>
+        <% if (d.expected_month && !['won','lost'].includes(d.stage)) { %><span class="muted">Expected <%= new Date(d.expected_month + '-01').toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) %></span><% } %>
+        <% if (d.lost_reason) { %><span class="muted">Lost: <%= d.lost_reason %></span><% } %>
+        <form method="post" action="/admin/deals/<%= d.id %>"><input type="hidden" name="_csrf" value="<%= csrf %>">
+          <select name="stage" aria-label="Move <%= d.title %> to"><% C.DEAL_STAGES.forEach(([k2, l2]) => { %><option value="<%= k2 %>" <%= d.stage === k2 ? 'selected' : '' %>><%= l2 %></option><% }) %></select>
+        </form>
+      </article>
+    <% }) %>
+  </section>
+  <% }) %>
+</div>
+<%- include('_bottom') %>

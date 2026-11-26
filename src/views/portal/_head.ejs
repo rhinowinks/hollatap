@@ -1,0 +1,8 @@
+<div class="phead">
+  <div>
+    <p class="crumb"><%= typeof crumb !== 'undefined' ? crumb : 'HollaTap · Team Portal' %></p>
+    <h1><%= title %></h1>
+    <% if (typeof intro !== 'undefined' && intro) { %><p><%= intro %></p><% } %>
+  </div>
+  <% if (typeof actions !== 'undefined' && actions && actions.length) { %><div class="pactions"><% actions.forEach(a => { %><a class="pbtn <%= a.primary ? 'primary' : '' %>" href="<%= a.href %>"><%= a.label %></a><% }) %></div><% } %>
+</div>

@@ -1,0 +1,92 @@
+<%- include('_top') %>
+<div class="phead">
+  <div><p class="crumb">HollaTap · Team Portal</p><h1>Dashboard</h1><p><%= intro %></p></div>
+  <div class="pactions"><a class="pbtn" href="/admin/tasks">My tasks</a><a class="pbtn primary" href="/admin/contacts/new">Add a contact</a></div>
+</div>
+<% if (demoCount) { %><div class="flash warn">Demo data is loaded (<%= demoCount %> demo contacts). Clear it in Settings before launch.</div><% } %>
+
+<div class="panel">
+  <div class="panel-head"><h2>Quick actions</h2><a href="/admin/menu" class="small">Main menu</a></div>
+  <div class="qa">
+    <a href="/admin/contacts?stage=new"><%- include('_icon', { name: 'filter' }) %>Work new leads</a>
+    <a href="/admin/messages"><%- include('_icon', { name: 'send' }) %>New SMS or email</a>
+    <a href="/admin/contacts/new"><%- include('_icon', { name: 'plus' }) %>Add a contact</a>
+    <% if (perms.includes('pipeline')) { %><a href="/admin/pipeline"><%- include('_icon', { name: 'board' }) %>Deals pipeline</a><% } %>
+    <% if (perms.includes('money')) { %><a href="/admin/renewals"><%- include('_icon', { name: 'refresh' }) %>Renewals &amp; trials</a><% } %>
+    <a href="/admin/nfc"><%- include('_icon', { name: 'card' }) %>NFC card orders</a>
+    <% if (perms.includes('occasions')) { %><a href="/admin/occasions"><%- include('_icon', { name: 'cake' }) %>Birthdays</a><% } %>
+    <% if (perms.includes('staff')) { %><a href="/admin/audit"><%- include('_icon', { name: 'history' }) %>Activity log</a><% } %>
+  </div>
+</div>
+
+<% const qs = (o) => '?' + new URLSearchParams(Object.fromEntries(Object.entries({ days: d, product, who, acts: acts.join(','), ...o }).filter(([k, val]) => val))).toString(); %>
+<div class="panel">
+  <form method="get" action="/admin" style="display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:center">
+    <div class="seg" role="group" aria-label="Period"><% [7, 14, 30, 90].forEach(x => { %><a class="<%= d === x ? 'on' : '' %>" href="<%= qs({ days: x }) %>"><%= x %> days</a><% }) %></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <input type="hidden" name="days" value="<%= d %>"><input type="hidden" name="acts" value="<%= acts.join(',') %>">
+      <select class="pinput" name="product" aria-label="Product" style="width:auto"><option value="">All products</option><% C.PRODUCTS.forEach(p => { %><option <%= product === p ? 'selected' : '' %>><%= p %></option><% }) %></select>
+      <select class="pinput" name="who" aria-label="Team member" style="width:auto"><option value="">Whole team</option><% staff.forEach(s => { %><option value="<%= s.id %>" <%= String(who) === String(s.id) ? 'selected' : '' %>><%= s.name || s.email %></option><% }) %></select>
+      <button class="pbtn" type="submit">Apply</button>
+    </div>
+  </form>
+  <div class="chips" style="margin-top:14px">
+    <% const colors = { call: 'var(--blue)', email: 'var(--violet)', sms: 'var(--warn)', whatsapp: 'var(--good)', social: 'var(--pink)', visit: 'var(--cyan)', meeting: 'var(--accent)' }; %>
+    <% Object.entries(colors).forEach(([k, c]) => { const on = acts.includes(k); const next = on ? acts.filter(a => a !== k) : acts.concat(k); %>
+      <a class="chip <%= on ? 'on' : '' %>" style="--c:<%= c %>" href="<%= qs({ acts: next.join(',') || '' }) %>"><i></i><%= C.label(C.ACTIVITY_TYPES, k) %></a>
+    <% }) %>
+    <a class="chip <%= acts.length ? '' : 'on' %>" href="<%= qs({ acts: '' }) %>">All activities</a>
+  </div>
+</div>
+
+<div class="tiles">
+  <a class="tile" style="--c:var(--blue)" href="/admin/audit"><div class="k">Activities</div><div class="v"><%= stats.activities %></div><div class="d">Calls, emails, SMS, WhatsApp, DMs, visits · last <%= d %> days</div></a>
+  <a class="tile" style="--c:var(--accent)" href="/admin/pipeline"><div class="k">Open pipeline</div><div class="v" title="<%= naira(stats.pipeline) %>"><%= nairaShort(stats.pipeline) %></div><div class="d"><%= stats.openDeals %> deals in progress</div></a>
+  <a class="tile" style="--c:var(--pink)" href="/admin/contacts?stage=warm"><div class="k">Interested</div><div class="v"><%= stats.warm %></div><div class="d">contacts warmed up · last <%= d %> days</div></a>
+  <a class="tile" style="--c:var(--good)" href="<%= perms.includes('money') ? '/admin/revenue' : '/admin/pipeline' %>"><div class="k">Money in</div><div class="v"><%= stats.revenue === null ? nairaShort(stats.won) : nairaShort(stats.revenue) %></div><div class="d"><%= stats.revenue === null ? `${stats.wonCount} deals won` : `Paystack · ${stats.wonCount} deals won (${naira(stats.won)})` %> · last <%= d %> days</div></a>
+  <a class="tile" style="--c:var(--violet)" href="/admin/contacts?source=signup&since=<%= d %>"><div class="k">Sign-ups</div><div class="v"><%= stats.signups %></div><div class="d"><%= stats.paidNow %> paying now · <%= stats.trials %> on trial</div></a>
+  <a class="tile" style="--c:var(--cyan)" href="/admin/contacts?stage=new"><div class="k">New leads</div><div class="v"><%= stats.newLeads %></div><div class="d">not contacted yet · <%= stats.nfcOpen %> NFC orders open</div></a>
+  <% if (perms.includes('money')) { %><a class="tile" style="--c:var(--warn)" href="/admin/revenue"><div class="k">Founding spots left</div><div class="v"><%= founding.left.toLocaleString() %></div><div class="d">of <%= founding.limit.toLocaleString() %> · <%= founding.expired ? 'offer ended' : 'ends ' + founding.endsLabel %></div></a><% } %>
+</div>
+
+<div class="grid2">
+  <div class="panel">
+    <div class="panel-head"><h2>Today</h2><a class="small" href="/admin/tasks">All tasks</a></div>
+    <ul class="today">
+      <% if (!today.tasks.length) { %><li class="empty">No tasks due today.</li><% } %>
+      <% today.tasks.forEach(t => { const late = t.due_at && new Date(t.due_at) < new Date(); %>
+        <li><span><%= t.title %><% if (t.contact_name) { %> · <a href="/admin/contacts/<%= t.contact_id %>"><%= t.contact_name %></a><% } %></span>
+        <span class="small" style="color:<%= late ? 'var(--bad)' : 'var(--muted)' %>"><%= t.due_at ? new Date(t.due_at).toLocaleString('en-GB', { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '' %></span></li>
+      <% }) %>
+    </ul>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>New leads to contact</h2><a class="small" href="/admin/contacts?stage=new">See all</a></div>
+    <ul class="today">
+      <% if (!today.leads.length) { %><li class="empty">Every lead has been contacted.</li><% } %>
+      <% today.leads.forEach(c => { %><li><a href="/admin/contacts/<%= c.id %>"><%= c.name %><%= c.company ? ', ' + c.company : '' %></a><span class="badge"><%= C.label(C.SOURCES, c.source) %></span></li><% }) %>
+    </ul>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Trials ending in 3 days</h2><% if (perms.includes('money')) { %><a class="small" href="/admin/renewals">Renewals &amp; trials</a><% } %></div>
+    <ul class="today">
+      <% if (!today.trialsEnding.length) { %><li class="empty">None this week.</li><% } %>
+      <% today.trialsEnding.forEach(u => { %><li><a href="<%= u.contact_id ? '/admin/contacts/' + u.contact_id : '#' %>"><%= u.name || u.email %></a><span class="small muted">ends <%= new Date(u.trial_ends_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) %></span></li><% }) %>
+    </ul>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Renewals due in 30 days</h2></div>
+    <ul class="today">
+      <% if (!today.renewals.length) { %><li class="empty">No renewals due.</li><% } %>
+      <% today.renewals.forEach(u => { %><li><a href="<%= u.contact_id ? '/admin/contacts/' + u.contact_id : '#' %>"><%= u.name || u.email %></a><span class="small muted"><%= new Date(u.plan_expires_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) %></span></li><% }) %>
+    </ul>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Birthdays this week</h2><% if (perms.includes('occasions')) { %><a class="small" href="/admin/occasions">Greetings</a><% } %></div>
+    <ul class="today">
+      <% if (!today.birthdays.length) { %><li class="empty">No birthdays this week.</li><% } %>
+      <% today.birthdays.forEach(c => { %><li><a href="/admin/contacts/<%= c.id %>"><%= c.name %></a><span class="small muted"><%= new Date('2000-' + c.birthday).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) %></span></li><% }) %>
+    </ul>
+  </div>
+</div>
+<%- include('_bottom') %>

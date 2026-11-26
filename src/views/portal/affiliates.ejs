@@ -1,0 +1,23 @@
+<%- include('_top') %><%- include('_head') %>
+<div class="panel"><h2>Ready to pay</h2>
+  <% if (!payouts.length) { %><p class="empty">Nothing payable yet.</p><% } %>
+  <div class="tw"><table class="pt"><thead><tr><th>Affiliate</th><th>Bank details</th><th>Commissions</th><th>Total</th><th></th></tr></thead><tbody>
+  <% payouts.forEach(p => { %><tr><td><%= p.email %></td><td class="small"><%= p.affiliate_bank || 'Not given yet' %></td><td><%= p.n %></td><td><b><%= naira(Number(p.total)) %></b></td>
+  <td><% if (Number(p.total) >= minPayout) { %><form method="post" action="/admin/affiliates/<%= p.affiliate_id %>/payout" data-confirm="Mark <%= naira(Number(p.total)) %> to <%= p.email %> as paid?"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="pbtn sm primary" type="submit">Mark as paid</button></form><% } else { %><span class="small muted">Below <%= naira(minPayout) %></span><% } %></td></tr><% }) %>
+  </tbody></table></div>
+</div>
+<div class="panel"><h2>All affiliates</h2>
+  <div class="tw"><table class="pt"><thead><tr><th>Affiliate</th><th>Code</th><th>Referred</th><th>Paying</th><th>Progress to 10,000</th><th>Pending</th><th>Payable</th><th>Paid</th></tr></thead><tbody>
+  <% if (!stats.length) { %><tr><td colspan="8" class="empty">No affiliates yet.</td></tr><% } %>
+  <% stats.forEach(a => { %><tr><td><%= a.name || a.email %><br><span class="small muted"><%= a.email %></span></td><td class="small"><%= a.ref_code %></td><td><%= a.referred %></td><td><%= a.paidRef %></td>
+  <td style="min-width:160px"><div class="bar" style="grid-template-columns:1fr 60px"><span class="track"><span class="fill" style="width:<%= Math.min(100, a.referred / 100) %>%"></span></span><span class="n small"><%= (a.referred / 100).toFixed(1) %>%</span></div></td>
+  <td><%= naira(a.pending) %></td><td><%= naira(a.payable) %></td><td><%= naira(a.paid) %></td></tr><% }) %>
+  </tbody></table></div>
+</div>
+<div class="panel"><h2>Commission history</h2>
+  <div class="tw"><table class="pt"><thead><tr><th>Date</th><th>Affiliate</th><th>Rate</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>
+  <% rows.forEach(r => { %><tr><td class="small"><%= new Date(r.created_at).toLocaleDateString('en-GB') %></td><td><%= r.email %></td><td><%= r.rate_pct %>%</td><td><%= naira(r.amount_naira) %></td><td><span class="badge b-<%= r.status === 'paid' ? 'won' : r.status === 'void' ? 'lost' : 'new' %>"><%= r.status %></span></td>
+  <td><% if (['pending','payable'].includes(r.status)) { %><form method="post" action="/admin/commissions/<%= r.id %>/void" data-confirm="Cancel this commission (for example, the customer was refunded)?"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="pbtn sm ghost danger" type="submit">Cancel</button></form><% } %></td></tr><% }) %>
+  </tbody></table></div>
+</div>
+<%- include('_bottom') %>

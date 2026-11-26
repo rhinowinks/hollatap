@@ -1,0 +1,6 @@
+<%- include('_top') %><%- include('_head') %>
+<div class="tw"><table class="pt"><thead><tr><th>Date</th><th>Product</th><th>Name</th><th>Company</th><th>Contact</th><th>Message</th><th></th></tr></thead><tbody>
+<% if (!rows.length) { %><tr><td colspan="7" class="empty">No enquiries yet.</td></tr><% } %>
+<% rows.forEach(e => { %><tr><td class="small"><%= new Date(e.created_at).toLocaleDateString('en-GB') %></td><td><span class="badge"><%= e.product %></span></td><td><%= e.name %></td><td><%= e.company || '' %></td><td class="small"><%= e.email %><br><%= e.phone || '' %></td><td class="small"><%= (e.message || '').slice(0, 200) %></td><td><% if (e.contact_id) { %><a class="pbtn sm" href="/admin/contacts/<%= e.contact_id %>">Open</a><% } %></td></tr><% }) %>
+</tbody></table></div>
+<%- include('_bottom') %>

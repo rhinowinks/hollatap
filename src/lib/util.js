@@ -34,6 +34,7 @@ function slugify(s) {
 }
 
 const RESERVED = new Set([
+  'unsubscribe', 'team-portal',
   'admin', 'api', 'login', 'logout', 'verify', 'dashboard', 'cards', 'card', 'pay', 'teams', 'team', 'instant',
   'privacy', 'terms', 'upgrade', 'services', 'go', 't', 'c', 'vendor', 'brand', 'css', 'js', 'static', 'public',
   'signature', 'affiliates', 'affiliate', 'account', 'help', 'pricing', 'join', 'invite', 'webhooks', 'health',

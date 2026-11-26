@@ -1,0 +1,25 @@
+<%- include('_top') %><%- include('_head') %>
+<div class="grid2">
+  <div class="panel"><h2>Connections</h2>
+    <p><span class="badge <%= smsEnabled ? 'b-won' : 'b-lost' %>"><%= smsEnabled ? 'On' : 'Not set' %></span> <b>SMS (Termii)</b><br><span class="small muted">Sender ID: <%= termii.sender %> · <%= termii.base %>. On Render, set TERMII_API_KEY, TERMII_SENDER_ID and, if your Termii dashboard shows a different base URL, TERMII_BASE_URL.</span></p>
+    <p><span class="badge <%= mailEnabled ? 'b-won' : 'b-lost' %>"><%= mailEnabled ? 'On' : 'Not set' %></span> <b>Email (Zoho)</b></p>
+    <p><span class="badge <%= paymentsEnabled ? 'b-won' : 'b-lost' %>"><%= paymentsEnabled ? 'On' : 'Not set' %></span> <b>Payments (Paystack)</b></p>
+    <p><span class="badge <%= googleEnabled ? 'b-won' : 'b-lost' %>"><%= googleEnabled ? 'On' : 'Not set' %></span> <b>Log in with Google</b></p>
+    <form method="post" action="/admin/settings/test-sms" class="pform row" style="margin-top:14px">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <div class="pf"><label for="tp">Send a test SMS to</label><input id="tp" name="phone" placeholder="0803 123 4567" required></div>
+      <div><button class="pbtn" type="submit">Send test</button></div>
+    </form>
+  </div>
+  <div class="panel"><h2>Demo data</h2>
+    <p class="small muted">Fills the portal with made-up Nigerian customers, leads, deals, payments, NFC orders and messages so you can test everything. Demo emails use example.com and demo messages are never really sent.</p>
+    <p>Loaded now: <b><%= demoCounts.contacts %></b> contacts, <b><%= demoCounts.deals %></b> deals, <b><%= demoCounts.users %></b> accounts, <b><%= demoCounts.payments %></b> payments.</p>
+    <form method="post" action="/admin/demo/load" style="margin-bottom:16px"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="pbtn primary" type="submit">Load demo data</button></form>
+    <form method="post" action="/admin/demo/clear" class="pform row" data-confirm="Remove ALL demo data? Real data is not touched.">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <div class="pf"><label for="cf">Type CLEAR to remove all demo data</label><input id="cf" name="confirm" autocomplete="off"></div>
+      <div><button class="pbtn danger" type="submit">Clear demo data</button></div>
+    </form>
+  </div>
+</div>
+<%- include('_bottom') %>
