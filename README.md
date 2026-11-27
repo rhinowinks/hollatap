@@ -68,4 +68,4 @@ revenue, renewals and trials, NFC order board, affiliates and payouts, reports, 
 activity log, weekly summary email (Mondays), and demo data (Settings → Load / Clear; every demo row is marked is_demo).
 
 Env for SMS: `TERMII_API_KEY`, `TERMII_SENDER_ID` (approved sender ID, e.g. HollaTap), optional `TERMII_BASE_URL`
-(the base URL shown in your Termii dashboard). Without a key, SMS are recorded as "simulated" and not sent.
+(the base URL shown in your Termii dashboard). `TERMII_SERVICE_CHANNEL` defaults to `generic` (promotional sender ID); set it to `dnd` once a transactional sender ID is approved. Without a key, SMS are recorded as "simulated" and not sent.

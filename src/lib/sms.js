@@ -21,13 +21,16 @@ async function post(path, body) {
   return data;
 }
 
+// Service messages ask for 'dnd'; until a transactional sender ID is approved they go on the route set in TERMII_SERVICE_CHANNEL.
+function route(channel) { return channel === 'dnd' ? config.termii.serviceChannel : channel; }
+
 // channel: 'dnd' for one-to-one service messages (reaches DND numbers), 'generic' for promotional bulk.
 async function sendOne(phone, text, channel = 'dnd') {
   const to = intl(phone);
   if (!to) return { status: 'failed', error: 'Not a valid phone number' };
   if (!config.smsEnabled) return { status: 'simulated', to };
   try {
-    const d = await post('/api/sms/send', { to, sms: text, channel });
+    const d = await post('/api/sms/send', { to, sms: text, channel: route(channel) });
     return { status: 'sent', to, ref: String(d.message_id_str || d.message_id || '') };
   } catch (e) {
     return { status: 'failed', to, error: String(e.message).slice(0, 300) };
@@ -42,7 +45,7 @@ async function sendBulk(phones, text, channel = 'generic') {
     const chunk = list.slice(i, i + 100);
     if (!config.smsEnabled) { chunk.forEach((to) => results.push({ to, status: 'simulated' })); continue; }
     try {
-      const d = await post('/api/sms/send/bulk', { to: chunk, sms: text, channel });
+      const d = await post('/api/sms/send/bulk', { to: chunk, sms: text, channel: route(channel) });
       chunk.forEach((to) => results.push({ to, status: 'sent', ref: String(d.message_id_str || d.message_id || '') }));
     } catch (e) {
       chunk.forEach((to) => results.push({ to, status: 'failed', error: String(e.message).slice(0, 300) }));

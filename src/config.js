@@ -25,7 +25,9 @@ const config = {
     secret: env('PAYSTACK_SECRET_KEY', ''),
     public: env('PAYSTACK_PUBLIC_KEY', ''),
   },
-  termii: { apiKey: env('TERMII_API_KEY', ''), senderId: env('TERMII_SENDER_ID', 'HollaTap'), baseUrl: env('TERMII_BASE_URL', 'https://api.ng.termii.com').replace(/\/$/, '') },
+  termii: { apiKey: env('TERMII_API_KEY', ''), senderId: env('TERMII_SENDER_ID', 'HollaTap'), baseUrl: env('TERMII_BASE_URL', 'https://api.ng.termii.com').replace(/\/$/, ''),
+    // Promotional sender IDs only work on the 'generic' route. Set to 'dnd' once a transactional sender ID is approved.
+    serviceChannel: env('TERMII_SERVICE_CHANNEL', 'generic') },
   google: { clientId: env('GOOGLE_CLIENT_ID', ''), clientSecret: env('GOOGLE_CLIENT_SECRET', '') },
   turnstile: { site: env('TURNSTILE_SITE_KEY', ''), secret: env('TURNSTILE_SECRET_KEY', '') },
 };
